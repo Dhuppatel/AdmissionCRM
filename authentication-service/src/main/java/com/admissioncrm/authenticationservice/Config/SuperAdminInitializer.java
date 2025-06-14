@@ -1,8 +1,9 @@
 package com.admissioncrm.authenticationservice.Config;
 
 
-import com.admissioncrm.authenticationservice.Entities.User;
-import com.admissioncrm.authenticationservice.Enums.Role;
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
+
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;

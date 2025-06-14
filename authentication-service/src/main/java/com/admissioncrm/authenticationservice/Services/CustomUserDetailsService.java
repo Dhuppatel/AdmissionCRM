@@ -1,6 +1,6 @@
 package com.admissioncrm.authenticationservice.Services;
 
-import com.admissioncrm.authenticationservice.Entities.User;
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 import com.admissioncrm.authenticationservice.Entities.UserPrinciple;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

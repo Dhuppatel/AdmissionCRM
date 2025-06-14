@@ -4,8 +4,9 @@ import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.student.StudentLoginRequest;
 import com.admissioncrm.authenticationservice.DTO.student.StudentRegistrationRequest;
 import com.admissioncrm.authenticationservice.DTO.loginRequestViaEmail;
-import com.admissioncrm.authenticationservice.Entities.User;
-import com.admissioncrm.authenticationservice.Enums.Role;
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
+
 import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Utilities.JwtUtils;
