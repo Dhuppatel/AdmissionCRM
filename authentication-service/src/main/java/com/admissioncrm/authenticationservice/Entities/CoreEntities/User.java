@@ -21,7 +21,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
+public class User  {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
@@ -42,7 +42,7 @@ public class User implements UserDetails {
     private String lastName;
 
     @Column(length = 15)
-    private String phone;
+    private String mobileNumber;
 
     @Enumerated(EnumType.STRING)
     private Role role = Role.STUDENT;
@@ -98,8 +98,5 @@ public class User implements UserDetails {
         return firstName + " " + lastName;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+
 }

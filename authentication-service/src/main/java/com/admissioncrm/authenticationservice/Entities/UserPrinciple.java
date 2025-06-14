@@ -1,5 +1,6 @@
 package com.admissioncrm.authenticationservice.Entities;
 
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
