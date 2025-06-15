@@ -45,6 +45,8 @@ public class AuthenticationService {
             user.setRole(Role.STUDENT);
 
             userRepository.save(user);
+            //Also add save the Student Details Entity in future for more user specific details
+
 
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPassword())
