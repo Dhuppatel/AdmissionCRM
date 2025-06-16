@@ -24,15 +24,17 @@ import java.math.BigDecimal;
 public class ApplicationForm {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "application_form_id")
-    private Long applicationFormId;
+    private String applicationFormId;
 
     @Column(name = "id_user", nullable = false)
     private String idUser;
 
-    @Column(name = "institute_course_id", nullable = false)
-    private Long instituteCourseId;
+    @OneToOne(mappedBy = "applicationForm",cascade = CascadeType.ALL)
+    private CoursePreferences coursePreference;
+
+
 
     @Column(name = "full_name", nullable = false, columnDefinition = "TEXT")
     private String fullName;
