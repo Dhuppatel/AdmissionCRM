@@ -20,7 +20,6 @@ public interface ApplicationFormService {
     ApplicationForm getApplicationByEmail(String email);
     List<ApplicationForm> getApplicationsByUserId(String userId);
     Page<ApplicationForm> getAllApplications(Pageable pageable);
-    Page<ApplicationForm> getApplicationsByCourse(Long instituteCourseId, Pageable pageable);
 
     // Update
     ApplicationForm updateApplication(String id, ApplicationFormSubmissionDTO applicationDto);

@@ -136,13 +136,6 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                 .map(app -> app.getDeletedAt() == null ? app : null);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ApplicationForm> getApplicationsByCourse(Long instituteCourseId, Pageable pageable) {
-        log.info("Fetching applications for course ID: {}", instituteCourseId);
-
-        return applicationFormRepository.findByInstituteCourseIdAndDeletedAtIsNull(instituteCourseId, pageable);
-    }
 
     @Override
     public ApplicationForm updateApplication(String id, ApplicationFormSubmissionDTO applicationDto) {
