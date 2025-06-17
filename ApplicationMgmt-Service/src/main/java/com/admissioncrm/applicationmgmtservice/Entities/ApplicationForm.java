@@ -1,5 +1,6 @@
 package com.admissioncrm.applicationmgmtservice.Entities;
 
+import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,9 @@ public class ApplicationForm {
     @OneToOne(mappedBy = "applicationForm",cascade = CascadeType.ALL)
     private CoursePreferences coursePreference;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "application_status", nullable = false)
+    private ApplicationStatus applicationStatus;
 
 
     @Column(name = "full_name", nullable = false, columnDefinition = "TEXT")

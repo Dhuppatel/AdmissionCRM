@@ -1,7 +1,9 @@
 package com.admissioncrm.applicationmgmtservice.Services;
 
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
-import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,10 +13,10 @@ import java.util.List;
 public interface ApplicationFormService {
 
     // Create
-    ApplicationForm createApplication(ApplicationFormSubmissionDTO applicationDto);
+    ApplicationFormResponseDTO createApplication(ApplicationFormSubmissionDTO applicationDto);
 
     // Read
-    ApplicationForm getApplicationById(String id);
+    ApplicationFormFullResponseDTO getApplicationById(String id);
     ApplicationForm getApplicationByEmail(String email);
     List<ApplicationForm> getApplicationsByUserId(String userId);
     Page<ApplicationForm> getAllApplications(Pageable pageable);

@@ -1,6 +1,6 @@
 package com.admissioncrm.applicationmgmtservice.Utills;
 
-import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.*;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,6 @@ public class ApplicationFormMapper {
     public ApplicationForm mapToEntity(ApplicationFormSubmissionDTO dto) {
         ApplicationForm form = ApplicationForm.builder()
                 .idUser(dto.getIdUser())
-                .instituteCourseId(dto.getCoursePreference().getInstituteCourseId())
 
                 // Personal Info
                 .firstName(dto.getPersonalInfo().getFirstName())
@@ -127,4 +126,142 @@ public class ApplicationFormMapper {
 
         return form;
     }
+
+
+    public ApplicationFormSubmissionDTO mapToDTO(ApplicationForm form) {
+        return ApplicationFormSubmissionDTO.builder()
+                .idUser(form.getIdUser())
+
+                .personalInfo(
+                        PersonalInfoDTO.builder()
+                                .firstName(form.getFirstName())
+                                .middleName(form.getMiddleName())
+                                .lastName(form.getLastName())
+                                .fullName(form.getFullName())
+                                .email(form.getEmail())
+                                .studentMobile(form.getStudentMobile())
+                                .dob(form.getDob())
+                                .gender(form.getGender())
+                                .religion(form.getReligion())
+                                .nationality(form.getNationality())
+                                .casteCategory(form.getCasteCategory())
+                                .domicileState(form.getDomicileState())
+                                .differentlyAbled(form.getDifferentlyAbled())
+                                .disability(form.getDisability())
+                                .economicallyBackwardClass(form.getEconomicallyBackwardClass())
+                                .build()
+                )
+
+                .parentInfo(
+                        ParentInfoDTO.builder()
+                                .fatherSalutation(form.getFatherSalutation())
+                                .fatherName(form.getFatherName())
+                                .fatherMobile(form.getFatherMobile())
+                                .fatherEmail(form.getFatherEmail())
+                                .motherSalutation(form.getMotherSalutation())
+                                .motherName(form.getMotherName())
+                                .motherMobile(form.getMotherMobile())
+                                .motherEmail(form.getMotherEmail())
+                                .annualIncome(form.getAnnualIncome())
+                                .build()
+                )
+
+                .addressInfo(
+                        AddressInfoDTO.builder()
+                                .country(form.getCountry())
+                                .state(form.getState())
+                                .district(form.getDistrict())
+                                .cityTaluka(form.getCityTaluka())
+                                .villageTown(form.getVillageTown())
+                                .addressLine1(form.getAddressLine1())
+                                .addressLine2(form.getAddressLine2())
+                                .pincode(form.getPincode())
+                                .permanentAddressSameAsCorrespondence(form.getPermanentAddressSameAsCorrespondence())
+                                .countryPermanent(form.getCountryPermanent())
+                                .statePermanent(form.getStatePermanent())
+                                .districtPermanent(form.getDistrictPermanent())
+                                .cityTalukaPermanent(form.getCityTalukaPermanent())
+                                .villageTownPermanent(form.getVillageTownPermanent())
+                                .addressLine1Permanent(form.getAddressLine1Permanent())
+                                .addressLine2Permanent(form.getAddressLine2Permanent())
+                                .pincodePermanent(form.getPincodePermanent())
+                                .build()
+                )
+
+                .academicInfo(
+                        AcademicInfoDTO.builder()
+                                .udiseNo(form.getUdiseNo())
+                                .abcId(form.getAbcId())
+                                .qualification(form.getQualification())
+                                .twelfthPassoutCountry(form.getTwelfthPassoutCountry())
+                                .twelfthPassoutState(form.getTwelfthPassoutState())
+                                .twelfthPassoutBoard(form.getTwelfthPassoutBoard())
+                                .twelfthSchoolName(form.getTwelfthSchoolName())
+                                .twelfthResultStatus(form.getTwelfthResultStatus())
+                                .twelfthSeatNumber(form.getTwelfthSeatNumber())
+                                .twelfthStream(form.getTwelfthStream())
+                                .twelfthPassingDate(form.getTwelfthPassingDate())
+                                .twelfthModeOfStudy(form.getTwelfthModeOfStudy())
+                                .twelfthMarkingScheme(form.getTwelfthMarkingScheme())
+                                .twelfthTotalMarks(form.getTwelfthTotalMarks())
+                                .twelfthObtainMarks(form.getTwelfthObtainMarks())
+                                .twelfthObtainCgpa(form.getTwelfthObtainCgpa())
+                                .courseInstituteName(form.getCourseInstituteName())
+                                .courseSeatNumber(form.getCourseSeatNumber())
+                                .courseBoardOrUniversity(form.getCourseBoardOrUniversity())
+                                .courseDegreeOrBranch(form.getCourseDegreeOrBranch())
+                                .courseSpecialization(form.getCourseSpecialization())
+                                .coursePassingDate(form.getCoursePassingDate())
+                                .courseResultStatus(form.getCourseResultStatus())
+                                .courseMarkingScheme(form.getCourseMarkingScheme())
+                                .courseMaximumMarks(form.getCourseMaximumMarks())
+                                .courseObtainMarks(form.getCourseObtainMarks())
+                                .courseObtainCgpaPercentage(form.getCourseObtainCgpaPercentage())
+                                .build()
+                )
+
+                .entranceExamInfo(
+                        EntranceExamInfoDTO.builder()
+                                .appearedForEntranceExam(form.getAppearedForEntranceExam())
+                                .entranceExam1(form.getEntranceExam1())
+                                .entrancePassingDate1(form.getEntrancePassingDate1())
+                                .entranceResultStatus1(form.getEntranceResultStatus1())
+                                .entranceScoreRankPercentile1(form.getEntranceScoreRankPercentile1())
+                                .entranceRollnoApplicationno1(form.getEntranceRollnoApplicationno1())
+                                .entranceExam2(form.getEntranceExam2())
+                                .entrancePassingDate2(form.getEntrancePassingDate2())
+                                .entranceResultStatus2(form.getEntranceResultStatus2())
+                                .entranceScoreRankPercentile2(form.getEntranceScoreRankPercentile2())
+                                .entranceRollnoApplicationno2(form.getEntranceRollnoApplicationno2())
+                                .entranceExam3(form.getEntranceExam3())
+                                .entrancePassingDate3(form.getEntrancePassingDate3())
+                                .entranceResultStatus3(form.getEntranceResultStatus3())
+                                .entranceScoreRankPercentile3(form.getEntranceScoreRankPercentile3())
+                                .entranceRollnoApplicationno3(form.getEntranceRollnoApplicationno3())
+                                .entranceExam4(form.getEntranceExam4())
+                                .entrancePassingDate4(form.getEntrancePassingDate4())
+                                .entranceResultStatus4(form.getEntranceResultStatus4())
+                                .entranceScoreRankPercentile4(form.getEntranceScoreRankPercentile4())
+                                .entranceRollnoApplicationno4(form.getEntranceRollnoApplicationno4())
+                                .registeredInAcpcAcpdc(form.getRegisteredInAcpcAcpdc())
+                                .acpcMeritNumber(form.getAcpcMeritNumber())
+                                .acpcMeritMarks(form.getAcpcMeritMarks())
+                                .acpcApplicationNumber(form.getAcpcApplicationNumber())
+                                .build()
+                )
+
+                .additionalInfo(
+                        AdditionalInfoDTO.builder()
+                                .educationLoanRequired(form.getEducationLoanRequired())
+                                .hostelAccommodationRequired(form.getHostelAccommodationRequired())
+                                .transportationRequired(form.getTransportationRequired())
+                                .heardAboutUniversityFrom(form.getHeardAboutUniversityFrom())
+                                .studentOfUniversity(form.getStudentOfUniversity())
+                                .enrollmentNumber(form.getEnrollmentNumber())
+                                .build()
+                )
+
+                .build();
+    }
+
 }
