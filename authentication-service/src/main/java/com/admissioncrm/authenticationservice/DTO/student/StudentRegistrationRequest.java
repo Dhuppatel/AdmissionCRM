@@ -16,6 +16,9 @@ public class StudentRegistrationRequest {
     @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "username is required")
+    private String username;
+
     @NotBlank(message = "First name is required")
     private String firstName;
 

@@ -30,12 +30,6 @@ public class UserPrinciple implements UserDetails {
     }
 
     @Override
-    public String getUsername() {
-        switch (user.getRole()) {
-            case STUDENT:
-                return user.getMobileNumber();
-            default:
-                return user.getEmail();
-        }
-    }
+    public String getUsername() { return user.getUsername(); }
+
 }

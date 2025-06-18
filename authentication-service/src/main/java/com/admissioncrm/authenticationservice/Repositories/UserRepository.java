@@ -1,6 +1,8 @@
 package com.admissioncrm.authenticationservice.Repositories;
 
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.swing.text.html.Option;
@@ -11,4 +13,8 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByMobileNumber(String mobileNumber);
 
     boolean existsByMobileNumber(String mobileNumber);
+
+    Optional<User> findByUsername(String username);
+
+    boolean existsByEmail(@NotBlank(message = "Email is required") @Email(message = "Invalid email format") String email);
 }

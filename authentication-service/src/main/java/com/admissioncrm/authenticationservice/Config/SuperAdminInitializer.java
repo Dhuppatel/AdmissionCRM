@@ -27,6 +27,7 @@ public class SuperAdminInitializer {
             boolean exists = userRepository.existsByMobileNumber(superAdminMobile);
             if (!exists) {
                 User superAdmin = new User();
+                superAdmin.setUsername("Admin");
                 superAdmin.setFirstName("Super");
                 superAdmin.setLastName("Admin");
                 superAdmin.setMobileNumber(superAdminMobile);

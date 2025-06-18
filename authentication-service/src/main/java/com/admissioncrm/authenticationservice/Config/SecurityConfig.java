@@ -46,6 +46,7 @@ public class SecurityConfig {
                         "/auth/student/register",
                         "/auth/sadmin/login",
                         "/auth/iadmin/login",
+                        "/auth/login",
                         "/actuator/**"
                 ).permitAll();
 

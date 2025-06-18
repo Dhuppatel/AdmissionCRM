@@ -1,9 +1,9 @@
 package com.admissioncrm.authenticationservice.Services;
 
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
+import com.admissioncrm.authenticationservice.DTO.LoginRequest;
 import com.admissioncrm.authenticationservice.DTO.student.StudentLoginRequest;
 import com.admissioncrm.authenticationservice.DTO.student.StudentRegistrationRequest;
-import com.admissioncrm.authenticationservice.DTO.loginRequestViaEmail;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
@@ -11,10 +11,13 @@ import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Utilities.JwtUtils;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,13 +33,48 @@ public class AuthenticationService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-@Transactional
+
+    public ResponseEntity<JwtResponse> loginUser(@Valid LoginRequest loginRequest) {
+        String identifier = loginRequest.getIdentifier();
+        String password = loginRequest.getPassword();
+        //fetch the user from DB
+
+        User user =getUserByIdentifier(loginRequest.getIdentifier());
+
+        //authenticate using spring security
+        try{
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(identifier, password));
+        }catch(BadCredentialsException e)
+        {
+            throw new BadCredentialsException("Invalid credentials");
+        }
+
+        //generate the token
+        try{
+            String jwtToken = jwtUtils.generateToken(user.getUsername(), user.getRole());
+            return ResponseEntity.ok(new JwtResponse(jwtToken, user.getRole()));
+        }catch(Exception e)
+        {
+            throw new ApiException("Failed to generate JWT token");
+        }
+    }
+
+
+
+    //register Student
+
+    @Transactional
     public JwtResponse registerStudent(StudentRegistrationRequest request) {
 
             if (userRepository.existsByMobileNumber(request.getMobileNumber())) {
                 throw new ApiException("Mobile number already registered");
             }
+            if(userRepository.existsByEmail(request.getEmail()))
+            {
+                throw new ApiException("Email already registered");
+            }
             User user = new User();
+            user.setUsername(request.getUsername());
             user.setMobileNumber(request.getMobileNumber());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
@@ -52,62 +90,27 @@ public class AuthenticationService {
                     new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPassword())
             );
 
-            String jwtToken = jwtUtils.generateToken(user.getMobileNumber(), Role.STUDENT);
-            return new JwtResponse(jwtToken, Role.STUDENT.toString());
+            String jwtToken = jwtUtils.generateToken(user.getUsername(), Role.STUDENT);
+            return new JwtResponse(jwtToken, Role.STUDENT);
 
 
     }
 
-    public ResponseEntity<?> loginStudent(StudentLoginRequest request) {
-        try{
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getMobileNumber(), request.getPassword())
-            );
-            User user=userRepository.findByMobileNumber(request.getMobileNumber())
-                    .orElseThrow(() -> new ApiException("User not found"));
-            if (user.getRole() != Role.STUDENT) {
-                throw new ApiException("Access denied: Not a student");
-            }
-            String jwtToken=jwtUtils.generateToken(user.getMobileNumber(), Role.STUDENT);
 
-            JwtResponse jwtResponse=new JwtResponse(jwtToken,user.getRole().toString());
-            return ResponseEntity.ok(jwtResponse);
-        }catch(Exception e){
-            throw new ApiException("Invalid username or password");
+
+
+    // Utility methods
+
+    private User getUserByIdentifier(String identifier) {
+        if (identifier.matches("^\\d{10}$")) {
+            return userRepository.findByMobileNumber(identifier)
+                    .orElseThrow(() -> new UsernameNotFoundException("Mobile number not found"));
+        } else if (identifier.contains("@")) {
+            return userRepository.findByEmail(identifier)
+                    .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+        } else {
+            return userRepository.findByUsername(identifier)
+                    .orElseThrow(()->new  UsernameNotFoundException("Username not found"));
         }
-    }
-    //Admin Login handeling
-
-    public ResponseEntity<?> loginSuperAdmin(loginRequestViaEmail request)
-    {
-        return loginAdminWithRole(Role.UNIVERSITY_ADMIN,request);
-    }
-    public ResponseEntity<?> loginInstitueAdmin(loginRequestViaEmail request)
-    {
-        return loginAdminWithRole(Role.INSTITUTE_ADMIN,request);
-    }
-
-    public ResponseEntity<?> loginAdminWithRole(Role expectedRole, loginRequestViaEmail request){
-
-        try {
-
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-            );
-
-            User user = userRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new ApiException("User not found"));
-
-            if (user.getRole() != expectedRole) {
-                throw new ApiException("Access denied for this role");
-            }
-
-            String jwtToken = jwtUtils.generateToken(user.getEmail(), user.getRole());
-
-            return ResponseEntity.ok(new JwtResponse(jwtToken, user.getRole().toString()));
-        } catch (Exception e) {
-            throw new ApiException("Invalid credentials" );
-        }
-
     }
 }

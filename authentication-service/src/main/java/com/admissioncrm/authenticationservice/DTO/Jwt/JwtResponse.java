@@ -1,5 +1,6 @@
 package com.admissioncrm.authenticationservice.DTO.Jwt;
 
+import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import lombok.*;
 
 @Getter
@@ -10,5 +11,5 @@ import lombok.*;
 public class JwtResponse {
 
     private String jwtToken;
-    private String role;
+    private Role role;
 }

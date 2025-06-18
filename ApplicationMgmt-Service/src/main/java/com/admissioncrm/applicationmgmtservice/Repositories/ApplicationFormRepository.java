@@ -22,9 +22,6 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     // Find by email
     Optional<ApplicationForm> findByEmailAndDeletedAtIsNull(String email);
 
-    // Find by institute course ID
-    Page<ApplicationForm> findByInstituteCourseIdAndDeletedAtIsNull(Long instituteCourseId, Pageable pageable);
-
     // Find applications within date range
     @Query("SELECT af FROM ApplicationForm af WHERE af.createdAt BETWEEN :startDate AND :endDate AND af.deletedAt IS NULL")
     List<ApplicationForm> findApplicationsBetweenDates(@Param("startDate") LocalDateTime startDate,
@@ -42,14 +39,5 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     @Query("SELECT COUNT(af) FROM ApplicationForm af WHERE af.deletedAt IS NULL")
     Long countActiveApplications();
 
-    // Find by multiple criteria
-    @Query("SELECT af FROM ApplicationForm af WHERE " +
-            "(:instituteCourseId IS NULL OR af.instituteCourseId = :instituteCourseId) AND " +
-            "(:email IS NULL OR af.email = :email) AND " +
-            "(:mobile IS NULL OR af.studentMobile = :mobile) AND " +
-            "af.deletedAt IS NULL")
-    Page<ApplicationForm> findByCriteria(@Param("instituteCourseId") Long instituteCourseId,
-                                         @Param("email") String email,
-                                         @Param("mobile") String mobile,
-                                         Pageable pageable);
+
 }

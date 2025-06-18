@@ -1,7 +1,7 @@
 package com.admissioncrm.authenticationservice.Controllers;
 
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
-import com.admissioncrm.authenticationservice.DTO.loginRequestViaEmail;
+import com.admissioncrm.authenticationservice.DTO.LoginRequest;
 import com.admissioncrm.authenticationservice.DTO.student.StudentLoginRequest;
 import com.admissioncrm.authenticationservice.DTO.student.StudentRegistrationRequest;
 import com.admissioncrm.authenticationservice.Services.AuthenticationService;
@@ -24,10 +24,10 @@ public class AuthController {
 
     }
 
-    @PostMapping("/student/login")
-    public ResponseEntity<?> loginStudent(@Valid @RequestBody StudentLoginRequest studentLoginRequest) {
+    @PostMapping("/login")
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest){
 
-        return authenticationService.loginStudent(studentLoginRequest);
+        return authenticationService.loginUser(loginRequest);
     }
 
     @PostMapping("/student/register")
@@ -39,18 +39,7 @@ public class AuthController {
             return ResponseEntity.ok(jwtResponse);
     }
 
-    @PostMapping("/sadmin/login")
-    public ResponseEntity<?> loginSuperAdmin(@RequestBody loginRequestViaEmail request){
 
-
-        return authenticationService.loginSuperAdmin(request);
-    }
-    @PostMapping("/iadmin/login")
-    public ResponseEntity<?> loginInstituteAdmin(@Valid @RequestBody loginRequestViaEmail request){
-
-
-        return authenticationService.loginInstitueAdmin(request);
-    }
 
 
     //testing endpoints

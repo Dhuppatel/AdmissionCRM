@@ -1,8 +1,11 @@
 package com.admissioncrm.applicationmgmtservice.Services.Implimentation;
 
 
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
-import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.*;
+import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
 import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,7 +39,7 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     private final ApplicationFormMapper applicationFormMapper;
 
     @Override
-    public ApplicationForm createApplication(ApplicationFormSubmissionDTO applicationDto) {
+    public ApplicationFormResponseDTO createApplication(ApplicationFormSubmissionDTO applicationDto) {
         log.info("Creating new application for user: {}", applicationDto.getIdUser());
 
         // Validate application data
@@ -55,7 +59,16 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
             ApplicationForm savedApplication = applicationFormRepository.save(applicationForm);
 
             log.info("Application created successfully with ID: {}", savedApplication.getApplicationFormId());
-            return savedApplication;
+
+           ApplicationFormResponseDTO response =new ApplicationFormResponseDTO().builder()
+                   .applicationId(savedApplication.getApplicationFormId())
+                   .status(ApplicationStatus.SUBMITTED.toString())
+                   .studentName(savedApplication.getFullName())
+                   .courseName(savedApplication.getCourseInstituteName())
+                   .email(savedApplication.getEmail())
+                   .submittedDate(LocalDate.now())
+                   .build();
+            return response;
 
         } catch (Exception e) {
             log.error("Error creating application for user: {}", applicationDto.getIdUser(), e);
@@ -65,13 +78,35 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
 
     @Override
     @Transactional(readOnly = true)
-    public ApplicationForm getApplicationById(String id) {
-        log.info("Fetching application with ID: {}", id);
+    public ApplicationFormFullResponseDTO getApplicationById(String id) {
+        try{
+            log.info("Fetching application with ID: {}", id);
 
-        return applicationFormRepository.findById(id)
-                .filter(app -> app.getDeletedAt() == null)
-                .orElseThrow(() -> new ApplicationFormNotFoundException(
-                        "Application not found with ID: " + id));
+            ApplicationForm applicationForm= applicationFormRepository.findById(id)
+                    .filter(app -> app.getDeletedAt() == null)
+                    .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
+
+            ApplicationFormFullResponseDTO responseDTO=new ApplicationFormFullResponseDTO();
+
+            //set metadata
+            responseDTO.setApplicationId(applicationForm.getApplicationFormId());
+            responseDTO.setStatus(applicationForm.getApplicationStatus());
+            responseDTO.setSubmittedDate(applicationForm.getCreatedAt());
+
+            switch (applicationForm.getApplicationStatus()) {
+                case DRAFT, SUBMITTED -> responseDTO.setEditable(true);
+                default -> responseDTO.setEditable(false);
+            }
+            //map the form to dto
+            responseDTO.setFormData(
+                    applicationFormMapper.mapToDTO(applicationForm)
+            );
+            return responseDTO;
+
+        }catch (Exception e) {
+            throw new RuntimeException("Error fetching application", e);
+        }
+
     }
 
     @Override
@@ -101,20 +136,16 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
                 .map(app -> app.getDeletedAt() == null ? app : null);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ApplicationForm> getApplicationsByCourse(Long instituteCourseId, Pageable pageable) {
-        log.info("Fetching applications for course ID: {}", instituteCourseId);
-
-        return applicationFormRepository.findByInstituteCourseIdAndDeletedAtIsNull(instituteCourseId, pageable);
-    }
 
     @Override
     public ApplicationForm updateApplication(String id, ApplicationFormSubmissionDTO applicationDto) {
         log.info("Updating application with ID: {}", id);
 
         // Get existing application
-        ApplicationForm existingApplication = getApplicationById(id);
+        ApplicationForm existingApplication = applicationFormRepository.findById(id)
+                .filter(app -> app.getDeletedAt() == null)
+                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
+
 
         // Validate new data
         validateApplicationData(applicationDto);
@@ -147,7 +178,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     public ApplicationForm partialUpdateApplication(String id, ApplicationFormSubmissionDTO applicationDto) {
         log.info("Partially updating application with ID: {}", id);
 
-        ApplicationForm existingApplication = getApplicationById(id);
+        ApplicationForm existingApplication = applicationFormRepository.findById(id)
+                .filter(app -> app.getDeletedAt() == null)
+                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
+
 
         // Here you would implement partial update logic
         // For simplicity, we'll do a full update
@@ -158,7 +192,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     public void deleteApplication(String id) {
         log.info("Hard deleting application with ID: {}", id);
 
-        ApplicationForm application = getApplicationById(id);
+        ApplicationForm application = applicationFormRepository.findById(id)
+                .filter(app -> app.getDeletedAt() == null)
+                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
+
         applicationFormRepository.delete(application);
 
         log.info("Application deleted successfully with ID: {}", id);
@@ -168,7 +205,10 @@ public class ApplicationFormServiceImpl implements ApplicationFormService {
     public void softDeleteApplication(String id) {
         log.info("Soft deleting application with ID: {}", id);
 
-        ApplicationForm application = getApplicationById(id);
+        ApplicationForm application = applicationFormRepository.findById(id)
+                .filter(app -> app.getDeletedAt() == null)
+                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
+
         application.setDeletedAt(LocalDateTime.now());
         applicationFormRepository.save(application);
 
