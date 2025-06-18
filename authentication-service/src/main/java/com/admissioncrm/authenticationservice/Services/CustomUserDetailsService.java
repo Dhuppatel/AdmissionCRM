@@ -16,12 +16,24 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOpt = userRepository.findByEmail(username);
-        if (userOpt.isEmpty()) {
-            userOpt = userRepository.findByMobileNumber(username);
-        }
-        User user = userOpt.orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public UserDetails loadUserByUsername(String identifier) throws UsernameNotFoundException {
+
+        User user=getUserByIdentifier(identifier);
         return new UserPrinciple(user);
     }
+
+    private User getUserByIdentifier(String identifier) {
+
+        if (identifier.matches("^\\d{10}$")) {
+            return userRepository.findByMobileNumber(identifier)
+                    .orElseThrow(() -> new UsernameNotFoundException("Mobile number not found"));
+        } else if (identifier.contains("@")) {
+            return userRepository.findByEmail(identifier)
+                    .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
+        } else {
+            return userRepository.findByUsername(identifier)
+                    .orElseThrow(()->new  UsernameNotFoundException("Username not found"));
+        }
+    }
+
 }

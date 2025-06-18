@@ -22,8 +22,6 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     // Find by email
     Optional<ApplicationForm> findByEmailAndDeletedAtIsNull(String email);
 
-    // Find by institute course ID
-
     // Find applications within date range
     @Query("SELECT af FROM ApplicationForm af WHERE af.createdAt BETWEEN :startDate AND :endDate AND af.deletedAt IS NULL")
     List<ApplicationForm> findApplicationsBetweenDates(@Param("startDate") LocalDateTime startDate,
