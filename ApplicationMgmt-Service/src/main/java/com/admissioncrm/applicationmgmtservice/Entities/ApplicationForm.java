@@ -27,7 +27,7 @@ public class ApplicationForm {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "application_form_id")
-    private String applicationFormId;
+    private String applicationId;
 
     @Column(name = "reference_id", unique = true, nullable = false, length = 20)
     private String referenceId;

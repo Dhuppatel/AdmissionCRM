@@ -67,11 +67,11 @@ public class ApplicationFormService  {
             // Save the application
             ApplicationForm savedApplication = applicationFormRepository.save(applicationForm);
 
-            log.info("Application created successfully with ID: {}", savedApplication.getApplicationFormId());
+            log.info("Application created successfully with ID: {}", savedApplication.getApplicationId());
 
             return ApplicationFormResponseDTO.builder()
                     .referenceId(savedApplication.getReferenceId())
-                    .applicationId(savedApplication.getApplicationFormId())
+                    .applicationId(savedApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
                     .studentName(savedApplication.getFullName())
                     .courseName(savedApplication.getCourseInstituteName())
@@ -91,14 +91,14 @@ public class ApplicationFormService  {
         try{
             log.info("Fetching application with ID: {}", applicationId);
 
-            ApplicationForm applicationForm= applicationFormRepository.findByApplicationFormId(applicationId)
+            ApplicationForm applicationForm= applicationFormRepository.findByapplicationId(applicationId)
                     .filter(app -> app.getDeletedAt() == null)
                     .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + applicationId));
 
             ApplicationFormFullResponseDTO responseDTO=new ApplicationFormFullResponseDTO();
 
             //set metadata
-            responseDTO.setApplicationId(applicationForm.getApplicationFormId());
+            responseDTO.setApplicationId(applicationForm.getApplicationId());
             responseDTO.setStatus(applicationForm.getApplicationStatus());
             responseDTO.setSubmittedDate(applicationForm.getCreatedAt());
 
@@ -130,7 +130,7 @@ public class ApplicationFormService  {
             ApplicationFormFullResponseDTO responseDTO=new ApplicationFormFullResponseDTO();
 
             //set metadata
-            responseDTO.setApplicationId(applicationForm.getApplicationFormId());
+            responseDTO.setApplicationId(applicationForm.getApplicationId());
             responseDTO.setStatus(applicationForm.getApplicationStatus());
             responseDTO.setSubmittedDate(applicationForm.getCreatedAt());
 
@@ -173,7 +173,7 @@ public class ApplicationFormService  {
         log.info("Updating application with ID: {}", applicationId);
 
         // Get existing application
-        ApplicationForm existingApplication = applicationFormRepository.findByApplicationFormId(applicationId)
+        ApplicationForm existingApplication = applicationFormRepository.findByapplicationId(applicationId)
                 .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + applicationId));
 
@@ -194,10 +194,10 @@ public class ApplicationFormService  {
             applicationFormMapper.updateEntityFromDTO(existingApplication, applicationDto);
             applicationFormRepository.save(existingApplication);
 
-            log.info("Application updated successfully with ID: {}", existingApplication.getApplicationFormId());
+            log.info("Application updated successfully with ID: {}", existingApplication.getApplicationId());
             return ApplicationFormResponseDTO.builder()
                     .referenceId(existingApplication.getReferenceId())
-                    .applicationId(existingApplication.getApplicationFormId())
+                    .applicationId(existingApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
                     .studentName(existingApplication.getFullName())
                     .courseName(existingApplication.getCourseInstituteName())
@@ -219,7 +219,7 @@ public class ApplicationFormService  {
     public void deleteApplication(String id) {
         log.info("Hard deleting application with ID: {}", id);
 
-        ApplicationForm application = applicationFormRepository.findByApplicationFormId(id)
+        ApplicationForm application = applicationFormRepository.findByapplicationId(id)
                 .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
 
@@ -232,7 +232,7 @@ public class ApplicationFormService  {
     public void softDeleteApplication(String id) {
         log.info("Soft deleting application with ID: {}", id);
 
-        ApplicationForm application = applicationFormRepository.findByApplicationFormId(id)
+        ApplicationForm application = applicationFormRepository.findByapplicationId(id)
                 .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
 

@@ -47,6 +47,6 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
 
     Optional<ApplicationForm> findByEmail(String email);
 
-    Optional<ApplicationForm> findByApplicationFormId(String applicationId);
+    Optional<ApplicationForm> findByapplicationId(String applicationId);
 
 }
