@@ -29,6 +29,9 @@ public class ApplicationForm {
     @Column(name = "application_form_id")
     private String applicationFormId;
 
+    @Column(name = "reference_id", unique = true, nullable = false, length = 20)
+    private String referenceId;
+
     @Column(name = "id_user", nullable = false)
     private String idUser;
 
