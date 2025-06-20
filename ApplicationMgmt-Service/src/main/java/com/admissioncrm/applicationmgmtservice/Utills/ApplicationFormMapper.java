@@ -114,6 +114,12 @@ public class ApplicationFormMapper {
                 .acpcMeritMarks(dto.getEntranceExamInfo().getAcpcMeritMarks())
                 .acpcApplicationNumber(dto.getEntranceExamInfo().getAcpcApplicationNumber())
 
+                //Course preference Info
+                .couresePreference1(dto.getCoursePreference().getCouresePreference1())
+                .couresePreference2(dto.getCoursePreference().getCouresePreference2())
+                .couresePreference3(dto.getCoursePreference().getCouresePreference3())
+                .couresePreference4(dto.getCoursePreference().getCouresePreference4())
+
                 // Additional Info
                 .educationLoanRequired(dto.getAdditionalInfo().getEducationLoanRequired())
                 .hostelAccommodationRequired(dto.getAdditionalInfo().getHostelAccommodationRequired())
@@ -249,6 +255,14 @@ public class ApplicationFormMapper {
                                 .acpcApplicationNumber(form.getAcpcApplicationNumber())
                                 .build()
                 )
+                .coursePreference(
+                        CoursePreferenceDTO.builder()
+                                .couresePreference1(form.getCouresePreference1())
+                                .couresePreference2(form.getCouresePreference2())
+                                .couresePreference3(form.getCouresePreference3())
+                                .couresePreference4(form.getCouresePreference4())
+                                .build()
+                )
 
                 .additionalInfo(
                         AdditionalInfoDTO.builder()
@@ -377,6 +391,16 @@ public class ApplicationFormMapper {
             existingEntity.setAcpcMeritNumber(dto.getEntranceExamInfo().getAcpcMeritNumber());
             existingEntity.setAcpcMeritMarks(dto.getEntranceExamInfo().getAcpcMeritMarks());
             existingEntity.setAcpcApplicationNumber(dto.getEntranceExamInfo().getAcpcApplicationNumber());
+        }
+
+        //update Course preference Info
+        if(dto.getCoursePreference()!=null)
+        {
+            existingEntity.setCouresePreference1(dto.getCoursePreference().getCouresePreference1());
+            existingEntity.setCouresePreference2(dto.getCoursePreference().getCouresePreference2());
+            existingEntity.setCouresePreference3(dto.getCoursePreference().getCouresePreference3());
+            existingEntity.setCouresePreference4(dto.getCoursePreference().getCouresePreference4());
+
         }
 
         // Update Additional Info

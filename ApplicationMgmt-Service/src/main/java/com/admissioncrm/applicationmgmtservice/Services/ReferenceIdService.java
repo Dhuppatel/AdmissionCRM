@@ -18,9 +18,9 @@ public class ReferenceIdService {
 
         int currentYear = LocalDate.now().getYear();
 
-        long applicationsCountThisYear = applicationFormRepository.countByCredatedAtYear(currentYear);
+        Long maxSequence = applicationFormRepository.findMaxSequenceForYearNative(currentYear);
 
-        long sequenceNumber=applicationsCountThisYear+1;
+        long sequenceNumber=maxSequence+1;
 
 
         // Format: APP-2025-000001

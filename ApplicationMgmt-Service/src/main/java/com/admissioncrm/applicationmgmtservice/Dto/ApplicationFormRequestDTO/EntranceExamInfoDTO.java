@@ -59,6 +59,6 @@ public class EntranceExamInfoDTO {
     @DecimalMin(value = "0.0", message = "ACPC merit marks must be positive")
     private BigDecimal acpcMeritMarks;
 
-    @Min(value = 1, message = "ACPC application number must be positive")
-    private Integer acpcApplicationNumber;
+    @NotNull( message = "ACPC application number can not be Null")
+    private String acpcApplicationNumber;
 }

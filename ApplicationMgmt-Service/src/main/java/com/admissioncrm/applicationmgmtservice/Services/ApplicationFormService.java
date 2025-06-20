@@ -9,6 +9,8 @@ import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
 import com.admissioncrm.applicationmgmtservice.Utills.ApplicationFormMapper;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -56,13 +58,19 @@ public class ApplicationFormService  {
             throw new DuplicateApplicationException(
                     "Application with email " + applicationDto.getPersonalInfo().getEmail() + " already exists");
         }
-
+        //cheak for duplicate phone number
+        if(isStudentMobileAlreadyRegistered(applicationDto.getPersonalInfo().getStudentMobile())){
+            throw new DuplicateApplicationException(
+                    "Application with student mobile " + applicationDto.getPersonalInfo().getStudentMobile() + " already exists"
+            );
+        }
         try {
             // Map DTO to Entity
             ApplicationForm applicationForm = applicationFormMapper.mapToEntity(applicationDto);
 
             String referenceId = referenceIdService.generateReferenceId();
             applicationForm.setReferenceId(referenceId);
+            applicationForm.setApplicationStatus(ApplicationStatus.SUBMITTED);
 
             // Save the application
             ApplicationForm savedApplication = applicationFormRepository.save(applicationForm);
@@ -86,22 +94,22 @@ public class ApplicationFormService  {
     }
 
 
+
     @Transactional(readOnly = true)
     public ApplicationFormFullResponseDTO getApplicationById(String applicationId) {
         try{
             log.info("Fetching application with ID: {}", applicationId);
-
+            System.out.println("1");
             ApplicationForm applicationForm= applicationFormRepository.findByapplicationId(applicationId)
-                    .filter(app -> app.getDeletedAt() == null)
                     .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + applicationId));
-
+            System.out.println("2");
             ApplicationFormFullResponseDTO responseDTO=new ApplicationFormFullResponseDTO();
 
             //set metadata
             responseDTO.setApplicationId(applicationForm.getApplicationId());
             responseDTO.setStatus(applicationForm.getApplicationStatus());
             responseDTO.setSubmittedDate(applicationForm.getCreatedAt());
-
+            System.out.println("3");
             switch (applicationForm.getApplicationStatus()) {
                 case DRAFT, SUBMITTED -> responseDTO.setEditable(true);
                 default -> responseDTO.setEditable(false);
@@ -174,7 +182,6 @@ public class ApplicationFormService  {
 
         // Get existing application
         ApplicationForm existingApplication = applicationFormRepository.findByapplicationId(applicationId)
-                .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + applicationId));
 
 
@@ -220,7 +227,6 @@ public class ApplicationFormService  {
         log.info("Hard deleting application with ID: {}", id);
 
         ApplicationForm application = applicationFormRepository.findByapplicationId(id)
-                .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
 
         applicationFormRepository.delete(application);
@@ -233,7 +239,6 @@ public class ApplicationFormService  {
         log.info("Soft deleting application with ID: {}", id);
 
         ApplicationForm application = applicationFormRepository.findByapplicationId(id)
-                .filter(app -> app.getDeletedAt() == null)
                 .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found with ID: " + id));
 
         application.setDeletedAt(LocalDateTime.now());
@@ -253,6 +258,12 @@ public class ApplicationFormService  {
     public boolean isEmailAlreadyRegistered(String email) {
         return applicationFormRepository.findByEmailAndDeletedAtIsNull(email).isPresent();
     }
+    @Transactional(readOnly = true)
+    public boolean isStudentMobileAlreadyRegistered( String studentMobile) {
+        return applicationFormRepository.existsByStudentMobile(studentMobile);
+    }
+
+
 
     public void validateApplicationData(ApplicationFormSubmissionDTO applicationDto) {
         if (applicationDto == null) {

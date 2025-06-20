@@ -5,22 +5,26 @@ import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.App
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping("/api/application/student")
 public class ApplicationFormController {
-
+    @Autowired
     private ApplicationFormService applicationFormService;
 
+    @GetMapping("/greet")
+    public String greet(){
+        return "Greetings from AppMGMT service!";
+    }
+
     @PostMapping("/submit")
-    public ResponseEntity<?> submitApplicationForm(@Valid @RequestBody ApplicationFormSubmissionDTO requestDto) {
+    public ResponseEntity<?> submitApplicationForm( @Valid @RequestBody ApplicationFormSubmissionDTO requestDto) {
         ApplicationFormResponseDTO response=applicationFormService.createApplication(requestDto);
 
         return ResponseEntity.ok().body(response);
