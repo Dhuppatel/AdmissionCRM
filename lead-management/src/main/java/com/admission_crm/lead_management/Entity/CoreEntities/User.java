@@ -47,9 +47,9 @@ public class User implements UserDetails {
     private Role role = Role.STUDENT;
 
     private String universityId;
-    private String institutionId;
+    private Long institutionId;
 
-    @CollectionTable(name = "assigned_leads", joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection
     private List<String> assignedLeads = new ArrayList<>();
 
     @Column(name = "max_leads_assignment")

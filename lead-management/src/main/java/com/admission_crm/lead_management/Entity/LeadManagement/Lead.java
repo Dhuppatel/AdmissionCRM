@@ -1,11 +1,5 @@
 package com.admission_crm.lead_management.Entity.LeadManagement;
 
-import com.admission_crm.lead_management.Entity.Academic.Course;
-import com.admission_crm.lead_management.Entity.Application.Application;
-import com.admission_crm.lead_management.Entity.Communication.Communication;
-import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
-import com.admission_crm.lead_management.Entity.CoreEntities.User;
-import com.admission_crm.lead_management.Entity.FollowUp.LeadFollowUp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -64,7 +58,7 @@ public class Lead {
     @Column(length = 10)
     private String pinCode;
 
-    private String institutionId;
+    private Long institutionId;
 
 //    @ManyToOne(fetch = FetchType.LAZY)
 //    @JoinColumn(name = "lead_source_id")
@@ -98,16 +92,24 @@ public class Lead {
     @Column(name = "custom_fields", columnDefinition = "JSON")
     private String customFields;
 
-    @CollectionTable
+    @ElementCollection
+    @CollectionTable(name = "lead_communications", joinColumns = @JoinColumn(name = "lead_id"))
+    @Column(name = "communication")
     private List<String> communications = new ArrayList<>();
 
-    @CollectionTable
+    @ElementCollection
+    @CollectionTable(name = "lead_follow_ups", joinColumns = @JoinColumn(name = "lead_id"))
+    @Column(name = "follow_up")
     private List<String> followUps = new ArrayList<>();
 
-    @CollectionTable
+    @ElementCollection
+    @CollectionTable(name = "lead_applications", joinColumns = @JoinColumn(name = "lead_id"))
+    @Column(name = "application")
     private List<String> applications = new ArrayList<>();
 
-    @CollectionTable
+    @ElementCollection
+    @CollectionTable(name = "lead_activities", joinColumns = @JoinColumn(name = "lead_id"))
+    @Column(name = "activity")
     private List<String> activities = new ArrayList<>();
 
     @CreationTimestamp

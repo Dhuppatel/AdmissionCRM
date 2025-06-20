@@ -10,7 +10,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 @Entity
@@ -45,7 +47,7 @@ public class Institution {
 
     private String universityId;
 
-    @CollectionTable
+    @ElementCollection
     private List<String> instituteAdmin = new ArrayList<>();
 
     @Column(name = "max_counselors")
@@ -57,14 +59,17 @@ public class Institution {
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @CollectionTable
+    @ElementCollection
     private List<String> counselors = new ArrayList<>();
 
-    @CollectionTable
+    @ElementCollection
     private List<String> courses = new ArrayList<>();
 
-    @CollectionTable
+    @ElementCollection
     private List<String> leads = new ArrayList<>();
+
+    @ElementCollection
+    private Deque<String> queuedLeads = new ArrayDeque<>();
 
     @CreationTimestamp
     @Column(name = "created_at")

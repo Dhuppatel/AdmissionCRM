@@ -1,25 +1,21 @@
 package com.admission_crm.lead_management.Service;
 
 import com.admission_crm.lead_management.Entity.AnalyticsAndReporting.AuditLog;
-import com.admission_crm.lead_management.Entity.CoreEntities.Role;
+import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
 import com.admission_crm.lead_management.Entity.CoreEntities.User;
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Repository.AuditLogRepository;
+import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.LeadRepository;
 import com.admission_crm.lead_management.Repository.UserRepository;
-import org.apache.commons.math3.stat.regression.SimpleRegression;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Deque;
+import java.util.Optional;
 
 @Service
 public class LeadService {
@@ -33,101 +29,152 @@ public class LeadService {
     @Autowired
     private AuditLogRepository auditLogRepository;
 
-    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+    @Autowired
+    private InstitutionRepository institutionRepository;
 
+//    private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
+
+    @Transactional
     public Lead createLead(Lead lead, String userEmail) {
         lead.setStatus(LeadStatus.NEW);
-        Lead savedLead = leadRepository.save(lead);
-        logAudit(userEmail, "Created Lead", savedLead.getId(), "Lead", "Created lead: " + lead.getEmail());
-        notifyCounselors("New lead created: " + lead.getEmail());
-        return savedLead;
-    }
-
-    public Lead updateLead(String leadId, Lead updatedLead, String userEmail) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new RuntimeException("Lead not found"));
-        lead.setFirstName(updatedLead.getFirstName());
-        lead.setLastName(updatedLead.getLastName());
-        lead.setEmail(updatedLead.getEmail());
-        lead.setPhone(updatedLead.getPhone());
-        lead.setStatus(updatedLead.getStatus());
-        Lead savedLead = leadRepository.save(lead);
-        logAudit(userEmail, "Updated Lead", leadId, "Lead", "Updated lead status to: " + lead.getStatus());
-        notifyCounselors("Lead updated: " + lead.getEmail());
-        return savedLead;
-    }
-
-    public Lead assignLead(String leadId, String counselorId, String userEmail) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new RuntimeException("Lead not found"));
-        User counselor = userRepository.findById(counselorId).orElseThrow(() -> new RuntimeException("Counselor not found"));
-        lead.setAssignedCounselor(counselor);
-        Lead savedLead = leadRepository.save(lead);
-        logAudit(userEmail, "Assigned Lead", leadId, "Lead", "Assigned to counselor: " + counselor.getEmail());
-        notifyCounselors("Lead assigned to: " + counselor.getEmail());
-        return savedLead;
-    }
-
-    public Lead autoAssignLead(String leadId, String userEmail) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new RuntimeException("Lead not found"));
-        User counselor = findLeastBusyCounselor();
-        lead.setAssignedCounselor(counselor);
-        Lead savedLead = leadRepository.save(lead);
-        logAudit(userEmail, "Auto-assigned Lead", leadId, "Lead", "Auto-assigned to counselor: " + counselor.getEmail());
-        notifyCounselors("Lead auto-assigned to: " + counselor.getEmail());
-        return savedLead;
-    }
-
-    public Page<Lead> getLeads(Pageable pageable, String status, String source, String counselorId) {
-        if (status != null) return leadRepository.findByStatus(LeadStatus.valueOf(status), pageable);
-        if (source != null) return leadRepository.findBySource(source, pageable);
-        if (counselorId != null) return leadRepository.findByAssignedCounselor_UserId(counselorId, pageable);
-        return leadRepository.findAll(pageable);
-    }
-
-    public double calculateLeadScore(String leadId) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new RuntimeException("Lead not found"));
-        SimpleRegression regression = new SimpleRegression();
-        // Example data: response time (hours), engagement count
-//        regression.addData(1.0, lead.getSource().equals("Website") ? 0.8 : 0.5);
-        regression.addData(2.0, lead.getStatus() == LeadStatus.COMPLETED ? 0.9 : 0.3);
-        return regression.predict(1.0); // Simplified scoring
-    }
-
-    private User findLeastBusyCounselor() {
-        List<User> counselors = userRepository.findByRole(Role.COUNSELOR);
-        User leastBusy = counselors.get(0);
-        long minLeads = Long.MAX_VALUE;
-        for (User counselor : counselors) {
-            long leadCount = leadRepository.countByAssignedCounselor_UserId(counselor.getId());
-            if (leadCount < minLeads) {
-                minLeads = leadCount;
-                leastBusy = counselor;
-            }
+        if (lead.getPriority() == null) {
+            lead.setPriority(Lead.Priority.MEDIUM);
         }
-        return leastBusy;
+
+        Lead savedLead = leadRepository.save(lead);
+
+        Optional<Institution> institutionOpt = institutionRepository.findById(lead.getInstitutionId());
+        if (institutionOpt.isPresent()) {
+            Institution institution = institutionOpt.get();
+            institution.getQueuedLeads().addLast(savedLead.getId());
+            institutionRepository.save(institution);
+        }
+
+        logAudit(userEmail, "Created Lead", savedLead.getId(), "Lead", "Created lead: " + lead.getEmail());
+
+        return savedLead;
+    }
+
+    @Transactional
+    public Lead assignLeadToCounselor(String counselorId) {
+        User counselor = userRepository.findById(counselorId)
+                .orElseThrow(() -> new RuntimeException("Counselor not found"));
+
+        // Check if counselor already has an active lead
+        if (counselor.getCurrentLeadsCount() >= counselor.getMaxLeadsAssignment()) {
+            throw new RuntimeException("Counselor already has maximum assigned leads");
+        }
+
+        // Check if user is a counselor and get their institution
+        if (!counselor.isCounselor()) {
+            throw new RuntimeException("User is not a counselor");
+        }
+
+        Optional<Institution> institutionOpt = institutionRepository.findById(counselor.getInstitutionId());
+        if (institutionOpt.isEmpty()) {
+            throw new RuntimeException("Institution not found");
+        }
+
+        Institution institution = institutionOpt.get();
+        Deque<String> queuedLeads = institution.getQueuedLeads();
+
+        // Get the first lead from the queue (FIFO)
+        String leadId = queuedLeads.pollFirst();
+        if (leadId == null) {
+            throw new RuntimeException("No leads available in the queue");
+        }
+
+        // Update lead with counselor assignment
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(() -> new RuntimeException("Lead not found"));
+
+        lead.setAssignedCounselor(counselorId);
+        lead.setStatus(LeadStatus.ASSIGNED);
+
+        // Update counselor's lead count
+        counselor.setCurrentLeadsCount(counselor.getCurrentLeadsCount() + 1);
+        counselor.getAssignedLeads().add(leadId);
+
+        // Save changes
+        leadRepository.save(lead);
+        userRepository.save(counselor);
+        institutionRepository.save(institution);
+
+        return lead;
+    }
+
+    @Transactional
+    public void requeueLead(String leadId, Lead.Priority priority) {
+        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new RuntimeException("Lead not found"));
+
+        User currentUser = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!currentUser.getInstitutionId().equals(lead.getInstitutionId()) ||
+                (!currentUser.isCounselor() && !currentUser.isInstituteAdmin())) {
+            throw new RuntimeException("Unauthorized to requeue this lead");
+        }
+
+        if (lead.getAssignedCounselor() != null) {
+            User counselor = userRepository.findById(lead.getAssignedCounselor())
+                    .orElseThrow(() -> new RuntimeException("Counselor not found"));
+            counselor.setCurrentLeadsCount(counselor.getCurrentLeadsCount() - 1);
+            counselor.getAssignedLeads().remove(leadId);
+            userRepository.save(counselor);
+
+            lead.setAssignedCounselor(null);
+            lead.setStatus(LeadStatus.NEW);
+        }
+
+        lead.setPriority(priority);
+        Optional<Institution> institutionOpt = institutionRepository.findById(lead.getInstitutionId());
+        if (institutionOpt.isPresent()) {
+            Institution institution = institutionOpt.get();
+            institution.getQueuedLeads().addLast(leadId);
+            institutionRepository.save(institution);
+        }
+
+        leadRepository.save(lead);
+    }
+
+    @Transactional
+    public Lead getLead(String leadId) {
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(() -> new RuntimeException("Lead not found"));
+
+        // Verify user has permission to access this lead
+        User currentUser = userRepository.findByUsername(
+                SecurityContextHolder.getContext().getAuthentication().getName()
+        ).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!currentUser.getInstitutionId().equals(lead.getInstitutionId()) ||
+                (!currentUser.isCounselor() && !currentUser.isInstituteAdmin())) {
+            throw new RuntimeException("Unauthorized to access this lead");
+        }
+
+        // Verify the lead is in the institution's queuedLeads or assigned to the counselor
+        Optional<Institution> institutionOpt = institutionRepository.findById(lead.getInstitutionId());
+        if (institutionOpt.isEmpty()) {
+            throw new RuntimeException("Institution not found");
+        }
+
+        Institution institution = institutionOpt.get();
+        if (!institution.getQueuedLeads().contains(leadId) &&
+                !currentUser.getAssignedLeads().contains(leadId)) {
+            throw new RuntimeException("Lead is not available in the institution's queue or assigned to you");
+        }
+
+        return lead;
     }
 
     private void logAudit(String userEmail, String action, String entityId, String entityType, String details) {
         User user = userRepository.findByEmail(userEmail).orElseThrow(() -> new RuntimeException("User not found"));
         AuditLog auditLog = new AuditLog();
-        auditLog.setUser(user);
         auditLog.setAction(action);
         auditLog.setEntityId(entityId);
         auditLog.setEntityType(entityType);
-//        auditLog.setDetails(details);
         auditLogRepository.save(auditLog);
     }
 
-    public void registerSession(String userEmail, WebSocketSession session) {
-        sessions.put(userEmail, session);
-    }
 
-    private void notifyCounselors(String message) {
-        sessions.values().forEach(session -> {
-            try {
-                session.sendMessage(new TextMessage(message));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 }

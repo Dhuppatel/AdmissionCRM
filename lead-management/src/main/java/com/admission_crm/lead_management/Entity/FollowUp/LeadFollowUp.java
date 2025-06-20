@@ -12,7 +12,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "lead_follow_ups")
+@Table(name = "lead_followup_details")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +21,7 @@ public class LeadFollowUp {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String leadId;
+//    private String leadId;
 
     private String assignedTo;
 

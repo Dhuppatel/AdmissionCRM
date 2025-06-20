@@ -19,7 +19,7 @@ public class LeadActivity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String leadId;
+//    private String leadId;
 
     private String userId;
 

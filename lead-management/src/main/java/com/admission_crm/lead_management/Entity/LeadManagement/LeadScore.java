@@ -19,7 +19,7 @@ public class LeadScore {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String leadId;
+//    private String leadId;
 
     @Column(name = "total_score")
     private Integer totalScore;
