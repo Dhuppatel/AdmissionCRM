@@ -2,6 +2,7 @@ package com.admissioncrm.applicationmgmtservice.Repositories;
 
 
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import org.apache.el.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -39,5 +40,21 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     @Query("SELECT COUNT(af) FROM ApplicationForm af WHERE af.deletedAt IS NULL")
     Long countActiveApplications();
 
+    @Query("SELECT COUNT(a) FROM ApplicationForm a WHERE YEAR(a.createdAt) = :year")
+    long countByCredatedAtYear(@Param("year") int year);
 
+    boolean existsByReferenceId(String refId);
+
+    Optional<ApplicationForm> findByEmail(String email);
+
+    Optional<ApplicationForm> findByapplicationId(String applicationId);
+
+    boolean existsByStudentMobile(String studentMobile);
+
+    // Alternative approach using native query (might be more reliable)
+    @Query(value = "SELECT MAX(CAST(RIGHT(reference_id, 6) AS UNSIGNED)) " +
+            "FROM application_forms " +
+            "WHERE reference_id LIKE CONCAT('APP-', :year, '-%')",
+            nativeQuery = true)
+    Long findMaxSequenceForYearNative(@Param("year") int year);
 }

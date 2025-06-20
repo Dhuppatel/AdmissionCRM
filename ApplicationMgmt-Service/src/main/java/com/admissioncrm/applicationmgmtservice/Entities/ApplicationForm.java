@@ -27,13 +27,14 @@ public class ApplicationForm {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "application_form_id")
-    private String applicationFormId;
+    private String applicationId;
+
+    @Column(name = "reference_id", unique = true, nullable = false, length = 20)
+    private String referenceId;
 
     @Column(name = "id_user", nullable = false)
     private String idUser;
 
-    @OneToOne(mappedBy = "applicationForm",cascade = CascadeType.ALL)
-    private CoursePreferences coursePreference;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "application_status", nullable = false)
@@ -240,6 +241,7 @@ public class ApplicationForm {
     @Column(name = "course_result_status", columnDefinition = "TEXT")
     private String courseResultStatus;
 
+
     @Column(name = "course_marking_scheme", columnDefinition = "TEXT")
     private String courseMarkingScheme;
 
@@ -331,7 +333,14 @@ public class ApplicationForm {
     private BigDecimal acpcMeritMarks;
 
     @Column(name = "acpc_application_number")
-    private Integer acpcApplicationNumber;
+    private String acpcApplicationNumber;
+
+    //course Preference
+
+    private String couresePreference1;
+    private String couresePreference2;
+    private String couresePreference3;
+    private String couresePreference4;
 
     // Additional Information
     @Column(name = "education_loan_required")

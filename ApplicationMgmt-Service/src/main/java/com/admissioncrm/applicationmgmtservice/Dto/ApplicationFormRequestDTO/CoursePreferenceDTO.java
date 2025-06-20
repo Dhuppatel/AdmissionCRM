@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CoursePreferenceDTO {
 
-    @NotNull(message = "Institute course ID is required")
-    private Long instituteCourseId;
 
-    // Add other course preference fields if you have them
+    private String couresePreference1;
+    private String couresePreference2;
+    private String couresePreference3;
+    private String couresePreference4;
 }
