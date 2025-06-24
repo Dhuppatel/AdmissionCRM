@@ -1,5 +1,8 @@
 package com.admissioncrm.applicationmgmtservice.Enums;
 
+import lombok.Data;
+
+
 public  enum ApplicationStatus {
     DRAFT,
     SUBMITTED,
@@ -7,5 +10,5 @@ public  enum ApplicationStatus {
     APPROVED,
     REJECTED,
     WAITLISTED,
-    ADMITTED
+    INCOMPLETE, PENDING_DOCUMENTS, ENROLLED, ADMITTED
 }

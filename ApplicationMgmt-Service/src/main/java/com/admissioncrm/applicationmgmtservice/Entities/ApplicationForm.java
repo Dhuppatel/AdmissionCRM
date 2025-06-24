@@ -1,5 +1,6 @@
 package com.admissioncrm.applicationmgmtservice.Entities;
 
+import com.admissioncrm.applicationmgmtservice.Entities.workflow.ApplicationStatusHistory;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Enums.Gender;
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ import org.hibernate.annotations.Where;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "application_forms")
@@ -39,6 +41,19 @@ public class ApplicationForm {
     @Enumerated(EnumType.STRING)
     @Column(name = "application_status", nullable = false)
     private ApplicationStatus applicationStatus;
+
+    @OneToMany(mappedBy = "applicationForm", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ApplicationStatusHistory> statusHistory;
+
+    //councellor fields
+    @Column(name="councellor_id",columnDefinition = "TEXT",nullable = true)
+    private String assignedReviewerId;
+
+
+    @Column(name="remarks",columnDefinition = "TEXT",nullable = true)
+    private String remarks;
+
+
 
 
     @Column(name = "full_name", nullable = false, columnDefinition = "TEXT")
@@ -360,6 +375,7 @@ public class ApplicationForm {
 
     @Column(name = "enrollment_number", columnDefinition = "TEXT")
     private String enrollmentNumber;
+
 
     // Audit Fields
     @CreationTimestamp

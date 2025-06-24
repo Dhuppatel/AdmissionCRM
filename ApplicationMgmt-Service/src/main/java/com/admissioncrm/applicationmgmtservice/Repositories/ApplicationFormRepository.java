@@ -2,6 +2,7 @@ package com.admissioncrm.applicationmgmtservice.Repositories;
 
 
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import org.apache.el.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -57,4 +58,6 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
             "WHERE reference_id LIKE CONCAT('APP-', :year, '-%')",
             nativeQuery = true)
     Long findMaxSequenceForYearNative(@Param("year") int year);
+
+    List<ApplicationForm> findByApplicationStatusOrderByCreatedAt(ApplicationStatus status);
 }

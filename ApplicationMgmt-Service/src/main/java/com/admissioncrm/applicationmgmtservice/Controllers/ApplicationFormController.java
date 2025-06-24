@@ -2,7 +2,7 @@ package com.admissioncrm.applicationmgmtservice.Controllers;
 
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
-import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
 import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/application/student")
 public class ApplicationFormController {
@@ -25,7 +25,7 @@ public class ApplicationFormController {
 
     @PostMapping("/submit")
     public ResponseEntity<?> submitApplicationForm( @Valid @RequestBody ApplicationFormSubmissionDTO requestDto) {
-        ApplicationFormResponseDTO response=applicationFormService.createApplication(requestDto);
+        ApplicationFormSummaryDTO response=applicationFormService.createApplication(requestDto);
 
         return ResponseEntity.ok().body(response);
     }
@@ -39,10 +39,10 @@ public class ApplicationFormController {
     }
 
     @PostMapping("/update/{applicationId}")
-    public ResponseEntity<ApplicationFormResponseDTO> updateApplication(@PathVariable String applicationId,
+    public ResponseEntity<ApplicationFormSummaryDTO> updateApplication(@PathVariable String applicationId,
             @Valid @RequestBody ApplicationFormSubmissionDTO requestDto) {
 
-        ApplicationFormResponseDTO response = applicationFormService.updateApplication(applicationId, requestDto);
+        ApplicationFormSummaryDTO response = applicationFormService.updateApplication(applicationId, requestDto);
         return ResponseEntity.ok(response);
     }
 

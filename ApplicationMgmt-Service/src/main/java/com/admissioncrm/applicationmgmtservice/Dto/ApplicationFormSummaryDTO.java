@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApplicationFormResponseDTO {
+public class ApplicationFormSummaryDTO {
     private String applicationId;
     private String referenceId;
-    private String studentName;
+    private String studentFullName;
     private String email;
-    private String courseName; // or applied program
+    private String courseAppliedFor; // or applied program
     private LocalDateTime submittedDate;
     private ApplicationStatus status; // "Pending", "Under Review", etc.
-
+    private long daysSinceSubmission;
     private LocalDateTime updatedDate;
 
 }
