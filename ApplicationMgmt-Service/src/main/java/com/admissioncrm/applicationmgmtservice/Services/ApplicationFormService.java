@@ -3,7 +3,7 @@ package com.admissioncrm.applicationmgmtservice.Services;
 
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
-import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
@@ -41,7 +41,7 @@ public class ApplicationFormService  {
     private final ApplicationFormMapper applicationFormMapper;
     private final ReferenceIdService referenceIdService;
 
-    public ApplicationFormResponseDTO createApplication(ApplicationFormSubmissionDTO applicationDto) {
+    public ApplicationFormSummaryDTO createApplication(ApplicationFormSubmissionDTO applicationDto) {
 
         //
         // Todo: add the logic to link user(from authnetication service) with Application iD
@@ -77,7 +77,7 @@ public class ApplicationFormService  {
 
             log.info("Application created successfully with ID: {}", savedApplication.getApplicationId());
 
-            return ApplicationFormResponseDTO.builder()
+            return ApplicationFormSummaryDTO.builder()
                     .referenceId(savedApplication.getReferenceId())
                     .applicationId(savedApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
@@ -177,7 +177,7 @@ public class ApplicationFormService  {
 
 
 
-    public ApplicationFormResponseDTO updateApplication(String applicationId, ApplicationFormSubmissionDTO applicationDto) {
+    public ApplicationFormSummaryDTO updateApplication(String applicationId, ApplicationFormSubmissionDTO applicationDto) {
         log.info("Updating application with ID: {}", applicationId);
 
         // Get existing application
@@ -202,7 +202,7 @@ public class ApplicationFormService  {
             applicationFormRepository.save(existingApplication);
 
             log.info("Application updated successfully with ID: {}", existingApplication.getApplicationId());
-            return ApplicationFormResponseDTO.builder()
+            return ApplicationFormSummaryDTO.builder()
                     .referenceId(existingApplication.getReferenceId())
                     .applicationId(existingApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)

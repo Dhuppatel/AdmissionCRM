@@ -8,6 +8,7 @@ import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
 import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
+import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyExistsException;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Utilities.JwtUtils;
 import jakarta.transaction.Transactional;
@@ -72,6 +73,11 @@ public class AuthenticationService {
             if(userRepository.existsByEmail(request.getEmail()))
             {
                 throw new ApiException("Email already registered");
+            }
+
+            if(userRepository.existsByUsername(request.getUsername()))
+            {
+                throw new UsernameAlreadyExistsException("Username "+request.getUsername()+" is already taken.! ");
             }
             User user = new User();
             user.setUsername(request.getUsername());

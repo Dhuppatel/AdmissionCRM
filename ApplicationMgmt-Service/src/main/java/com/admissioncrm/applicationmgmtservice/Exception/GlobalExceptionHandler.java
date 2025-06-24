@@ -76,6 +76,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 
+    //invalid workflow transection
+
+    @ExceptionHandler(InvalidWorkflowTransitionException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidWorkflowTransition(InvalidWorkflowTransitionException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Invalid workflow transition");
+        response.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+
     //  Generic fallback for all unhandled exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleAllExceptions(Exception ex) {
@@ -85,4 +96,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+
+
 }

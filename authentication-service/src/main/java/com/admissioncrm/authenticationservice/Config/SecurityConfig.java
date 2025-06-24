@@ -42,18 +42,15 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> {
                 // Public endpoints - no authentication
                 authorize.requestMatchers(
-                        "/auth/student/login",
-                        "/auth/student/register",
-                        "/auth/sadmin/login",
-                        "/auth/iadmin/login",
-                        "/auth/login",
+                        "/api/auth/student/register",
+                        "/api/auth/login",
                         "/actuator/**"
                 ).permitAll();
 
 
 
                 // Role-based endpoints
-                authorize.requestMatchers("/auth/admin/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN");
+                authorize.requestMatchers("/api/auth/admin/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN");
                 authorize.requestMatchers("/api/university-admin/**").hasRole("UNIVERSITY_ADMIN");
                 authorize.requestMatchers("/api/institute-admin/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN");
                 authorize.requestMatchers("/api/counsellor/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN", "COUNSELLOR");
