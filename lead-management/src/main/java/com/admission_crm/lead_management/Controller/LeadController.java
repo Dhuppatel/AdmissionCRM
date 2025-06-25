@@ -1,6 +1,7 @@
 package com.admission_crm.lead_management.Controller;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
+import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Service.LeadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,12 @@ public class LeadController {
     public ResponseEntity<Lead> getLead(@PathVariable String leadId) {
         Lead lead = leadService.getLead(leadId);
         return ResponseEntity.ok(lead);
+    }
+
+    @PatchMapping("/{leadId}/status")
+    public ResponseEntity<Lead> changeLeadStatus(@PathVariable String leadId, @RequestParam("status") LeadStatus status) {
+        Lead updatedLead = leadService.changeLeadStatus(leadId, status);
+        return ResponseEntity.ok(updatedLead);
     }
 
 }
