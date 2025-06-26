@@ -60,4 +60,6 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     Long findMaxSequenceForYearNative(@Param("year") int year);
 
     List<ApplicationForm> findByApplicationStatusOrderByCreatedAt(ApplicationStatus status);
+
+    List<ApplicationForm> findByDeletedAtIsNull();
 }
