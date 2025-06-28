@@ -15,6 +15,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
 
+    @Autowired
+    private WhatsAppService whatsAppService;
+
     @Value("${spring.mail.from}")
     private String fromEmail;
 
@@ -32,6 +35,8 @@ public class EmailService {
                 lead.getFullName(), fromEmail);
         helper.setText(template, true);
         mailSender.send(msg);
+
+        whatsAppService.sendWhatsAppMessage(lead.getPhone(), "Hello " + lead.getFullName() + "Thank you for your interest in our institution. Your application has been received, and we will keep you updated on the next steps." + lead.getId());
     }
 
     public void sendLeadAssignmentEmail(Lead lead, String counselorEmail) throws MessagingException {
@@ -48,6 +53,8 @@ public class EmailService {
                 lead.getFullName(), counselorEmail, fromEmail);
         helper.setText(template, true);
         mailSender.send(message);
+
+        whatsAppService.sendWhatsAppMessage(lead.getPhone(), "Hello " + lead.getFullName() + "! Your application is assigned to " + counselorEmail + "." + lead.getId());
     }
 
     public void sendStatusUpdateEmail(Lead lead, LeadStatus oldStatus, LeadStatus newStatus) throws MessagingException {
@@ -64,5 +71,7 @@ public class EmailService {
                 lead.getFullName(), oldStatus, newStatus, fromEmail);
         helper.setText(template, true);
         mailSender.send(message);
+
+        whatsAppService.sendWhatsAppMessage(lead.getPhone(), "Hello " + lead.getFullName() + "! Your status changed from " + oldStatus + " to " + newStatus + "." + lead.getId());
     }
 }
