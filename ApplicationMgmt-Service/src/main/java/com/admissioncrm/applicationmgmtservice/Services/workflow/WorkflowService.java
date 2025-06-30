@@ -35,11 +35,11 @@ public class WorkflowService {
     }
 
     // Move application to next stage in workflow
-    public ApplicationWorkflowResponseDTO processApplicationWorkflow(String applicationId,
+    public ApplicationWorkflowResponseDTO processApplicationWorkflow(String referenceId,
                                                                      ApplicationWorkflowRequestDTO request) {
-        log.info("Processing workflow for application: {} to status: {}", applicationId, request.getNewStatus());
+        log.info("Processing workflow for application: {} to status: {}", referenceId, request.getNewStatus());
 
-        ApplicationForm application = getApplicationById(applicationId);
+        ApplicationForm application = getApplicationByRefId(referenceId);
         ApplicationStatus currentStatus = application.getApplicationStatus();
         ApplicationStatus newStatus = ApplicationStatus.valueOf(request.getNewStatus().toUpperCase());
 
@@ -63,7 +63,7 @@ public class WorkflowService {
 
 
         return ApplicationWorkflowResponseDTO.builder()
-                .applicationId(applicationId)
+                .referenceId(referenceId)
                 .previousStatus(currentStatus.toString())
                 .currentStatus(newStatus.toString())
                 .actionBy(request.getActionBy())
@@ -164,9 +164,9 @@ public class WorkflowService {
                 .collect(Collectors.toList());
     }
 
-    private ApplicationForm getApplicationById(String applicationId) {
-        return applicationFormRepository.findByapplicationId(applicationId)
-                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found: " + applicationId));
+    private ApplicationForm getApplicationByRefId(String refId) {
+        return applicationFormRepository.findByReferenceId(refId)
+                .orElseThrow(() -> new ApplicationFormNotFoundException("Application not found: " + refId));
     }
 
     // Helper methods for workflow actions
@@ -205,7 +205,6 @@ public class WorkflowService {
 
     private ApplicationFormSummaryDTO mapToSummaryDTO(ApplicationForm application) {
         return ApplicationFormSummaryDTO.builder()
-                .applicationId(application.getApplicationId())
                 .studentFullName(application.getFullName())
                 .email(application.getEmail())
                 .courseAppliedFor(application.getCourseInstituteName())

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApplicationWorkflowResponseDTO {
-    private String applicationId;
+    private String referenceId;
     private String previousStatus;
     private String currentStatus;
     private String actionBy;

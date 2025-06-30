@@ -80,7 +80,6 @@ public class ApplicationFormService  {
 
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(savedApplication.getReferenceId())
-                    .applicationId(savedApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
                     .studentFullName(savedApplication.getFullName())
                     .courseAppliedFor(savedApplication.getCourseInstituteName())
@@ -194,7 +193,6 @@ public class ApplicationFormService  {
             log.info("Application updated successfully with ID: {}", existingApplication.getApplicationId());
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(existingApplication.getReferenceId())
-                    .applicationId(existingApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
                     .studentFullName(existingApplication.getFullName())
                     .courseAppliedFor(existingApplication.getCourseInstituteName())
@@ -283,7 +281,6 @@ public class ApplicationFormService  {
             return applications.stream()
                     .map(app -> ApplicationFormSummaryDTO.builder()
                             .referenceId(app.getReferenceId())
-                            .applicationId(app.getApplicationId())
                             .status(app.getApplicationStatus())
                             .studentFullName(app.getFullName())
                             .courseAppliedFor(app.getCourseInstituteName())

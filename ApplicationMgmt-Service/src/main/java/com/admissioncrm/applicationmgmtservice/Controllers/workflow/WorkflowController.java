@@ -20,11 +20,11 @@ public class WorkflowController {
     private WorkflowService workflowService;
 
 
-    @PostMapping("/{applicationId}/process")
+    @PostMapping("/{refId}/process")
     public ResponseEntity<ApplicationWorkflowResponseDTO> processWorkflow(
-            @PathVariable String applicationId,
+            @PathVariable String refId,
             @Valid @RequestBody ApplicationWorkflowRequestDTO request) {
-        ApplicationWorkflowResponseDTO response = workflowService.processApplicationWorkflow(applicationId, request);
+        ApplicationWorkflowResponseDTO response = workflowService.processApplicationWorkflow(refId, request);
         return ResponseEntity.ok(response);
     }
 

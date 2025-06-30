@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApplicationFormSummaryDTO {
-    private String applicationId;
     private String referenceId;
     private String studentFullName;
     private String email;

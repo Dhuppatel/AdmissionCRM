@@ -1,7 +1,9 @@
 package com.admissioncrm.applicationmgmtservice.Controllers.Admin;
 
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.Counsellor.CounsellorDTO;
 import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
+import com.admissioncrm.applicationmgmtservice.Services.CounsellorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,9 +18,12 @@ import java.util.List;
 @RequestMapping("/api/application/admin")
 public class AdminController {
 
+    private final CounsellorService counsellorService;
     private  final ApplicationFormService applicationFormService;
-    public AdminController(ApplicationFormService applicationFormService) {
+
+    public AdminController(ApplicationFormService applicationFormService,CounsellorService counsellorService) {
         this.applicationFormService = applicationFormService;
+        this.counsellorService = counsellorService;
     }
 
     @GetMapping("/getall")
@@ -26,6 +31,11 @@ public class AdminController {
         List<ApplicationFormSummaryDTO> applications = applicationFormService.getAllSubmittedApplications();
         return ResponseEntity.ok(applications);
 
+    }
+    @GetMapping("/counsellors")
+    public ResponseEntity<List<CounsellorDTO>> getAllCounsellors() {
+        List<CounsellorDTO> counsellors = counsellorService.getAllCounsellors();
+        return ResponseEntity.ok(counsellors);
     }
 
 }

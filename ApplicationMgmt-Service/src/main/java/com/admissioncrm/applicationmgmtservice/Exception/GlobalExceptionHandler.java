@@ -1,6 +1,11 @@
 package com.admissioncrm.applicationmgmtservice.Exception;
 
 
+import com.admissioncrm.applicationmgmtservice.Dto.ErrorResponse;
+import com.admissioncrm.applicationmgmtservice.Exception.Feign.ForbiddenException;
+import com.admissioncrm.applicationmgmtservice.Exception.Feign.UnauthorizedException;
+import feign.FeignException;
+
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +52,6 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-
 
 
     // Application not found
@@ -96,6 +101,54 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    //Feign Error handeling
 
+//    @ExceptionHandler(UnauthorizedException.class)
+//    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
+//
+//        ErrorResponse errorResponse = ErrorResponse.builder()
+//                .timestamp(LocalDateTime.now())
+//                .message(e.getMessage())
+//                .errorCode("UNAUTHORIZED")
+//                .status(HttpStatus.UNAUTHORIZED.value())
+//                .build();
+//
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+//    }
+//
+//    @ExceptionHandler(ForbiddenException.class)
+//    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
+//        System.out.println("this is done too");
+//        ErrorResponse errorResponse = ErrorResponse.builder()
+//                .timestamp(LocalDateTime.now())
+//                .message(e.getMessage())
+//                .errorCode("FORBIDDEN")
+//                .status(HttpStatus.FORBIDDEN.value())
+//                .build();
+//
+//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+//    }
 
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ErrorResponse> handleFeignException(FeignException e) {
+
+        HttpStatus status = HttpStatus.valueOf(e.status());
+        String message = switch (e.status()) {
+            case 401 -> "Authentication required. Please login.";
+            case 403 -> "Access denied. Insufficient permissions.";
+            case 404 -> "Service endpoint not found.";
+            case 500 -> "Internal server error occurred.";
+            case 503 -> "Service temporarily unavailable.";
+            default -> "Service communication error occurred.";
+        };
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .message(message)
+                .errorCode("FEIGN_ERROR")
+                .status(e.status())
+                .build();
+
+        return ResponseEntity.status(status).body(errorResponse);
+    }
 }
