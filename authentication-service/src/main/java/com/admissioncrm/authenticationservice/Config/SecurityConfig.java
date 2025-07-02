@@ -42,8 +42,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(authorize -> {
                 // Public endpoints - no authentication
                 authorize.requestMatchers(
-                        "/api/auth/student/register",
-                        "/api/auth/login",
+                        "/api/auth/**",
                         "/actuator/**"
                 ).permitAll();
 
