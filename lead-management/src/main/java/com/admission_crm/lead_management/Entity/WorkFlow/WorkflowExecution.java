@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Entity.LeadManagement.WorkFlow;
+package com.admission_crm.lead_management.Entity.WorkFlow;
 
 import com.admission_crm.lead_management.Entity.Application.Application;
 import com.admission_crm.lead_management.Entity.CoreEntities.User;
