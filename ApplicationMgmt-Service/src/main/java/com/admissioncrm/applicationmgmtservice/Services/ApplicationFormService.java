@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -79,10 +80,9 @@ public class ApplicationFormService  {
 
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(savedApplication.getReferenceId())
-                    .applicationId(savedApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
-                    .studentName(savedApplication.getFullName())
-                    .courseName(savedApplication.getCourseInstituteName())
+                    .studentFullName(savedApplication.getFullName())
+                    .courseAppliedFor(savedApplication.getCourseInstituteName())
                     .email(savedApplication.getEmail())
                     .submittedDate(LocalDateTime.now(clock))
                     .build();
@@ -165,18 +165,7 @@ public class ApplicationFormService  {
 
         return applicationFormRepository.findByIdUserAndDeletedAtIsNull(userId);
     }
-
-
-    @Transactional(readOnly = true)
-    public Page<ApplicationForm> getAllApplications(Pageable pageable) {
-        log.info("Fetching all applications with pagination");
-
-        return applicationFormRepository.findAll(pageable)
-                .map(app -> app.getDeletedAt() == null ? app : null);
-    }
-
-
-
+    
     public ApplicationFormSummaryDTO updateApplication(String applicationId, ApplicationFormSubmissionDTO applicationDto) {
         log.info("Updating application with ID: {}", applicationId);
 
@@ -204,10 +193,9 @@ public class ApplicationFormService  {
             log.info("Application updated successfully with ID: {}", existingApplication.getApplicationId());
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(existingApplication.getReferenceId())
-                    .applicationId(existingApplication.getApplicationId())
                     .status(ApplicationStatus.SUBMITTED)
-                    .studentName(existingApplication.getFullName())
-                    .courseName(existingApplication.getCourseInstituteName())
+                    .studentFullName(existingApplication.getFullName())
+                    .courseAppliedFor(existingApplication.getCourseInstituteName())
                     .email(existingApplication.getEmail())
                     .submittedDate(existingApplication.getCreatedAt())
                     .updatedDate(existingApplication.getUpdatedAt())
@@ -283,5 +271,28 @@ public class ApplicationFormService  {
         }
 
         // Add more validation logic as needed
+    }
+
+    public List<ApplicationFormSummaryDTO> getAllSubmittedApplications() {
+        log.info("Fetching all submitted applications");
+        try {
+            List<ApplicationForm> applications = applicationFormRepository.findByDeletedAtIsNull();
+
+            return applications.stream()
+                    .map(app -> ApplicationFormSummaryDTO.builder()
+                            .referenceId(app.getReferenceId())
+                            .status(app.getApplicationStatus())
+                            .studentFullName(app.getFullName())
+                            .courseAppliedFor(app.getCourseInstituteName())
+                            .email(app.getEmail())
+                            .submittedDate(app.getCreatedAt())
+                            .updatedDate(app.getUpdatedAt())
+                            .daysSinceSubmission(ChronoUnit.DAYS.between(app.getCreatedAt().toLocalDate(), LocalDate.now(clock)))
+                            .build())
+                    .toList();
+        } catch (Exception e) {
+            log.error("Error fetching all applications", e);
+            throw new RuntimeException("Failed to fetch applications", e);
+        }
     }
 }

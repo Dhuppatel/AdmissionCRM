@@ -30,21 +30,28 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable) // ✅ disable login page
+                .formLogin(AbstractHttpConfigurer::disable) // disable login page
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        // Allow actuator health checks or any other public endpoint
-                        .requestMatchers("/actuator/**").permitAll()
+//                .authorizeHttpRequests(auth -> auth
+//                        // Allow actuator health checks or any other public endpoint
+//                        .requestMatchers("/actuator/**").permitAll()
+//
+//                        // Application form endpoints (require STUDENT role)
+//                        .requestMatchers("/api/application/student/**").hasRole("STUDENT")
+//
+//                        // Admin-related endpoints (require INSTITUTE_ADMIN or UNIVERSITY_ADMIN)
+//                        .requestMatchers("/api/application/admin/**").hasAnyRole("INSTITUTE_ADMIN", "UNIVERSITY_ADMIN")
+//
+//                        // Any other request must be authenticated
+//                        .anyRequest().authenticated()
+//                )
 
-                        // Application form endpoints (require STUDENT role)
-                        .requestMatchers("/api/application/student/**").hasRole("STUDENT")
-
-                        // Admin-related endpoints (require INSTITUTE_ADMIN or UNIVERSITY_ADMIN)
-                        .requestMatchers("/api/application/admin/**").hasAnyRole("INSTITUTE_ADMIN", "UNIVERSITY_ADMIN")
-
-                        // Any other request must be authenticated
-                        .anyRequest().authenticated()
+                //for testing purpose after testing remove this line and enable uncomment the above code
+                .authorizeHttpRequests(
+                        authorizeRequests -> authorizeRequests.anyRequest().permitAll()
                 )
+
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

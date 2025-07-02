@@ -4,8 +4,12 @@ import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import com.admissioncrm.authenticationservice.DTO.UserCreationDTO.CreateUserRequest;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
+import com.admissioncrm.authenticationservice.Entities.CounsellorDetails;
+import com.admissioncrm.authenticationservice.Entities.InstituteAdminDetails;
 import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
 import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyExistsException;
+import com.admissioncrm.authenticationservice.Repositories.CounsellorDetailsRepository;
+import com.admissioncrm.authenticationservice.Repositories.InstituteAdminDetailsRepository;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +23,17 @@ public class UserService {
         private PasswordEncoder passwordEncoder;
         @Autowired
         private UserRepository userRepository;
+        @Autowired
+        private InstituteAdminDetailsRepository instituteAdminDetailsRepository;
+        @Autowired
+        private CounsellorDetailsRepository counsellorDetailsRepository;
 
     public ResponseEntity<?> createInstituteAdmin( CreateUserRequest request) {
         return createUserFromDTO(request,Role.INSTITUTE_ADMIN);
     }
 
     public ResponseEntity<?> createCounsellor(CreateUserRequest request) {
-        return createUserFromDTO(request, Role.COUNSELOR);
+        return createUserFromDTO(request, Role.COUNSELLOR);
     }
 
     private ResponseEntity<?> createUserFromDTO(CreateUserRequest request, Role role) {
@@ -44,9 +52,36 @@ public class UserService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        //set Institiute/Dept ID if needed,,,,,
-        if (request.getInstituteId() != null) {
+        //spilt the full name into the first and last name
+        String[] nameParts = request.getFullName().trim().split("\\s+", 2);
+        
+        user.setFirstName(nameParts[0]);
+        user.setLastName(nameParts.length > 1 ? nameParts[1] : "");
 
+        if(role==Role.INSTITUTE_ADMIN)
+        {
+            //set the institute admin details here when you add the further Fields
+
+            InstituteAdminDetails instituteAdminDetails=InstituteAdminDetails.builder()
+                    .institute(request.getInstituteId())
+                    .user(user)
+                    .build();
+
+            instituteAdminDetailsRepository.save(instituteAdminDetails);
+
+        }
+        else if(role==Role.COUNSELLOR)
+        {
+
+            //add the fields as in future need
+
+            CounsellorDetails counsellorDetails=CounsellorDetails.builder()
+                    .expertiseArea(request.getExpertiseArea())
+                    .assignedInstitute(request.getInstituteId())
+                    .user(user)
+                    .build();
+
+            counsellorDetailsRepository.save(counsellorDetails);
         }
 
 

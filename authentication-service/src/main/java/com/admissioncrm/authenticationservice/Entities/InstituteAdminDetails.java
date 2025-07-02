@@ -2,7 +2,16 @@ package com.admissioncrm.authenticationservice.Entities;
 
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
 
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@Data
 @Entity
 public class InstituteAdminDetails {
     @Id
@@ -13,7 +22,7 @@ public class InstituteAdminDetails {
     @JoinColumn(name = "id")
     private User user;
 
-    private int institute;//we can store pk of institute table from another microservice
+    private String institute;//we can store pk of institute table from another microservice
 
     // other fields like job title, permissions, etc.
 }

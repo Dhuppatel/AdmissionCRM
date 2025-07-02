@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Config;
+package com.admission_crm.lead_management.Controller.Config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
