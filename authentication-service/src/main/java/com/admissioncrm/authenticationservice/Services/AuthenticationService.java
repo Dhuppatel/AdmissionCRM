@@ -2,8 +2,7 @@ package com.admissioncrm.authenticationservice.Services;
 
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.LoginRequest;
-import com.admissioncrm.authenticationservice.DTO.student.StudentLoginRequest;
-import com.admissioncrm.authenticationservice.DTO.student.StudentRegistrationRequest;
+import com.admissioncrm.authenticationservice.DTO.RegisterRequest;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
@@ -35,7 +34,7 @@ public class AuthenticationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<JwtResponse> loginUser(@Valid LoginRequest loginRequest) {
+    public ResponseEntity<JwtResponse> loginUser( LoginRequest loginRequest) {
         String identifier = loginRequest.getIdentifier();
         String password = loginRequest.getPassword();
         //fetch the user from DB
@@ -65,7 +64,7 @@ public class AuthenticationService {
     //register Student
 
     @Transactional
-    public JwtResponse registerStudent(StudentRegistrationRequest request) {
+    public JwtResponse registerStudent(RegisterRequest request) {
 
             if (userRepository.existsByMobileNumber(request.getMobileNumber())) {
                 throw new ApiException("Mobile number already registered");
@@ -80,9 +79,13 @@ public class AuthenticationService {
                 throw new UsernameAlreadyExistsException("Username "+request.getUsername()+" is already taken.! ");
             }
             User user = new User();
-            user.setUsername(request.getUsername());
+            if (request.getUsername() != null && !request.getUsername().isEmpty()){
+                user.setUsername(request.getUsername());
+            }else user.setUsername(request.getMobileNumber()); // set the mobile as the Username if Username not exists
+
             user.setMobileNumber(request.getMobileNumber());
             user.setFirstName(request.getFirstName());
+            user.setMiddleName(request.getMiddleName());
             user.setLastName(request.getLastName());
             user.setEmail(request.getEmail());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
