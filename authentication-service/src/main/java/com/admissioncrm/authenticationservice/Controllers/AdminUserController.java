@@ -19,15 +19,15 @@ public class AdminUserController {
     private UserService userService;
 
     @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
-    @PostMapping("/create-institue-admin")
-    public ResponseEntity<?> createInstitueAdmin (@Valid @RequestBody CreateUserRequest request){
+    @PostMapping("/i/create")
+    public ResponseEntity<?> createInstitueAdmin ( @RequestBody CreateUserRequest request){
 
             return ResponseEntity.ok(userService.createInstituteAdmin(request));
 
     }
 
     @PreAuthorize("hasAnyRole('UNIVERSITY_ADMIN', 'INSTITUTE_ADMIN')")
-    @PostMapping("/create-counsellor")
+    @PostMapping("/c/create")
     public ResponseEntity<?> createCounsellor(@RequestBody CreateUserRequest request) {
         return ResponseEntity.ok(userService.createCounsellor(request));
     }

@@ -2,8 +2,7 @@ package com.admissioncrm.authenticationservice.Controllers;
 
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.LoginRequest;
-import com.admissioncrm.authenticationservice.DTO.student.StudentLoginRequest;
-import com.admissioncrm.authenticationservice.DTO.student.StudentRegistrationRequest;
+import com.admissioncrm.authenticationservice.DTO.RegisterRequest;
 import com.admissioncrm.authenticationservice.Services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -25,13 +24,13 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest loginRequest){
+    public ResponseEntity<JwtResponse> login( @RequestBody LoginRequest loginRequest){
 
         return authenticationService.loginUser(loginRequest);
     }
 
-    @PostMapping("/student/register")
-    public ResponseEntity<?> registerStudent(@Valid  @RequestBody StudentRegistrationRequest request)
+    @PostMapping("/s/register")
+    public ResponseEntity<?> registerStudent( @RequestBody RegisterRequest request)
     {
         //cheak exception handeling in this method
        JwtResponse jwtResponse=authenticationService.registerStudent(request);
