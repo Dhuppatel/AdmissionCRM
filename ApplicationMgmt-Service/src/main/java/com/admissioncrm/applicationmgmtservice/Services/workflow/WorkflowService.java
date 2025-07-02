@@ -103,19 +103,19 @@ public class WorkflowService {
         //this defines from which state we can go to only which state and validates that
         // change this as our need and workflow
         transitions.put(ApplicationStatus.SUBMITTED,
-                Set.of(ApplicationStatus.UNDER_REVIEW, ApplicationStatus.REJECTED, ApplicationStatus.INCOMPLETE));
+                Set.of(ApplicationStatus.UNDER_REVIEW, ApplicationStatus.REJECTED, ApplicationStatus.INCOMPLETE,ApplicationStatus.TAKEN_ADMISSION_ELSEWHERE,ApplicationStatus.NOT_INTERESTED));
 
         transitions.put(ApplicationStatus.UNDER_REVIEW,
-                Set.of(ApplicationStatus.PENDING_DOCUMENTS, ApplicationStatus.APPROVED, ApplicationStatus.REJECTED));
+                Set.of(ApplicationStatus.PENDING_DOCUMENTS, ApplicationStatus.APPROVED, ApplicationStatus.REJECTED,ApplicationStatus.TAKEN_ADMISSION_ELSEWHERE,ApplicationStatus.NOT_INTERESTED));
 
         transitions.put(ApplicationStatus.PENDING_DOCUMENTS,
-                Set.of(ApplicationStatus.UNDER_REVIEW, ApplicationStatus.REJECTED));
+                Set.of(ApplicationStatus.UNDER_REVIEW, ApplicationStatus.REJECTED,ApplicationStatus.TAKEN_ADMISSION_ELSEWHERE,ApplicationStatus.NOT_INTERESTED));
 
         transitions.put(ApplicationStatus.APPROVED,
-                Set.of(ApplicationStatus.ENROLLED, ApplicationStatus.REJECTED));
+                Set.of(ApplicationStatus.ENROLLED, ApplicationStatus.REJECTED,ApplicationStatus.TAKEN_ADMISSION_ELSEWHERE,ApplicationStatus.NOT_INTERESTED));
 
         transitions.put(ApplicationStatus.INCOMPLETE,
-                Set.of(ApplicationStatus.SUBMITTED, ApplicationStatus.REJECTED));
+                Set.of(ApplicationStatus.SUBMITTED, ApplicationStatus.REJECTED,ApplicationStatus.TAKEN_ADMISSION_ELSEWHERE,ApplicationStatus.NOT_INTERESTED));
 
 
         return transitions;

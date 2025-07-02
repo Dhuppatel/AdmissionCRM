@@ -23,6 +23,8 @@ public class CounsellorService {
     private final RestTemplate restTemplate;
     private final ApplicationFormService applicationService; // To get application counts
 
+
+
     @Value("${auth.service.url}")
     private String authServiceUrl;
 
