@@ -30,6 +30,6 @@ public class UserPrinciple implements UserDetails {
     }
 
     @Override
-    public String getUsername() { return user.getUsername(); }
+    public String getUsername() { return user.getEmail(); }
 
 }

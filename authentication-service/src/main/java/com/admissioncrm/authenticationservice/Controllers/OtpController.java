@@ -32,7 +32,4 @@ public class OtpController {
         String otp = otpService.sendEmailOtp(email);
         return "OTP sent successfully to " + email + ". Please check your SMS.";
     }
-
-
-
 }
