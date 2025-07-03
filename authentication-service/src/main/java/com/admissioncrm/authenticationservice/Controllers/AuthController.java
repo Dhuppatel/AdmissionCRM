@@ -61,10 +61,9 @@ public class AuthController {
     @PostMapping("/s/register")
     public ResponseEntity<?> registerStudent( @RequestBody RegisterRequest request)
     {
-        //cheak exception handeling in this method
-       JwtResponse jwtResponse=authenticationService.registerStudent(request);
+        return authenticationService.registerStudent(request);
 
-            return ResponseEntity.ok(jwtResponse);
+
     }
 
 

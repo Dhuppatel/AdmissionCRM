@@ -87,7 +87,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok(new ApiResponse(true, "User created successfully"));
+        return ResponseEntity.ok(ApiResponse.success("User created successfully", null));
     }
 
 
