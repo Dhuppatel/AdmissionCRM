@@ -2,7 +2,7 @@ package com.admissioncrm.authenticationservice.Services;
 
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.LoginRequest;
-import com.admissioncrm.authenticationservice.DTO.RegisterRequest;
+import com.admissioncrm.authenticationservice.DTO.Register.RegisterRequest;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
@@ -11,7 +11,6 @@ import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyE
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Utilities.JwtUtils;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;

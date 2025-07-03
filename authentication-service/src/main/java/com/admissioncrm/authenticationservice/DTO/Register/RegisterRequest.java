@@ -1,4 +1,4 @@
-package com.admissioncrm.authenticationservice.DTO;
+package com.admissioncrm.authenticationservice.DTO.Register;
 
 import lombok.Data;
 
