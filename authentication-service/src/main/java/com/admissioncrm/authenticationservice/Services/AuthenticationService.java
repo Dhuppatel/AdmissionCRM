@@ -51,7 +51,7 @@ public class AuthenticationService {
 
         //generate the token
         try {
-            String jwtToken = jwtUtils.generateToken(user.getUsername(), user.getRole());
+            String jwtToken = jwtUtils.generateToken(identifier, user.getRole());
             return ResponseEntity.ok(new JwtResponse(jwtToken, user.getRole()));
         } catch (Exception e) {
             throw new ApiException("Failed to generate JWT token");
