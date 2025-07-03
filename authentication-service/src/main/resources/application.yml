@@ -15,7 +15,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: admissioncrm.official@gmail.com
-    password: amqq jiop vjgh eonr  # NOT your actual Gmail password (use app password)
+    password: amqq jiop vjgh eonr
     properties:
       mail:
         smtp:
