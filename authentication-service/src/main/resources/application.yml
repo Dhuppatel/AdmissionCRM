@@ -1,20 +1,31 @@
 server:
-  port: ${PORT}
+  port: ${PORT:8000}
 
 spring:
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/admissioncrm_auth?useSSL=false&serverTimezone=UTC}
+    username: ${DB_USERNAME:admissionCRM}
+    password: ${DB_PASSWORD:Admission123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: admissioncrm.official@gmail.com
+    password: amqq jiop vjgh eonr  # NOT your actual Gmail password (use app password)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 twilio:
-  account-sid: ${TWILIO_ACCOUNT_SID}
-  auth-token: ${TWILIO_AUTH_TOKEN}
-  phone-number: ${TWILIO_PHONE_NUMBER}
+  account-sid: ${TWILIO_ACCOUNT_SID:ACb2e9d9518a0abe40fc17f8d3411cf18a}
+  auth-token: ${TWILIO_AUTH_TOKEN:3d8f4eb5e98f7df7b5dcf33c3dfae5aa}
+  phone-number: ${TWILIO_PHONE_NUMBER:+13307310287}
 
 jwt:
   secret: ${JWT_SECRET}

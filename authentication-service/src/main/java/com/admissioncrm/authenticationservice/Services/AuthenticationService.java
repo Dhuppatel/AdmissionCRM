@@ -1,8 +1,10 @@
 package com.admissioncrm.authenticationservice.Services;
 
+import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.LoginRequest;
-import com.admissioncrm.authenticationservice.DTO.RegisterRequest;
+import com.admissioncrm.authenticationservice.DTO.Register.RegisterRequest;
+import com.admissioncrm.authenticationservice.DTO.Register.RegisterResponse;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
@@ -11,7 +13,6 @@ import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyE
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Utilities.JwtUtils;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -61,7 +62,7 @@ public class AuthenticationService {
     //register Student
 
     @Transactional
-    public JwtResponse registerStudent(RegisterRequest request) {
+    public ResponseEntity<ApiResponse<RegisterResponse>> registerStudent(RegisterRequest request) {
 
         if (userRepository.existsByMobileNumber(request.getMobileNumber())) {
             throw new ApiException("Mobile number already registered");
@@ -91,13 +92,16 @@ public class AuthenticationService {
 
         System.out.println("User registered successfully: " + user.getUsername());
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
+        RegisterResponse response = RegisterResponse.builder()
+                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .middleName(user.getMiddleName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .mobileNumber(user.getMobileNumber())
+                .build();
 
-        String jwtToken = jwtUtils.generateToken(user.getUsername(), Role.STUDENT);
-        return new JwtResponse(jwtToken, Role.STUDENT);
-
+        return ResponseEntity.ok(ApiResponse.success("Student registered successfully", response));
 
     }
 
