@@ -19,44 +19,12 @@ public class AuthController {
         this.authenticationService = authenticationService;
 
     }
-//login
+    // login
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login( @RequestBody LoginRequest loginRequest){
 
         return authenticationService.loginUser(loginRequest);
     }
-//OTP
-//
-//    // Student registration with SMS OTP verification
-//    @PostMapping("/register/student/sms/otp")
-//    public ResponseEntity<OtpResponse> registerStudentWithSmsOtp(@Valid @RequestBody RegisterRequest registerRequest) {
-//        return authenticationService.registerStudentWithSmsOtp(registerRequest);
-//    }
-//
-//    // Student registration with Email OTP verification
-//    @PostMapping("/register/student/email/otp")
-//    public ResponseEntity<OtpResponse> registerStudentWithEmailOtp(@Valid @RequestBody RegisterRequest registerRequest) {
-//        return authenticationService.registerStudentWithEmailOtp(registerRequest);
-//    }
-//
-//    // Student registration with Both SMS and Email OTP verification
-//    @PostMapping("/register/student/both/otp")
-//    public ResponseEntity<OtpResponse> registerStudentWithBothOtp(@Valid @RequestBody RegisterRequest registerRequest) {
-//        return authenticationService.registerStudentWithBothOtp(registerRequest);
-//    }
-//
-//    // Student registration with OTP verification - Step 2: Verify OTP and Complete Registration
-//    @PostMapping("/register/student/otp/verify")
-//    public ResponseEntity<JwtResponse> verifyRegistrationOtp(@Valid @RequestBody OtpVerifyRequest otpVerifyRequest) {
-//        return authenticationService.verifyRegistrationOtp(otpVerifyRequest);
-//    }
-//
-
-
-
-
-
-
 
     @PostMapping("/s/register")
     public ResponseEntity<?> registerStudent( @RequestBody RegisterRequest request)
@@ -65,10 +33,6 @@ public class AuthController {
 
 
     }
-
-
-
-
     //testing endpoints
 
     @GetMapping("/test")
