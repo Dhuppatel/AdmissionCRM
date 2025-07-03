@@ -3,6 +3,7 @@ package com.admission_crm.lead_management.Entity.LeadManagement;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -22,10 +23,10 @@ public class Lead {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String lastName;
 
     @Column(nullable = false, length = 100)
@@ -34,10 +35,9 @@ public class Lead {
     @Column(nullable = false, length = 15)
     private String phone;
 
-    @Column(name = "alternate_phone", length = 15)
+    @Column(length = 15)
     private String alternatePhone;
 
-    @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
@@ -58,67 +58,60 @@ public class Lead {
     @Column(length = 10)
     private String pinCode;
 
-    private Long institutionId;
+    private String institutionId;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "lead_source_id")
-//    private LeadSource leadSource;
+    @Enumerated(EnumType.STRING)
+    private LeadSource leadSource;
 
     private String assignedCounselor;
 
-    private LeadStatus status;
-    private Integer leadScore;
+    @Enumerated(EnumType.STRING)
+    private LeadStatus status = LeadStatus.NEW;
+
+    private Double leadScore = 0.0;
+
+    private Integer queuePosition;
 
     @Enumerated(EnumType.STRING)
-    private Priority priority;
+    private LeadPriority priority = LeadPriority.LOW;
 
     @Column(length = 100)
     private String qualification;
 
-    private String courseInterest;
+    private String courseInterestId;
 
-    @Column(name = "budget_range", length = 50)
+    @Column(length = 50)
     private String budgetRange;
-
-    @Column(name = "preferred_intake", length = 20)
-    private String preferredIntake;
-
-    @Column(columnDefinition = "TEXT")
-    private String notes;
-
-    @Column(columnDefinition = "JSON")
-    private String tags;
-
-    @Column(name = "custom_fields", columnDefinition = "JSON")
-    private String customFields;
 
     @ElementCollection
     @CollectionTable(name = "lead_communications", joinColumns = @JoinColumn(name = "lead_id"))
-    @Column(name = "communication")
+    @Column(name = "communication_id")
     private List<String> communications = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "lead_follow_ups", joinColumns = @JoinColumn(name = "lead_id"))
-    @Column(name = "follow_up")
+    @Column(name = "follow_up_id")
     private List<String> followUps = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "lead_applications", joinColumns = @JoinColumn(name = "lead_id"))
-    @Column(name = "application")
+    @Column(name = "application_id")
     private List<String> applications = new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "lead_activities", joinColumns = @JoinColumn(name = "lead_id"))
-    @Column(name = "activity")
+    @Column(name = "activity_id")
     private List<String> activities = new ArrayList<>();
 
     @CreationTimestamp
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    private LocalDateTime assignedAt;
+
+    private LocalDateTime completedAt;
 
     public String getFullName() {
         return firstName + " " + lastName;
@@ -128,7 +121,15 @@ public class Lead {
         MALE, FEMALE, OTHER
     }
 
-    public enum Priority {
-        LOW, MEDIUM, HIGH, URGENT
+    @Getter
+    public enum LeadPriority {
+        LOW(1), MEDIUM(2), HIGH(3), URGENT(4);
+
+        private final int value;
+        LeadPriority(int value) { this.value = value; }
+    }
+
+    public enum LeadSource {
+        WEBSITE, REFERRAL, SOCIAL_MEDIA, ADVERTISEMENT, PHONE_CALL, WALK_IN, EMAIL_CAMPAIGN, OTHER
     }
 }

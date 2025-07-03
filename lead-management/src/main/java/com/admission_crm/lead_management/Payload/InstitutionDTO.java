@@ -24,4 +24,3 @@ public class InstitutionDTO {
     private List<String> leads;
     private Deque<String> queuedLeads;
 }
-
