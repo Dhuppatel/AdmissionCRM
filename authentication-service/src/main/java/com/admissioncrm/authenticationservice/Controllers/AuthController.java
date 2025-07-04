@@ -7,6 +7,7 @@ import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/s/register")
-    public ResponseEntity<?> registerStudent(@RequestBody RegisterRequest request) {
+    public ResponseEntity<?> registerStudent(@Valid @RequestBody RegisterRequest request) {
         return authenticationService.registerStudent(request);
     }
 

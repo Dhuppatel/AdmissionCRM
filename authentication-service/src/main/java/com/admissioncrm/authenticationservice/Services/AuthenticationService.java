@@ -60,24 +60,33 @@ public class AuthenticationService {
 
 
     //register Student
-
     @Transactional
     public ResponseEntity<ApiResponse<RegisterResponse>> registerStudent(RegisterRequest request) {
 
         if (userRepository.existsByMobileNumber(request.getMobileNumber())) {
-            throw new ApiException("Mobile number already registered");
+            return ResponseEntity
+                    .badRequest()
+                    .body(ApiResponse.error("Mobile number already registered", "Duplicate mobile", 400));
         }
+
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new ApiException("Email already registered");
+            return ResponseEntity
+                    .badRequest()
+                    .body(ApiResponse.error("Email already registered", "Duplicate email", 400));
         }
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new UsernameAlreadyExistsException("Username " + request.getUsername() + " is already taken.! ");
+            return ResponseEntity
+                    .badRequest()
+                    .body(ApiResponse.error("Username already taken", "Username " + request.getUsername() + " is already taken", 400));
         }
+
         User user = new User();
         if (request.getUsername() != null && !request.getUsername().isEmpty()) {
             user.setUsername(request.getUsername());
-        } else user.setUsername(request.getMobileNumber()); // set the mobile as the Username if Username not exists
+        } else {
+            user.setUsername(request.getMobileNumber()); // Default to mobile number as username
+        }
 
         user.setMobileNumber(request.getMobileNumber());
         user.setFirstName(request.getFirstName());
@@ -88,7 +97,7 @@ public class AuthenticationService {
         user.setRole(Role.STUDENT);
 
         userRepository.save(user);
-        //Also add save the Student Details Entity in future for more user specific details
+        // also add the studnet Details entity if needed in future
 
         System.out.println("User registered successfully: " + user.getUsername());
 
@@ -102,8 +111,8 @@ public class AuthenticationService {
                 .build();
 
         return ResponseEntity.ok(ApiResponse.success("Student registered successfully", response));
-
     }
+
 
 
     // Utility methods
