@@ -50,6 +50,7 @@ public class OtpService {
     }
     //Send SMS otp
     public String sendSmsOtp( String toPhoneNumber) {
+
         String otp = generateOtp();
         String key = generateKey(toPhoneNumber);
         String messageBody = "Your OTP is: " + otp + ". This OTP will expire in " + OTP_EXPIRY_MINUTES + " minutes.";
