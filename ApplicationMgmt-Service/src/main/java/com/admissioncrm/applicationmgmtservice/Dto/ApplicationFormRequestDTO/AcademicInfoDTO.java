@@ -52,6 +52,7 @@ public class AcademicInfoDTO {
     private String courseResultStatus;
     private String courseMarkingScheme;
 
+
     @DecimalMin(value = "0.0", message = "Course maximum marks must be positive")
     private BigDecimal courseMaximumMarks;
 

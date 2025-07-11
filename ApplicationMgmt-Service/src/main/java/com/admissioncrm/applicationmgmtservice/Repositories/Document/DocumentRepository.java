@@ -18,6 +18,8 @@ public interface DocumentRepository extends JpaRepository<Document, String> {
 
     Optional<Document> findByStructuredFilenameAndIsActiveTrue(String structuredFilename);
 
+    Optional<Document> findTopByApplicationIdAndDocumentTypeOrderBySequenceNumberDesc (String applicationId, String documentType);
+
     int countByApplicationIdAndDocumentTypeAndIsActiveTrue(String applicationId, String documentType);
 
     // Find documents by reference ID pattern

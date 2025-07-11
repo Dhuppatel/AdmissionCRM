@@ -16,6 +16,8 @@ public class ReferenceIdService {
     @Transactional
     synchronized public String generateReferenceId(){
 
+
+
         int currentYear = LocalDate.now().getYear();
 
         Long maxSequence = applicationFormRepository.findMaxSequenceForYearNative(currentYear);
