@@ -1,7 +1,9 @@
 package com.admissioncrm.applicationmgmtservice.Exception;
 
 
+import com.admissioncrm.applicationmgmtservice.Dto.ApiResponse;
 import com.admissioncrm.applicationmgmtservice.Dto.ErrorResponse;
+import com.admissioncrm.applicationmgmtservice.Exception.Document.DocumentNotFoundException;
 import com.admissioncrm.applicationmgmtservice.Exception.Feign.ForbiddenException;
 import com.admissioncrm.applicationmgmtservice.Exception.Feign.UnauthorizedException;
 import feign.FeignException;
@@ -101,33 +103,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
-    //Feign Error handeling
 
-//    @ExceptionHandler(UnauthorizedException.class)
-//    public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
-//
-//        ErrorResponse errorResponse = ErrorResponse.builder()
-//                .timestamp(LocalDateTime.now())
-//                .message(e.getMessage())
-//                .errorCode("UNAUTHORIZED")
-//                .status(HttpStatus.UNAUTHORIZED.value())
-//                .build();
-//
-//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
-//    }
-//
-//    @ExceptionHandler(ForbiddenException.class)
-//    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
-//        System.out.println("this is done too");
-//        ErrorResponse errorResponse = ErrorResponse.builder()
-//                .timestamp(LocalDateTime.now())
-//                .message(e.getMessage())
-//                .errorCode("FORBIDDEN")
-//                .status(HttpStatus.FORBIDDEN.value())
-//                .build();
-//
-//        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-//    }
+
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ResponseEntity<ApiResponse<?>> handelDocumentNotFound(DocumentNotFoundException ex) {
+
+        return ResponseEntity.badRequest().body(ApiResponse.error("Document not Found", ex.getMessage(),400));
+    }
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handleFeignException(FeignException e) {

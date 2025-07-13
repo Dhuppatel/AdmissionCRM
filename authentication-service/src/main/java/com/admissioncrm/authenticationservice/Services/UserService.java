@@ -4,11 +4,11 @@ import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import com.admissioncrm.authenticationservice.DTO.UserCreationDTO.CreateUserRequest;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
-import com.admissioncrm.authenticationservice.Entities.CounsellorDetails;
+import com.admissioncrm.authenticationservice.Entities.CounselorDetails;
 import com.admissioncrm.authenticationservice.Entities.InstituteAdminDetails;
 import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
 import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyExistsException;
-import com.admissioncrm.authenticationservice.Repositories.CounsellorDetailsRepository;
+import com.admissioncrm.authenticationservice.Repositories.CounselorDetailsRepository;
 import com.admissioncrm.authenticationservice.Repositories.InstituteAdminDetailsRepository;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,14 @@ public class UserService {
         @Autowired
         private InstituteAdminDetailsRepository instituteAdminDetailsRepository;
         @Autowired
-        private CounsellorDetailsRepository counsellorDetailsRepository;
+        private CounselorDetailsRepository counsellorDetailsRepository;
 
     public ResponseEntity<?> createInstituteAdmin( CreateUserRequest request) {
         return createUserFromDTO(request,Role.INSTITUTE_ADMIN);
     }
 
     public ResponseEntity<?> createCounsellor(CreateUserRequest request) {
-        return createUserFromDTO(request, Role.COUNSELLOR);
+        return createUserFromDTO(request, Role.COUNSELOR);
     }
 
     private ResponseEntity<?> createUserFromDTO(CreateUserRequest request, Role role) {
@@ -70,18 +70,18 @@ public class UserService {
             instituteAdminDetailsRepository.save(instituteAdminDetails);
 
         }
-        else if(role==Role.COUNSELLOR)
+        else if(role==Role.COUNSELOR)
         {
 
             //add the fields as in future need
 
-            CounsellorDetails counsellorDetails=CounsellorDetails.builder()
+            CounselorDetails counselorDetails=CounselorDetails.builder()
                     .expertiseArea(request.getExpertiseArea())
                     .assignedInstitute(request.getInstituteId())
                     .user(user)
                     .build();
 
-            counsellorDetailsRepository.save(counsellorDetails);
+            counsellorDetailsRepository.save(counselorDetails);
         }
 
 
