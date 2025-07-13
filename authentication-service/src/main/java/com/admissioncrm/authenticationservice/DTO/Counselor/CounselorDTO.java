@@ -1,4 +1,4 @@
-package com.admissioncrm.authenticationservice.DTO.Counsellor;
+package com.admissioncrm.authenticationservice.DTO.Counselor;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CounsellorDTO {
+public class CounselorDTO {
     private String id;
     private String name;
     private String email;
