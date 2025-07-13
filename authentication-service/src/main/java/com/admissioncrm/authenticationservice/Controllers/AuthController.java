@@ -1,11 +1,13 @@
 package com.admissioncrm.authenticationservice.Controllers;
 
+import com.admissioncrm.authenticationservice.DTO.ForgetPassword.ForgetPasswordDTO;
 import com.admissioncrm.authenticationservice.DTO.Jwt.JwtResponse;
 import com.admissioncrm.authenticationservice.DTO.LoginRequest;
 import com.admissioncrm.authenticationservice.DTO.Register.RegisterRequest;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import com.admissioncrm.authenticationservice.Services.AuthenticationService;
+import com.admissioncrm.authenticationservice.Services.ForgetPasswordService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,10 +27,12 @@ import java.util.Optional;
 public class AuthController {
     private final UserRepository userRepository;
     AuthenticationService authenticationService;
+    private final ForgetPasswordService forgetPasswordService;
 
-    AuthController(AuthenticationService authenticationService, UserRepository userRepository) {
+    AuthController(AuthenticationService authenticationService, UserRepository userRepository,ForgetPasswordService forgetPasswordService) {
         this.authenticationService = authenticationService;
         this.userRepository = userRepository;
+        this.forgetPasswordService = forgetPasswordService;
     }
 
     // login
@@ -41,6 +45,18 @@ public class AuthController {
     public ResponseEntity<?> registerStudent(@Valid @RequestBody RegisterRequest request) {
         return authenticationService.registerStudent(request);
     }
+    @PostMapping("/request-password-reset")
+    public ResponseEntity<String> requestPasswordReset(@RequestParam String email) {
+       return forgetPasswordService.passwordResetRequest(email);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ForgetPasswordDTO forgetPasswordDTO) {
+
+        return forgetPasswordService.resetPassword(forgetPasswordDTO.getToken(), forgetPasswordDTO.getNewPassword());
+    }
+
+
 
     // Get Current User
     @GetMapping("/current")
