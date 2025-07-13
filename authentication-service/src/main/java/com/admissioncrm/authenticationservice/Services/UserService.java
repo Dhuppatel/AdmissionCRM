@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> createCounsellor(CreateUserRequest request) {
-        return createUserFromDTO(request, Role.COUNSELLOR);
+        return createUserFromDTO(request, Role.COUNSELOR);
     }
 
     private ResponseEntity<?> createUserFromDTO(CreateUserRequest request, Role role) {
@@ -70,7 +70,7 @@ public class UserService {
             instituteAdminDetailsRepository.save(instituteAdminDetails);
 
         }
-        else if(role==Role.COUNSELLOR)
+        else if(role==Role.COUNSELOR)
         {
 
             //add the fields as in future need
