@@ -5,6 +5,7 @@ import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.User;
 
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,9 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 
 @Configuration
+@RequiredArgsConstructor
 public class SuperAdminInitializer {
-    @Autowired
-    PasswordEncoder passwordEncoder;
+
+    private final PasswordEncoder passwordEncoder;
     @Bean
     public CommandLineRunner initSuperAdmin(UserRepository userRepository) {
         return args -> {
