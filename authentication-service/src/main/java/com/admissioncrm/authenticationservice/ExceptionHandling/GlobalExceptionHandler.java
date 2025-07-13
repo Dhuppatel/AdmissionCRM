@@ -1,5 +1,6 @@
 package com.admissioncrm.authenticationservice.ExceptionHandling;
 
+import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -13,33 +14,34 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<?> handleApiException(ApiException ex) {
+    public ResponseEntity<ApiResponse<?>> handleApiException(ApiException ex) {
         return ResponseEntity
                 .badRequest()
-                .body(Map.of("error", ex.getMessage()));
+                .body(ApiResponse.error("API Exception occurred", ex.getMessage(), 400));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationErrors(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(err ->
                 errors.put(err.getField(), err.getDefaultMessage())
         );
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    //duplicate Username Exception
-    @ExceptionHandler(UsernameAlreadyExistsException.class)
-    public ResponseEntity<?> handleUsernameAlreadyExists(UsernameAlreadyExistsException ex) {
         return ResponseEntity
                 .badRequest()
-                .body(Map.of("error", ex.getMessage()));
+                .body(ApiResponse.error("Validation Failed", errors.toString(), 400));
+    }
+
+    @ExceptionHandler(UsernameAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<?>> handleUsernameAlreadyExists(UsernameAlreadyExistsException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(ApiResponse.error("Username already exists", ex.getMessage(), 400));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<?> handleBadCredentials(BadCredentialsException ex) {
+    public ResponseEntity<ApiResponse<?>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity
                 .status(401)
-                .body(Map.of("error", "Invalid username or password"));
+                .body(ApiResponse.error("Authentication Failed", "Invalid username or password", 401));
     }
 }
