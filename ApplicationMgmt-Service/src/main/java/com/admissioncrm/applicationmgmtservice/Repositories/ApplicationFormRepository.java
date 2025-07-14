@@ -1,9 +1,8 @@
 package com.admissioncrm.applicationmgmtservice.Repositories;
 
 
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
-import org.apache.el.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

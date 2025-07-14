@@ -2,7 +2,7 @@ package com.admissioncrm.applicationmgmtservice.Services.Document;
 
 import com.admissioncrm.applicationmgmtservice.Dto.Document.ApplicationDocumentsResponse;
 import com.admissioncrm.applicationmgmtservice.Dto.Document.DocumentResponse;
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Entities.Document.Document;
 import com.admissioncrm.applicationmgmtservice.Exception.Document.DocumentNotFoundException;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
@@ -15,14 +15,12 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

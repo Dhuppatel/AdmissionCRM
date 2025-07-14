@@ -1,6 +1,6 @@
 package com.admissioncrm.applicationmgmtservice.Entities.workflow;
 
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

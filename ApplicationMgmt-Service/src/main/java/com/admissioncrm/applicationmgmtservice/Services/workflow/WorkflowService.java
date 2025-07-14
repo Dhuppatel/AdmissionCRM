@@ -3,7 +3,7 @@ package com.admissioncrm.applicationmgmtservice.Services.workflow;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.WorkflowDTO.ApplicationWorkflowRequestDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.WorkflowDTO.ApplicationWorkflowResponseDTO;
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Entities.workflow.ApplicationStatusHistory;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.ApplicationFormNotFoundException;
