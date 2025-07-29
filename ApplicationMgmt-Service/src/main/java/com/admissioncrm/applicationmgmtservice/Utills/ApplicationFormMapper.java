@@ -10,6 +10,8 @@ public class ApplicationFormMapper {
     public ApplicationForm mapToEntity(ApplicationFormSubmissionDTO dto) {
         ApplicationForm form = ApplicationForm.builder()
                 .idUser(dto.getIdUser())
+                .email(dto.getPersonalInfo().getEmail())
+                .studentMobile(dto.getPersonalInfo().getStudentMobile())
                 // Embedded Personal Info
                 .personalInfo(
                         PersonalInfo.builder()
@@ -17,8 +19,6 @@ public class ApplicationFormMapper {
                                 .middleName(dto.getPersonalInfo().getMiddleName())
                                 .lastName(dto.getPersonalInfo().getLastName())
                                 .fullName(dto.getPersonalInfo().getFullName())
-                                .email(dto.getPersonalInfo().getEmail())
-                                .studentMobile(dto.getPersonalInfo().getStudentMobile())
                                 .dob(dto.getPersonalInfo().getDob())
                                 .gender(dto.getPersonalInfo().getGender())
                                 .religion(dto.getPersonalInfo().getReligion())
@@ -163,8 +163,8 @@ public class ApplicationFormMapper {
                                 .middleName(form.getPersonalInfo() != null ? form.getPersonalInfo().getMiddleName() : null)
                                 .lastName(form.getPersonalInfo() != null ? form.getPersonalInfo().getLastName() : null)
                                 .fullName(form.getPersonalInfo() != null ? form.getPersonalInfo().getFullName() : null)
-                                .email(form.getPersonalInfo() != null ? form.getPersonalInfo().getEmail() : null)
-                                .studentMobile(form.getPersonalInfo() != null ? form.getPersonalInfo().getStudentMobile() : null)
+                                .email(form.getPersonalInfo() != null ? form.getEmail() : null)
+                                .studentMobile(form.getPersonalInfo() != null ? form.getStudentMobile() : null)
                                 .dob(form.getPersonalInfo() != null ? form.getPersonalInfo().getDob() : null)
                                 .gender(form.getPersonalInfo() != null ? form.getPersonalInfo().getGender() : null)
                                 .religion(form.getPersonalInfo() != null ? form.getPersonalInfo().getReligion() : null)
@@ -296,6 +296,12 @@ public class ApplicationFormMapper {
 
 
     public void updateEntityFromDTO(ApplicationForm existingEntity, ApplicationFormSubmissionDTO dto) {
+
+        if(existingEntity != null) {
+            existingEntity.setEmail(dto.getPersonalInfo().getEmail());
+            existingEntity.setStudentMobile(dto.getPersonalInfo().getStudentMobile());
+
+        }
         // Update Personal Info
         if (dto.getPersonalInfo() != null) {
             PersonalInfo pi = existingEntity.getPersonalInfo();
@@ -304,8 +310,7 @@ public class ApplicationFormMapper {
             pi.setMiddleName(dto.getPersonalInfo().getMiddleName());
             pi.setLastName(dto.getPersonalInfo().getLastName());
             pi.setFullName(dto.getPersonalInfo().getFullName());
-            pi.setEmail(dto.getPersonalInfo().getEmail());
-            pi.setStudentMobile(dto.getPersonalInfo().getStudentMobile());
+
             pi.setDob(dto.getPersonalInfo().getDob());
             pi.setGender(dto.getPersonalInfo().getGender());
             pi.setReligion(dto.getPersonalInfo().getReligion());

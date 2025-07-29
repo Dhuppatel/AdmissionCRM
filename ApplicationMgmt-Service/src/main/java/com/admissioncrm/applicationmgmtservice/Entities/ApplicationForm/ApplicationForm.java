@@ -31,6 +31,17 @@ public class ApplicationForm {
     @Column(name = "id_user", nullable = false)
     private String idUser;
 
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "student_mobile", nullable = false, columnDefinition = "TEXT")
+    private String studentMobile;
+
+    // Applied institute and Course Fields
+
+    private String SelectedInstitute;
+
+
     @Enumerated(EnumType.STRING)
     @Column(name = "application_status", nullable = false)
     private ApplicationStatus applicationStatus;

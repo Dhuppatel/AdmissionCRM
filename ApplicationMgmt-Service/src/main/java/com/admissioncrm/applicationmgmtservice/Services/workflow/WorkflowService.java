@@ -205,9 +205,9 @@ public class WorkflowService {
 
     private ApplicationFormSummaryDTO mapToSummaryDTO(ApplicationForm application) {
         return ApplicationFormSummaryDTO.builder()
-                .studentFullName(application.getFullName())
+                .studentFullName(application.getPersonalInfo().getFullName())
                 .email(application.getEmail())
-                .courseAppliedFor(application.getCourseInstituteName())
+                .courseAppliedFor(application.getSelectedInstitute())
                 .status(application.getApplicationStatus())
                 .submittedDate(application.getCreatedAt())
                 .daysSinceSubmission(ChronoUnit.DAYS.between(application.getCreatedAt(), LocalDateTime.now()))

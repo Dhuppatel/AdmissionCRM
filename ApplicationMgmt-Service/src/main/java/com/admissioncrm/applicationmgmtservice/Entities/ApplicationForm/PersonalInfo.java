@@ -28,12 +28,6 @@ public class PersonalInfo {
     @Column(name = "last_name", nullable = false, columnDefinition = "TEXT")
     private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "student_mobile", nullable = false, columnDefinition = "TEXT")
-    private String studentMobile;
-
     @Column(name = "dob", nullable = false)
     private java.time.LocalDate dob;
 
