@@ -11,6 +11,15 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASS}
+    from: ${MAIL_USERNAME}
+
+
+
 twilio:
   account-sid: ${TWILIO_ACCOUNT_SID}
   auth-token: ${TWILIO_AUTH_TOKEN}
@@ -22,6 +31,7 @@ jwt:
 
 sendgrid:
   api-key: ${SENDGRID_API_KEY}
+
 
 eureka:
   client:

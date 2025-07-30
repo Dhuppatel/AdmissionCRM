@@ -14,6 +14,7 @@ import com.admission_crm.lead_management.Repository.AuditLogRepository;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.LeadRepository;
 import com.admission_crm.lead_management.Repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class LeadService {
 
@@ -41,6 +41,17 @@ public class LeadService {
     private final AuditLogRepository auditLogRepository;
     private final InstitutionQueueService queueService;
     private final LeadScoringService scoringService;
+    private final EmailService emailService;
+
+    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService) {
+        this.leadRepository = leadRepository;
+        this.userRepository = userRepository;
+        this.institutionRepository = institutionRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.queueService = queueService;
+        this.scoringService = scoringService;
+        this.emailService = emailService;
+    }
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -81,6 +92,12 @@ public class LeadService {
 
         // Try auto-assignment if counselors are available
 //        tryAutoAssignment(savedLead.getInstitutionId());
+
+//        try {
+//            emailService.sendWelcomeMail(savedLead);
+//        } catch (MessagingException e) {
+//            throw new RuntimeException(e);
+//        }
 
         return savedLead;
     }

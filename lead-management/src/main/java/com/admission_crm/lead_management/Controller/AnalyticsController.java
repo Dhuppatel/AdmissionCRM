@@ -22,13 +22,15 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/analytics")
-@RequiredArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "*")
 public class AnalyticsController {
 
-    @Autowired
-    private LeadService leadService;
+    private final LeadService leadService;
+
+    public AnalyticsController(LeadService leadService) {
+        this.leadService = leadService;
+    }
 
     /**
      * Get comprehensive lead statistics for an institution
