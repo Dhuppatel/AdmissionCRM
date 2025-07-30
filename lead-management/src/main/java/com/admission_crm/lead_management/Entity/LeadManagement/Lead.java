@@ -1,11 +1,5 @@
 package com.admission_crm.lead_management.Entity.LeadManagement;
 
-import com.admission_crm.lead_management.Entity.Academic.Course;
-import com.admission_crm.lead_management.Entity.Application.Application;
-import com.admission_crm.lead_management.Entity.Communication.Communication;
-import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
-import com.admission_crm.lead_management.Entity.CoreEntities.User;
-import com.admission_crm.lead_management.Entity.FollowUp.LeadFollowUp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,16 +37,10 @@ public class Lead {
     @Column(nullable = false, length = 15)
     private String phone;
 
-    @Column(length = 15)
-    private String alternatePhone;
-
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
-    @Column(columnDefinition = "TEXT")
-    private String address;
 
     @Column(length = 50)
     private String city;
@@ -62,9 +50,6 @@ public class Lead {
 
     @Column(length = 50)
     private String country;
-
-    @Column(length = 10)
-    private String pinCode;
 
     private String institutionId;
 
@@ -88,8 +73,9 @@ public class Lead {
 
     private String courseInterestId;
 
-    @Column(length = 50)
-    private String budgetRange;
+    private String queryTitle;
+
+    private String queryDescription;
 
     @ElementCollection
     @CollectionTable(name = "lead_communications", joinColumns = @JoinColumn(name = "lead_id"))
@@ -111,6 +97,7 @@ public class Lead {
     @Column(name = "activity_id")
     private List<String> activities = new ArrayList<>();
 
+    @Column(name = "createdAt", nullable = false, updatable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
 
@@ -135,9 +122,5 @@ public class Lead {
 
         private final int value;
         LeadPriority(int value) { this.value = value; }
-    }
-
-    public enum LeadSource {
-        WEBSITE, REFERRAL, SOCIAL_MEDIA, ADVERTISEMENT, PHONE_CALL, WALK_IN, EMAIL_CAMPAIGN, OTHER
     }
 }

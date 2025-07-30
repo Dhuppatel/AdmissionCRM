@@ -14,11 +14,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -56,6 +60,38 @@ public class LeadController {
         }
     }
 
+    @GetMapping("/my-leads/{username}")
+    public ResponseEntity<Page<Lead>> getCurrentUserLeads(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @PathVariable String username) {
+        try {
+            System.out.println("Line 69 "+ username);
+            log.info("Fetching leads for user: {}", username);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Lead> leads = leadService.findLeadsByUser(username, pageable);
+            if (leads.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(leads);
+        } catch (Exception e) {
+            log.error("Error fetching leads for current user: ", e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+//    private String getCurrentUsername() {
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        System.out.println(principal.toString());
+//        if (principal instanceof UserDetails) {
+//            System.out.println(((UserDetails) principal).getUsername());
+//            return ((UserDetails) principal).getUsername(); // Typically email or username
+//        } else {
+//            System.out.println("Line 88");
+//            return principal.toString();
+//        }
+//    }
+
     // Get a lead by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getLeadById(@PathVariable String id) {
@@ -75,6 +111,7 @@ public class LeadController {
 
     // Get all leads with pagination and filtering
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'COUNSELOR')")
     public ResponseEntity<?> getAllLeads(
             Pageable pageable,
             @RequestParam(required = false) String searchTerm,
@@ -98,11 +135,11 @@ public class LeadController {
     }
 
     // Get leads by institution
-    @GetMapping("/institution/{institutionId}")
-    public ResponseEntity<?> getLeadsByInstitution(@PathVariable String institutionId,
+    @GetMapping("/institution/{institutionCode}")
+    public ResponseEntity<?> getLeadsByInstitution(@PathVariable String institutionCode,
                                                    Pageable pageable) {
         try {
-            Page<Lead> leads = leadService.getLeadsByInstitution(institutionId, pageable);
+            Page<Lead> leads = leadService.getLeadsByInstitution(institutionCode, pageable);
             Page<LeadResponse> leadResponses = leads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Institution leads retrieved successfully", leadResponses));
         } catch (Exception e) {

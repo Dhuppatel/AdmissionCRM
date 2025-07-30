@@ -8,6 +8,7 @@ import com.admission_crm.lead_management.Payload.LeadStatistics;
 import com.admission_crm.lead_management.Service.LeadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class AnalyticsController {
 
-    private final LeadService leadService;
+    @Autowired
+    private LeadService leadService;
 
     /**
      * Get comprehensive lead statistics for an institution

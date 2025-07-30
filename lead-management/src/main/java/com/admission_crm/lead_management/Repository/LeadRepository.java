@@ -1,6 +1,7 @@
 package com.admission_crm.lead_management.Repository;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
+import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public interface LeadRepository extends JpaRepository<Lead, String> {
 
     // Basic CRUD enhancements
-    Optional<Lead> findByEmail(String email);
+    Page<Lead> findByEmail(String userEmail, Pageable pageable);
     Page<Lead> findByStatus(LeadStatus status, Pageable pageable);
     Page<Lead> findByInstitutionId(String institutionId, Pageable pageable);
     Page<Lead> findByAssignedCounselor(String counselorId, Pageable pageable);
@@ -128,7 +129,7 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
                                    @Param("institutionId") String institutionId,
                                    @Param("status") LeadStatus status,
                                    @Param("priority") Lead.LeadPriority priority,
-                                   @Param("source") Lead.LeadSource source,
+                                   @Param("source") LeadSource source,
                                    @Param("counselorId") String counselorId,
                                    @Param("fromDate") LocalDateTime fromDate,
                                    @Param("toDate") LocalDateTime toDate,

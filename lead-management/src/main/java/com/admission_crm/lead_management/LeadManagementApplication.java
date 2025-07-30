@@ -9,7 +9,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableDiscoveryClient
 public class LeadManagementApplication {
 	public static void main(String[] args) {
-		String currentDir = System.getProperty("user.dir") + "/lead-management";
+		String currentDir = "E:\\AdmissionCRM\\lead-management\\.env";
 		Dotenv dotenv = Dotenv.configure().directory(currentDir).load();
 		dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
 		SpringApplication.run(LeadManagementApplication.class, args);
