@@ -38,18 +38,12 @@ public class Course {
     @Column(precision = 10, scale = 2)
     private BigDecimal fees;
 
-    @Column(columnDefinition = "TEXT")
-    private String eligibility;
-
     private String institutionId;
 
     private String departmentId;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
-
-    @Column(name = "brochure_url", length = 255)
-    private String brochureUrl;
 
     @ElementCollection
     private List<String> interestedLeads = new ArrayList<>();

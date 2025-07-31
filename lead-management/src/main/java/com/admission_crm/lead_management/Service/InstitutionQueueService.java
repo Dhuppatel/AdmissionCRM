@@ -28,7 +28,7 @@ public class InstitutionQueueService {
      * Add lead to institution's queue
      */
     public void addToQueue(Lead lead) {
-        Institution institution = institutionRepository.findByInstituteCode(lead.getInstitutionId())
+        Institution institution = institutionRepository.findById(lead.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         Double score = scoringService.calculateLeadScore(lead);

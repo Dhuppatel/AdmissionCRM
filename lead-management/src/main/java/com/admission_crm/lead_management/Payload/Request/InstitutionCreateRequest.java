@@ -14,6 +14,5 @@ public class InstitutionCreateRequest {
     private String phone;
     private String email;
     private String website;
-    private String logoUrl;
     private String universityId;
 }
