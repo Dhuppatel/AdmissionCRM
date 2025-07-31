@@ -1,6 +1,7 @@
 package com.admission_crm.lead_management.Service;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
+import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,11 @@ public class LeadScoringService {
     public Double calculateLeadScore(Lead lead) {
         double score = 0.0;
 
+        if (lead == null) {
+            System.out.println("Lead is null in calculateLeadScore");
+            throw new IllegalArgumentException("Lead cannot be null");
+        }
+
         // Source scoring
         score += getSourceScore(lead.getLeadSource());
 
@@ -19,18 +25,22 @@ public class LeadScoringService {
         score += lead.getPriority().getValue() * 10;
 
         // Urgency based on creation time
-        long hoursOld = ChronoUnit.HOURS.between(lead.getCreatedAt(), LocalDateTime.now());
-        if (hoursOld > 24) score += 15; // Older leads get higher priority
-        if (hoursOld > 72) score += 25; // Very old leads get much higher priority
-
-        score += getBudgetScore(lead.getBudgetRange());
+        if (lead.getCreatedAt() != null) {
+            long hoursOld = ChronoUnit.HOURS.between(lead.getCreatedAt(), LocalDateTime.now());
+            if (hoursOld > 24) score += 15; // Older leads get higher priority
+            if (hoursOld > 72) score += 25; // Very old leads get much higher priority
+        } else {
+            System.out.println("createdAt is null for lead: {}"+ lead.getId());
+            score += 0; // Default score or handle differently
+        }
+//        score += getBudgetScore(lead.getBudgetRange());
 
         score += getQualificationScore(lead.getQualification());
 
         return Math.min(score, 100.0);
     }
 
-    private double getSourceScore(Lead.LeadSource source) {
+    private double getSourceScore(LeadSource source) {
         return switch (source) {
             case REFERRAL -> 30.0;
             case WEBSITE -> 25.0;

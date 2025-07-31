@@ -19,10 +19,8 @@ public class InstituteAdminDetails {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "user_id")
     private User user;
 
-    private String institute;//we can store pk of institute table from another microservice
-
-    // other fields like job title, permissions, etc.
+    private String instituteId;
 }

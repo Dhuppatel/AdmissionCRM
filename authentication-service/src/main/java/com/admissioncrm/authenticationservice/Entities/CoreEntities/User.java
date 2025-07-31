@@ -50,14 +50,17 @@ public class User  {
     @Enumerated(EnumType.STRING)
     private Role role = Role.STUDENT;
 
+    @Column(name = "expertise_area")
+    private String expertiseArea;
+
 //    @JoinColumn(name = "university_id")
 //    private String universityId;
 //
-//    @JoinColumn(name = "institution_id")
-//    private String institutionId;
+    @JoinColumn(name = "institution_id")
+    private String institutionId;
 
 //    @OneToMany(mappedBy = "assignedCounselor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @CollectionTable(name = "assigned_leads", joinColumns = @JoinColumn(name = "user_id"))
+    @ElementCollection
     private List<String> assignedLeads = new ArrayList<>();
 
     @Column(name = "max_leads_assignment")
@@ -100,7 +103,4 @@ public class User  {
     public String getFullName() {
         return firstName + " " + lastName;
     }
-
-
-
 }

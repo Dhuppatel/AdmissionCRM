@@ -24,6 +24,8 @@ public class CounselorController {
         return ResponseEntity.ok(counselors);
     }
 
+
+
     @GetMapping("/{counsellorId}")
     public ResponseEntity<CounselorDTO> getCounsellorById(@PathVariable String counselorId) {
         CounselorDTO counselor = counselorService.getCounselorById(counselorId);

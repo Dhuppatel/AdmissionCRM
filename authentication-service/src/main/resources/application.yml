@@ -1,11 +1,11 @@
 server:
-  port: ${PORT:6002}
+  port: ${PORT}
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/admissioncrm_auth?useSSL=false&serverTimezone=UTC}
-    username: ${DB_USERNAME:admissionCRM}
-    password: ${DB_PASSWORD:Admission123}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

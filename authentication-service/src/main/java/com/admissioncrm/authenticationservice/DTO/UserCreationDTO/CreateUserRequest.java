@@ -10,14 +10,15 @@ public class CreateUserRequest {
 
     private String fullName;
 
-
     private String username;
 
     private String email;
 
     private String password;
 
-    private String instituteId; //institute or DeptId to assign dept/Institute to the councellor/Admin
+    private String instituteId;
 
     private String ExpertiseArea;
+
+    private String mobileNumber;
 }

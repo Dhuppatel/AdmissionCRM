@@ -18,17 +18,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InstitutionQueueService {
 
-    private InstitutionRepository institutionRepository;
+    private final InstitutionRepository institutionRepository;
 
-    private LeadRepository leadRepository;
+    private final LeadRepository leadRepository;
 
-    private LeadScoringService scoringService;
+    private final LeadScoringService scoringService;
 
     /**
      * Add lead to institution's queue
      */
     public void addToQueue(Lead lead) {
-        Institution institution = institutionRepository.findById(lead.getInstitutionId())
+        Institution institution = institutionRepository.findByInstituteCode(lead.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         Double score = scoringService.calculateLeadScore(lead);
