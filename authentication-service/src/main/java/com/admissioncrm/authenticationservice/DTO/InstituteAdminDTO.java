@@ -1,26 +1,23 @@
-package com.admissioncrm.authenticationservice.DTO.Counselor;
+package com.admissioncrm.authenticationservice.DTO;
 
 import com.admissioncrm.authenticationservice.Entities.CoreEntities.Role;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class CounselorDTO {
+public class InstituteAdminDTO {
     private String id;
     private String fullName;
+    private String username;
     private String email;
-    private String phone;
     private String instituteId;
     private String instituteName;
     private String expertiseArea;
-    private boolean isActive;
-    private String department;
     private Role role;
-
+    private LocalDateTime createdAt;
+    private LocalDateTime lastLogin;
 
 }

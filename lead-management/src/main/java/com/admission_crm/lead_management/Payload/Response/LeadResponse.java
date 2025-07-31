@@ -16,13 +16,10 @@ public class LeadResponse {
     private String lastName;
     private String email;
     private String phone;
-    private String alternatePhone;
     private String city;
     private String state;
     private String country;
-    private String address;
     private String qualification;
-    private String budgetRange;
     private LocalDate dateOfBirth;
     private String gender;
     private String institutionId;
@@ -35,6 +32,8 @@ public class LeadResponse {
     private String assignedCounselorId;
     private String assignedCounselorName;
     private Double leadScore;
+    private String queryTitle;
+    private String queryDescription;
     private Integer queuePosition;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -49,13 +48,12 @@ public class LeadResponse {
                 .lastName(lead.getLastName())
                 .email(lead.getEmail())
                 .phone(lead.getPhone())
-                .alternatePhone(lead.getAlternatePhone())
                 .city(lead.getCity())
                 .state(lead.getState())
                 .country(lead.getCountry())
-                .address(lead.getAddress())
                 .qualification(lead.getQualification())
-                .budgetRange(lead.getBudgetRange())
+                .queryTitle(lead.getQueryTitle())
+                .queryDescription(lead.getQueryDescription())
                 .dateOfBirth(lead.getDateOfBirth())
                 .gender(lead.getGender() != null ? lead.getGender().name() : null)
                 .institutionId(lead.getInstitutionId())

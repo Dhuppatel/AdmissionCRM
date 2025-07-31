@@ -13,15 +13,12 @@ public class LeadUpdateRequest {
     private String firstName;
     private String lastName;
     private String phone;
-    private String alternatePhone;
     private String city;
     private String state;
-    private String address;
     private String qualification;
-    private String budgetRange;
     private LeadStatus status;
     private Lead.LeadPriority priority;
-    private String notes;
     private String courseInterestId;
-
+    private String queryTitle;
+    private String queryDescription;
 }

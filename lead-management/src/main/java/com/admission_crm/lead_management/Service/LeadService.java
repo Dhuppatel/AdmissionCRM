@@ -14,6 +14,7 @@ import com.admission_crm.lead_management.Repository.AuditLogRepository;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.LeadRepository;
 import com.admission_crm.lead_management.Repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class LeadService {
 
@@ -41,6 +41,17 @@ public class LeadService {
     private final AuditLogRepository auditLogRepository;
     private final InstitutionQueueService queueService;
     private final LeadScoringService scoringService;
+    private final EmailService emailService;
+
+    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService) {
+        this.leadRepository = leadRepository;
+        this.userRepository = userRepository;
+        this.institutionRepository = institutionRepository;
+        this.auditLogRepository = auditLogRepository;
+        this.queueService = queueService;
+        this.scoringService = scoringService;
+        this.emailService = emailService;
+    }
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
@@ -58,7 +69,7 @@ public class LeadService {
 //            throw new DuplicateLeadException("Lead with email " + leadRequest.getEmail() + " already exists");
 //        }
 
-        Institution institution = institutionRepository.findById(leadRequest.getInstitutionId())
+        Institution institution = institutionRepository.findByInstituteCode(leadRequest.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         Lead lead = mapRequestToLead(leadRequest);
@@ -82,7 +93,17 @@ public class LeadService {
         // Try auto-assignment if counselors are available
 //        tryAutoAssignment(savedLead.getInstitutionId());
 
+//        try {
+//            emailService.sendWelcomeMail(savedLead);
+//        } catch (MessagingException e) {
+//            throw new RuntimeException(e);
+//        }
+
         return savedLead;
+    }
+
+    public Page<Lead> findLeadsByUser(String userEmail, Pageable pageable) {
+        return leadRepository.findByEmail(userEmail, pageable);
     }
 
     // Get a lead by ID
@@ -93,6 +114,10 @@ public class LeadService {
 
     // Get All leads with pagination
     public Page<Lead> getAllLeads(Pageable pageable) {
+        return leadRepository.findAll(pageable);
+    }
+
+    public Page<Lead> findAllLeads(Pageable pageable) {
         return leadRepository.findAll(pageable);
     }
 
@@ -204,7 +229,7 @@ public class LeadService {
     // Get next lead from queue for available counselor
     public Lead getNextLeadForCounselor(String counselorId, String institutionId, String userEmail) {
         // Verify a counselor belongs to an institution
-        Institution institution = institutionRepository.findById(institutionId)
+        Institution institution = institutionRepository.findByInstituteCode(institutionId)
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         if (!institution.getCounselors().contains(counselorId)) {
@@ -344,16 +369,16 @@ public class LeadService {
         lead.setLastName(request.getLastName());
         lead.setEmail(request.getEmail());
         lead.setPhone(request.getPhone());
-        lead.setAlternatePhone(request.getAlternatePhone());
         lead.setCity(request.getCity());
         lead.setState(request.getState());
         lead.setCountry(request.getCountry());
-        lead.setPinCode(request.getPinCode());
-        lead.setAddress(request.getAddress());
         lead.setQualification(request.getQualification());
-        lead.setBudgetRange(request.getBudgetRange());
         lead.setInstitutionId(request.getInstitutionId());
         lead.setCourseInterestId(request.getCourseInterested());
+        lead.setQueryTitle(request.getQueryTitle());
+        lead.setQueryDescription(request.getQueryDescription());
+        lead.setLeadSource(request.getLeadSource());
+        lead.setStatus(request.getStatus());
 
         if (request.getDateOfBirth() != null && !request.getDateOfBirth().trim().isEmpty()) {
             try {
@@ -371,9 +396,9 @@ public class LeadService {
             }
         }
 
-        if (request.getSource() != null && !request.getSource().trim().isEmpty()) {
+        if (request.getLeadSource() != null) {
             try {
-                lead.setLeadSource(Lead.LeadSource.valueOf(request.getSource().toUpperCase()));
+                lead.setLeadSource(request.getLeadSource());
             } catch (Exception e) {
                 throw new InvalidLeadDataException("Invalid source");
             }
@@ -393,23 +418,14 @@ public class LeadService {
         if (request.getPhone() != null && !request.getPhone().trim().isEmpty()) {
             lead.setPhone(request.getPhone().trim());
         }
-        if (request.getAlternatePhone() != null) {
-            lead.setAlternatePhone(request.getAlternatePhone().trim());
-        }
         if (request.getCity() != null) {
             lead.setCity(request.getCity().trim());
         }
         if (request.getState() != null) {
             lead.setState(request.getState().trim());
         }
-        if (request.getAddress() != null) {
-            lead.setAddress(request.getAddress().trim());
-        }
         if (request.getQualification() != null) {
             lead.setQualification(request.getQualification().trim());
-        }
-        if (request.getBudgetRange() != null) {
-            lead.setBudgetRange(request.getBudgetRange().trim());
         }
         if (request.getStatus() != null) {
             lead.setStatus(request.getStatus());
@@ -419,6 +435,12 @@ public class LeadService {
         }
         if (request.getCourseInterestId() != null) {
             lead.setCourseInterestId(request.getCourseInterestId());
+        }
+        if(request.getQueryTitle() != null) {
+            lead.setQueryTitle(request.getQueryTitle());
+        }
+        if(request.getQueryDescription() != null) {
+            lead.setQueryDescription(request.getQueryDescription());
         }
     }
 
