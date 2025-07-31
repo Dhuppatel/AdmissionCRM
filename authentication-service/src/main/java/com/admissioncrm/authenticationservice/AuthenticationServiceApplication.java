@@ -15,7 +15,7 @@ public class AuthenticationServiceApplication {
     private static String envPath;
 
     public static void main(String[] args) {
-        String currentDir = "E:\\AdmissionCRM\\authentication-service\\.env";
+        String currentDir = System.getProperty("user.dir") + "/authentication-service";
         Dotenv dotenv = Dotenv.configure().directory(currentDir).load();
         dotenv.entries().forEach(entry -> System.setProperty(entry.getKey(), entry.getValue()));
         SpringApplication.run(AuthenticationServiceApplication.class, args);
