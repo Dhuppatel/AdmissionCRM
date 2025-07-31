@@ -1,6 +1,5 @@
 package com.admission_crm.lead_management.Payload.Request;
 
-import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import lombok.Builder;
