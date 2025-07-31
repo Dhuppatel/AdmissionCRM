@@ -69,7 +69,8 @@ public class LeadService {
 //            throw new DuplicateLeadException("Lead with email " + leadRequest.getEmail() + " already exists");
 //        }
 
-        Institution institution = institutionRepository.findByInstituteCode(leadRequest.getInstitutionId())
+        System.out.println("Line 72 lead service "+leadRequest.getInstitutionId());
+        Institution institution = institutionRepository.findById(leadRequest.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         Lead lead = mapRequestToLead(leadRequest);

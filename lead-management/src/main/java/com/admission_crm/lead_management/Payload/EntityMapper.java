@@ -22,7 +22,6 @@ public class EntityMapper {
         institution.setPhone(dto.getPhone());
         institution.setEmail(dto.getEmail());
         institution.setWebsite(dto.getWebsite());
-        institution.setLogoUrl(dto.getLogoUrl());
         institution.setUniversityId(dto.getUniversityId());
         institution.setCurrentCounselors(0);
         institution.setIsActive(true);
