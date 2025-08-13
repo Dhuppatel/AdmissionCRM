@@ -283,6 +283,7 @@ public class ApplicationFormService  {
                             .email(app.getEmail())
                             .submittedDate(app.getCreatedAt())
                             .updatedDate(app.getUpdatedAt())
+                            .courseAppliedFor(app.getSelectedInstitute())
                             .DocumentsSubmitted(app.getDocumentsSubmitted())
                             .daysSinceSubmission(ChronoUnit.DAYS.between(app.getCreatedAt().toLocalDate(), LocalDate.now(clock)))
                             .build())
