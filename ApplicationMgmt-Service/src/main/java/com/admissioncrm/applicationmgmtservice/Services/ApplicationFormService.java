@@ -4,17 +4,13 @@ package com.admissioncrm.applicationmgmtservice.Services;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
 import com.admissioncrm.applicationmgmtservice.Utills.ApplicationFormMapper;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -81,8 +77,8 @@ public class ApplicationFormService  {
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(savedApplication.getReferenceId())
                     .status(ApplicationStatus.SUBMITTED)
-                    .studentFullName(savedApplication.getFullName())
-                    .courseAppliedFor(savedApplication.getCourseInstituteName())
+                    .studentFullName(savedApplication.getPersonalInfo().getFullName())
+                    .courseAppliedFor(savedApplication.getAcademicInfo().getCourseInstituteName())
                     .email(savedApplication.getEmail())
                     .submittedDate(LocalDateTime.now(clock))
                     .build();
@@ -194,8 +190,8 @@ public class ApplicationFormService  {
             return ApplicationFormSummaryDTO.builder()
                     .referenceId(existingApplication.getReferenceId())
                     .status(ApplicationStatus.SUBMITTED)
-                    .studentFullName(existingApplication.getFullName())
-                    .courseAppliedFor(existingApplication.getCourseInstituteName())
+                    .studentFullName(existingApplication.getPersonalInfo().getFullName())
+                    .courseAppliedFor(existingApplication.getSelectedInstitute())
                     .email(existingApplication.getEmail())
                     .submittedDate(existingApplication.getCreatedAt())
                     .updatedDate(existingApplication.getUpdatedAt())
@@ -282,11 +278,13 @@ public class ApplicationFormService  {
                     .map(app -> ApplicationFormSummaryDTO.builder()
                             .referenceId(app.getReferenceId())
                             .status(app.getApplicationStatus())
-                            .studentFullName(app.getFullName())
-                            .courseAppliedFor(app.getCourseInstituteName())
+                            .studentFullName(app.getPersonalInfo().getFullName())
+                            .courseAppliedFor(app.getSelectedInstitute())
                             .email(app.getEmail())
                             .submittedDate(app.getCreatedAt())
                             .updatedDate(app.getUpdatedAt())
+                            .courseAppliedFor(app.getSelectedInstitute())
+                            .DocumentsSubmitted(app.getDocumentsSubmitted())
                             .daysSinceSubmission(ChronoUnit.DAYS.between(app.getCreatedAt().toLocalDate(), LocalDate.now(clock)))
                             .build())
                     .toList();

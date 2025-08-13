@@ -1,6 +1,6 @@
 package com.admissioncrm.applicationmgmtservice.Services.Document;
 
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
 import com.admissioncrm.applicationmgmtservice.Repositories.Document.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;

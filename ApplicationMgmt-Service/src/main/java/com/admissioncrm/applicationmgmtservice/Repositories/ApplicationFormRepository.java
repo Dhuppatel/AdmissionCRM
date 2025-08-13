@@ -1,9 +1,8 @@
 package com.admissioncrm.applicationmgmtservice.Repositories;
 
 
-import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm;
+import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
-import org.apache.el.stream.Stream;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,13 +29,13 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     List<ApplicationForm> findApplicationsBetweenDates(@Param("startDate") LocalDateTime startDate,
                                                        @Param("endDate") LocalDateTime endDate);
 
-    // Search by name
-    @Query("SELECT af FROM ApplicationForm af WHERE " +
-            "(LOWER(af.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(af.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(af.fullName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
-            "af.deletedAt IS NULL")
-    Page<ApplicationForm> searchByName(@Param("searchTerm") String searchTerm, Pageable pageable);
+//    // Search by name
+//    @Query("SELECT af FROM ApplicationForm af WHERE " +
+//            "(LOWER(af.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+//            "LOWER(af.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
+//            "LOWER(af.fullName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))) AND " +
+//            "af.deletedAt IS NULL")
+//    Page<ApplicationForm> searchByName(@Param("searchTerm") String searchTerm, Pageable pageable);
 
     // Count applications by status
     @Query("SELECT COUNT(af) FROM ApplicationForm af WHERE af.deletedAt IS NULL")
