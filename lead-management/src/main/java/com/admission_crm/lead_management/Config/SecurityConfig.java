@@ -19,16 +19,28 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
-                )
-                .build();
-    }
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(csrf -> csrf.disable())
+//                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .authorizeHttpRequests(auth -> auth
+//                        .anyRequest().permitAll()
+//                )
+//                .build();
+//    }
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http, MockAuthenticationFilter mockAuthenticationFilter) throws Exception {
+    return http
+            .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth
+                    .anyRequest().authenticated()
+            )
+            .addFilterBefore(mockAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
+}
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

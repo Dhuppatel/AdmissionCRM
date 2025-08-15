@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UniversityRepository extends JpaRepository<University, String> {
@@ -19,4 +20,8 @@ public interface UniversityRepository extends JpaRepository<University, String> 
 
     @Query("SELECT u FROM University u WHERE :institutionId MEMBER OF u.institutions")
     University findByInstitutionId(@Param("institutionId") String institutionId);
+
+    boolean existsByName(String defaultUniversityName);
+
+    Optional<University> findByName(String name);
 }
