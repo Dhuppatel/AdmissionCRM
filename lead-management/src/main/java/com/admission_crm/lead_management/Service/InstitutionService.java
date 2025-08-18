@@ -44,7 +44,8 @@ public class InstitutionService {
             Institution institution = entityMapper.toEntity(createDTO);
             Institution savedInstitution = institutionRepository.save(institution);
 
-            University university = universityRepository.findById(createDTO.getUniversityId()).get();
+            University university = universityRepository.findByName("CHARUSAT UNIVERSITY")
+                    .orElseThrow(() -> new ResourceNotFoundException("University not found with name: CHARUSAT UNIVERSITY"));
             university.getInstitutions().add(savedInstitution.getId());
 
             universityRepository.save(university);

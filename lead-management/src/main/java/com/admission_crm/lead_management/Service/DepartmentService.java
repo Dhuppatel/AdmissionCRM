@@ -4,7 +4,8 @@ import com.admission_crm.lead_management.Entity.Academic.Department;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
 import com.admission_crm.lead_management.Payload.DepartmentDTO;
 import com.admission_crm.lead_management.Repository.DepartmentRepository;
-import com.admission_crm.lead_management.Repository.InstitutionRepository;
+import com.admission_crm.lead_management.Repository.ProgramRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -13,23 +14,20 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DepartmentService {
 
     private final DepartmentRepository departmentRepository;
-    private final InstitutionRepository institutionRepository;
+    private final ProgramRepository programRepository;
 
-    public DepartmentService(DepartmentRepository departmentRepository, InstitutionRepository institutionRepository) {
-        this.departmentRepository = departmentRepository;
-        this.institutionRepository = institutionRepository;
-    }
 
     public DepartmentDTO createDepartment(DepartmentDTO departmentDTO) {
         log.info("Creating department with code: {}", departmentDTO.getCode());
 
-        // Validate institutionId
-        if (departmentDTO.getInstitutionId() != null && !institutionRepository.existsById(departmentDTO.getInstitutionId())) {
-            log.warn("Institution not found for ID: {}", departmentDTO.getInstitutionId());
-            throw new ResourceNotFoundException("Institution not found with ID: " + departmentDTO.getInstitutionId());
+        // Validate ProgramId
+        if (departmentDTO.getProgramId() != null && !programRepository.existsById(departmentDTO.getProgramId())) {
+            log.warn("Program not found for ID: {}", departmentDTO.getProgramId());
+            throw new ResourceNotFoundException("Program not found with ID: " + departmentDTO.getProgramId());
         }
 
         // Validate unique code
@@ -42,10 +40,18 @@ public class DepartmentService {
         department.setName(departmentDTO.getName());
         department.setCode(departmentDTO.getCode());
         department.setDescription(departmentDTO.getDescription());
-        department.setInstitutionId(departmentDTO.getInstitutionId());
+        department.setProgram(
+                departmentDTO.getProgramId() != null ? programRepository.findById(departmentDTO.getProgramId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Program not found with ID: " + departmentDTO.getProgramId()))
+                        : null
+        );
+        department.setDuration(departmentDTO.getDuration());
+        department.setFees(departmentDTO.getFees());
+        department.setIntakeCapacity(departmentDTO.getIntakeCapacity());
+
         department.setHeadOfDepartment(departmentDTO.getHeadOfDepartment());
         department.setIsActive(departmentDTO.getIsActive() != null ? departmentDTO.getIsActive() : true);
-        department.setCourses(departmentDTO.getCourses());
+//        department.setCourses(departmentDTO.getCourses());
 
         Department savedDepartment = departmentRepository.save(department);
         log.info("Department created successfully with ID: {}", savedDepartment.getId());
@@ -69,13 +75,13 @@ public class DepartmentService {
                 .collect(Collectors.toList());
     }
 
-    public List<DepartmentDTO> getDepartmentsByInstitutionId(String institutionId) {
-        log.info("Fetching departments for institution ID: {}", institutionId);
-        if (!institutionRepository.existsById(institutionId)) {
-            log.warn("Institution not found with ID: {}", institutionId);
-            throw new ResourceNotFoundException("Institution not found with ID: " + institutionId);
+    public List<DepartmentDTO> getDepartmentsByProgramId(String programId) {
+        log.info("Fetching departments for Program ID: {}", programId);
+        if (!programRepository.existsById(programId)) {
+            log.warn("Program not found with ID: {}", programId);
+            throw new ResourceNotFoundException("Program not found with ID: " + programId);
         }
-        return departmentRepository.findByInstitutionId(institutionId).stream()
+        return departmentRepository.findByProgram_Id(programId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
@@ -88,10 +94,10 @@ public class DepartmentService {
                     return new ResourceNotFoundException("Department not found with ID: " + id);
                 });
 
-        // Validate institutionId
-        if (departmentDTO.getInstitutionId() != null && !institutionRepository.existsById(departmentDTO.getInstitutionId())) {
-            log.warn("Institution not found for ID: {}", departmentDTO.getInstitutionId());
-            throw new ResourceNotFoundException("Institution not found with ID: " + departmentDTO.getInstitutionId());
+        // Validate ProgramId
+        if (departmentDTO.getProgramId() != null && !programRepository.existsById(departmentDTO.getProgramId())) {
+            log.warn("Program not found for ID: {}", departmentDTO.getProgramId());
+            throw new ResourceNotFoundException("Program not found with ID: " + departmentDTO.getProgramId());
         }
 
         // Validate unique code
@@ -104,10 +110,18 @@ public class DepartmentService {
         department.setName(departmentDTO.getName());
         department.setCode(departmentDTO.getCode());
         department.setDescription(departmentDTO.getDescription());
-        department.setInstitutionId(departmentDTO.getInstitutionId());
+        department.setProgram(
+                departmentDTO.getProgramId() != null ? programRepository.findById(departmentDTO.getProgramId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Program not found with ID: " + departmentDTO.getProgramId()))
+                        : null
+        );
         department.setHeadOfDepartment(departmentDTO.getHeadOfDepartment());
         department.setIsActive(departmentDTO.getIsActive() != null ? departmentDTO.getIsActive() : department.getIsActive());
-        department.setCourses(departmentDTO.getCourses());
+
+        department.setDuration(departmentDTO.getDuration());
+        department.setFees(departmentDTO.getFees());
+        department.setIntakeCapacity(departmentDTO.getIntakeCapacity());
+
 
         Department updatedDepartment = departmentRepository.save(department);
         log.info("Department updated successfully with ID: {}", updatedDepartment.getId());
@@ -130,10 +144,10 @@ public class DepartmentService {
         dto.setName(department.getName());
         dto.setCode(department.getCode());
         dto.setDescription(department.getDescription());
-        dto.setInstitutionId(department.getInstitutionId());
+        dto.setProgramId(department.getProgram().getId());
         dto.setHeadOfDepartment(department.getHeadOfDepartment());
         dto.setIsActive(department.getIsActive());
-        dto.setCourses(department.getCourses());
+//        dto.setCourses(department.getCourses());
         return dto;
     }
 }

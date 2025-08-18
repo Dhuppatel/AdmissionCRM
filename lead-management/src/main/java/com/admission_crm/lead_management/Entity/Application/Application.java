@@ -1,10 +1,6 @@
 package com.admission_crm.lead_management.Entity.Application;
 
-import com.admission_crm.lead_management.Entity.Academic.Course;
-import com.admission_crm.lead_management.Entity.Academic.Intake;
-import com.admission_crm.lead_management.Entity.FollowUp.ApplicationFollowUp;
-import com.admission_crm.lead_management.Entity.FollowUp.LeadFollowUp;
-import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
