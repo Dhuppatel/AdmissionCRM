@@ -2,6 +2,7 @@ package com.admission_crm.lead_management.Entity.Academic;
 
 
 import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
+import com.admission_crm.lead_management.Entity.CoreEntities.Program;
 import com.admission_crm.lead_management.Entity.CoreEntities.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,11 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
+
+
     @Column(nullable = false, length = 100)
     private String name;
 
@@ -33,15 +40,20 @@ public class Department {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    private String institutionId;
+    // Fees and Duration move here ⬇
+    @Column(length = 50)
+    private String duration;   // e.g., 4 years
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal fees;   // program fee
+
+    private Integer intakeCapacity;  // e.g., 120 seats
+
 
     private String headOfDepartment;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
-
-    @ElementCollection
-    private List<String> courses = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at")

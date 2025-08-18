@@ -32,7 +32,7 @@ public class DepartmentController {
         } catch (ResourceNotFoundException e) {
             log.warn("Failed to create department: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Institution not found", e.getMessage()));
+                    .body(ApiResponse.error("Program not found", e.getMessage()));
         } catch (IllegalArgumentException e) {
             log.warn("Failed to create department: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -76,17 +76,17 @@ public class DepartmentController {
         }
     }
 
-    @GetMapping("/institution/{institutionId}")
+    @GetMapping("/program/{programId}")
     @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
-    public ResponseEntity<ApiResponse> getDepartmentsByInstitutionId(@PathVariable String institutionId) {
+    public ResponseEntity<ApiResponse> getDepartmentsByProgramId(@PathVariable String programId) {
         try {
-            log.info("REST request to get departments by institution ID: {}", institutionId);
-            List<DepartmentDTO> departments = departmentService.getDepartmentsByInstitutionId(institutionId);
+            log.info("REST request to get departments by Program ID: {}", programId);
+            List<DepartmentDTO> departments = departmentService.getDepartmentsByProgramId(programId);
             return ResponseEntity.ok(ApiResponse.success("Departments retrieved successfully", departments));
         } catch (ResourceNotFoundException e) {
-            log.warn("Institution not found: {}", e.getMessage());
+            log.warn("Program not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("Institution not found", e.getMessage()));
+                    .body(ApiResponse.error("Program not found", e.getMessage()));
         } catch (Exception e) {
             log.error("Error retrieving departments: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -102,7 +102,7 @@ public class DepartmentController {
             DepartmentDTO updatedDepartment = departmentService.updateDepartment(id, departmentDTO);
             return ResponseEntity.ok(ApiResponse.success("Department updated successfully", updatedDepartment));
         } catch (ResourceNotFoundException e) {
-            log.warn("Department or institution not found: {}", e.getMessage());
+            log.warn("Department or Program not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error("Resource not found", e.getMessage()));
         } catch (IllegalArgumentException e) {
