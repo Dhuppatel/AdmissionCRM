@@ -1,5 +1,6 @@
 package com.admission_crm.lead_management.Controller;
 
+import com.admission_crm.lead_management.Entity.Academic.Department;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
 import com.admission_crm.lead_management.Payload.DepartmentDTO;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -133,4 +135,30 @@ public class DepartmentController {
                     .body(ApiResponse.error("Failed to delete department", "An unexpected error occurred"));
         }
     }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
+    public ResponseEntity<ApiResponse> updateDepartmentStatus(
+            @PathVariable String id,
+            @RequestBody Map<String, Boolean> request) {
+        try {
+            Boolean isActive = request.get("isActive");
+            log.info("REST request to update status of Department with ID: {} to {}", id, isActive);
+
+            boolean updated = departmentService.updateDepartmentStatus(id, isActive);
+
+            if (updated) {
+                return ResponseEntity.ok(ApiResponse.success("Department status updated successfully", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Department not found", "No department exists with ID: " + id));
+            }
+        } catch (Exception e) {
+            log.error("Error updating department status: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to update department status", "An unexpected error occurred"));
+        }
+    }
+
+
 }

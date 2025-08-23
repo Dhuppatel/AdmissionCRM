@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -134,5 +135,30 @@ public class ProgramController {
                     .body(ApiResponse.error("Failed to delete program", "An unexpected error occurred"));
         }
     }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
+    public ResponseEntity<ApiResponse> updateProgramStatus(
+            @PathVariable String id,
+            @RequestBody Map<String, Boolean> request) {
+        try {
+            Boolean isActive = request.get("isActive");
+            log.info("REST request to update status of program with ID: {} to {}", id, isActive);
+
+            boolean updated = programService.updateProgramStatus(id, isActive);
+
+            if (updated) {
+                return ResponseEntity.ok(ApiResponse.success("Program status updated successfully", null));
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("Program not found", "No program exists with ID: " + id));
+            }
+        } catch (Exception e) {
+            log.error("Error updating program status: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to update program status", "An unexpected error occurred"));
+        }
+    }
+
 
 }
