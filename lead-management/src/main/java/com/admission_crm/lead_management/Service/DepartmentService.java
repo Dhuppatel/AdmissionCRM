@@ -30,11 +30,13 @@ public class DepartmentService {
             throw new ResourceNotFoundException("Program not found with ID: " + departmentDTO.getProgramId());
         }
 
-        // Validate unique code
-        if (departmentRepository.existsByCode(departmentDTO.getCode())) {
-            log.warn("Department code already exists: {}", departmentDTO.getCode());
-            throw new IllegalArgumentException("Department code already exists: " + departmentDTO.getCode());
+        // Validate unique code within the same program
+        if (departmentDTO.getProgramId() != null &&
+                departmentRepository.existsByProgram_IdAndCode(departmentDTO.getProgramId(), departmentDTO.getCode())) {
+            log.warn("Department code '{}' already exists in program {}", departmentDTO.getCode(), departmentDTO.getProgramId());
+            throw new IllegalArgumentException("Department code already exists in this program: " + departmentDTO.getCode());
         }
+
 
         Department department = new Department();
         department.setName(departmentDTO.getName());
@@ -101,10 +103,11 @@ public class DepartmentService {
         }
 
         // Validate unique code
-        if (departmentDTO.getCode() != null && !departmentDTO.getCode().equals(department.getCode())
-                && departmentRepository.existsByCode(departmentDTO.getCode())) {
-            log.warn("Department code already exists: {}", departmentDTO.getCode());
-            throw new IllegalArgumentException("Department code already exists: " + departmentDTO.getCode());
+        if (departmentDTO.getCode() != null && departmentDTO.getProgramId() != null &&
+                !departmentDTO.getCode().equals(department.getCode()) &&
+                departmentRepository.existsByProgram_IdAndCode(departmentDTO.getProgramId(), departmentDTO.getCode())) {
+            log.warn("Department code '{}' already exists in program {}", departmentDTO.getCode(), departmentDTO.getProgramId());
+            throw new IllegalArgumentException("Department code already exists in this program: " + departmentDTO.getCode());
         }
 
         department.setName(departmentDTO.getName());
@@ -134,7 +137,10 @@ public class DepartmentService {
             log.warn("Department not found with ID: {}", id);
             throw new ResourceNotFoundException("Department not found with ID: " + id);
         }
-        departmentRepository.deleteById(id);
+        Department department= departmentRepository.findById(id).orElseThrow(
+                ()->new ResourceNotFoundException("Department not found with ID: " + id)
+        );
+        departmentRepository.delete(department);
         log.info("Department deleted successfully with ID: {}", id);
     }
 

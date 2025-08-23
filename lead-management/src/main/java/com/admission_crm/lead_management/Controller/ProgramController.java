@@ -77,12 +77,12 @@ public class ProgramController {
         }
     }
 
-    @GetMapping("/faculty/{facultyId}")
+    @GetMapping("/institution/{institutionId}")
     @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
-    public ResponseEntity<ApiResponse> getProgramsByFaculty(@PathVariable String facultyId) {
+    public ResponseEntity<ApiResponse> getProgramsByInstitution(@PathVariable String institutionId) {
         try {
-            log.info("REST request to get programs by faculty ID: {}", facultyId);
-            List<ProgramDTO> programs = programService.getProgramsByInstituion(facultyId);
+            log.info("REST request to get programs by faculty ID: {}", institutionId);
+            List<ProgramDTO> programs = programService.getProgramsByInstituion(institutionId);
             return ResponseEntity.ok(ApiResponse.success("Programs retrieved successfully", programs));
         } catch (ResourceNotFoundException e) {
             log.warn("Faculty not found: {}", e.getMessage());
