@@ -17,7 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "departments")
+@Table(name = "departments",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"program_id", "name"}),
+                @UniqueConstraint(columnNames = {"program_id", "code"})
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +39,7 @@ public class Department {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(unique = true, length = 20)
+    @Column(nullable = false, length = 20)
     private String code;
 
     @Column(columnDefinition = "TEXT")

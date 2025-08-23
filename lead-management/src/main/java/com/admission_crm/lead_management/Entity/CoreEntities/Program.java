@@ -14,7 +14,11 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "programs")
+@Table(name = "programs",
+uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"institution_id", "name"}),
+                @UniqueConstraint(columnNames = {"institution_id", "code"})
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,7 +36,7 @@ public class Program {
     @Column(nullable = false, length = 100)
     private String name;   // e.g., B.Tech, M.Tech
 
-    @Column(unique = true, length = 20)
+    @Column(nullable = false, length = 20)
     private String code;   // e.g., BTECH, MTECH
 
     @Column(columnDefinition = "TEXT")
