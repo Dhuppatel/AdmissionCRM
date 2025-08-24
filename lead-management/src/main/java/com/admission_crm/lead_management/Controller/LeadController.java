@@ -9,6 +9,7 @@ import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.Request.BulkAssignRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
+import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Service.LeadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -447,4 +448,18 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to retrieve daily statistics", "An unexpected error occurred"));
         }
     }
+    //get total lead count
+    @GetMapping("/count")
+    public ResponseEntity<?> getLeadsCount() {
+
+        return ResponseEntity.ok(ApiResponse.success("leads count retrived succefully",leadService.getTotalLeadsCount()));
+    }
+    //get lead stats like total ,active ,converted ,etc..
+    @GetMapping("/stats")
+    public ResponseEntity<ApiResponse<LeadStatsDTO>> getLeadsStats() {
+        LeadStatsDTO stats = leadService.getLeadStats();
+        return ResponseEntity.ok(ApiResponse.success("Lead stats fetched successfully", stats));
+    }
+
+
 }

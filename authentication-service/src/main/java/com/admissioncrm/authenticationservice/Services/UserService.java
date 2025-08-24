@@ -2,6 +2,7 @@ package com.admissioncrm.authenticationservice.Services;
 
 import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import com.admissioncrm.authenticationservice.DTO.InstituteResponse;
+import com.admissioncrm.authenticationservice.DTO.Stats.UserStatsDTO;
 import com.admissioncrm.authenticationservice.DTO.UserCreationDTO.CreateUserRequest;
 import com.admissioncrm.authenticationservice.DTO.InstituteAdminDTO;
 import com.admissioncrm.authenticationservice.DTO.UserResponseDTO;
@@ -202,6 +203,36 @@ public class UserService {
             return null;
         }
     }
+
+
+    public List<UserResponseDTO> getInstituteAdmins() {
+        // Fetch all users having role INSTITUTE_ADMIN
+        List<User> instituteAdmins = userRepository.findByRole(Role.INSTITUTE_ADMIN);
+        return instituteAdmins.stream()
+                .map(this::convertToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponseDTO> getCounsellors() {
+        // Fetch all users having role COUNSELOR
+        List<User> counsellors = userRepository.findByRole(Role.COUNSELOR);
+        return counsellors.stream()
+                .map(this::convertToUserDTO)
+                .collect(Collectors.toList());
+    }
+
+    public UserStatsDTO getUserStats() {
+        long totalCounselors = userRepository.countByRole(Role.COUNSELOR);
+        long totalStudents = userRepository.countByRole(Role.STUDENT);
+        long totalInstituteAdmins = userRepository.countByRole(Role.INSTITUTE_ADMIN);
+        long totalAdmins = userRepository.countByRole(Role.UNIVERSITY_ADMIN)+totalInstituteAdmins;
+
+        long activeCounselors = userRepository.countByRoleAndIsActive(Role.COUNSELOR, true);
+        long activeStudents = userRepository.countByRoleAndIsActive(Role.STUDENT, true);
+
+        return new UserStatsDTO(totalCounselors, totalStudents, totalAdmins, totalInstituteAdmins, activeCounselors, activeStudents);
+    }
+
 
     private static class ApiResponse {
         private boolean success;

@@ -1,7 +1,7 @@
 package com.admission_crm.lead_management.Entity.LeadManagement;
 
 public enum LeadStatus {
-    NEW, QUEUED, ASSIGNED, IN_PROGRESS, COMPLETED, REJECTED, ON_HOLD, CONTACTED, FOLLOW_UP
+    NEW, QUEUED, ASSIGNED, IN_PROGRESS, COMPLETED, REJECTED, ON_HOLD, CONTACTED, FOLLOW_UP,CONVERTED
 }
 
 //public enum LeadStatus {

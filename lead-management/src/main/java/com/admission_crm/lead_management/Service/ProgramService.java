@@ -5,6 +5,7 @@ import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
 import com.admission_crm.lead_management.Payload.ProgramDTO;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.ProgramRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -64,7 +65,7 @@ public class ProgramService {
     public boolean deleteProgram(String id) {
         return programRepository.findById(id).map(existing -> {
             existing.setIsActive(false); // soft delete
-            programRepository.save(existing);
+            programRepository.delete(existing);
             return true;
         }).orElse(false);
     }
@@ -88,4 +89,14 @@ public class ProgramService {
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+    @Transactional
+    public boolean updateProgramStatus(String programId, Boolean isActive) {
+        return programRepository.findById(programId).map(program -> {
+            program.setIsActive(isActive);
+            programRepository.save(program);
+            return true;
+        }).orElse(false);
+    }
+
 }

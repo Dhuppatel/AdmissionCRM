@@ -156,4 +156,14 @@ public class DepartmentService {
 //        dto.setCourses(department.getCourses());
         return dto;
     }
+
+
+    public boolean updateDepartmentStatus(String departmentId, Boolean isActive) {
+        return departmentRepository.findById(departmentId).map(department -> {
+            department.setIsActive(isActive);
+            departmentRepository.save(department);
+            return true;
+        }).orElse(false);
+    }
+
 }

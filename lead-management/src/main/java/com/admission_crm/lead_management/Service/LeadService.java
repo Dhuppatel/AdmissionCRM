@@ -10,6 +10,7 @@ import com.admission_crm.lead_management.Payload.*;
 import com.admission_crm.lead_management.Payload.Request.LeadRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
+import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.AuditLogRepository;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.LeadRepository;
@@ -1037,4 +1038,23 @@ public class LeadService {
 
         return health;
     }
+   //get lead stats
+
+    public LeadStatsDTO getLeadStats() {
+        long total = leadRepository.count();
+        long active = leadRepository.countByStatus(LeadStatus.NEW );
+        active += leadRepository.countByStatus(LeadStatus.IN_PROGRESS );
+        active += leadRepository.countByStatus(LeadStatus.FOLLOW_UP );
+        active += leadRepository.countByStatus(LeadStatus.CONTACTED );
+        active += leadRepository.countByStatus(LeadStatus.QUEUED );
+
+        long converted = leadRepository.countByStatus(LeadStatus.COMPLETED);
+        long pending = leadRepository.countByStatus(LeadStatus.ON_HOLD);
+
+        return new LeadStatsDTO(total, active, converted, pending);
+    }
+    public long getTotalLeadsCount() {
+        return leadRepository.count();
+    }
+
 }
