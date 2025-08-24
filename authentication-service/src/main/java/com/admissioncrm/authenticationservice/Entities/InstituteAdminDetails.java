@@ -19,7 +19,7 @@ public class InstituteAdminDetails {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "id")
     private User user;
 
     private String instituteId;

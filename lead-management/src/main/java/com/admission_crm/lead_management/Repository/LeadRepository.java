@@ -18,6 +18,9 @@ import java.util.Optional;
 @Repository
 public interface LeadRepository extends JpaRepository<Lead, String> {
 
+    //lead stats counting
+    long countByStatus(LeadStatus status);
+
     // Basic CRUD enhancements
     Page<Lead> findByEmail(String userEmail, Pageable pageable);
     Page<Lead> findByStatus(LeadStatus status, Pageable pageable);

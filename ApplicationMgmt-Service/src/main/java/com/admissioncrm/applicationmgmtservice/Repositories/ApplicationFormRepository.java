@@ -18,6 +18,9 @@ import java.util.Optional;
 @Repository
 public interface ApplicationFormRepository extends JpaRepository<ApplicationForm, String> {
 
+    long countByApplicationStatus(ApplicationStatus applicationStatus);
+
+
     // Find by user ID
     List<ApplicationForm> findByIdUserAndDeletedAtIsNull(String idUser);
 

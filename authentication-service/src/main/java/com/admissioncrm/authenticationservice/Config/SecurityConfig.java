@@ -44,7 +44,13 @@ public class SecurityConfig {
                 // Public endpoints - no authentication
                 authorize.requestMatchers(
                         "/api/auth/**",
-                        "/actuator/**"
+                        "/actuator/**",
+                        //swagger endpoints
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/v3/api-docs/**",
+                        "/swagger-resources/**",
+                        "/webjars/**"
                 ).permitAll();
 
 
@@ -55,6 +61,7 @@ public class SecurityConfig {
                 authorize.requestMatchers("/api/institute-admin/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN");
                 authorize.requestMatchers("/api/counsellor/**").hasAnyRole("UNIVERSITY_ADMIN", "INSTITUTE_ADMIN");
                 authorize.requestMatchers("/api/student/**").hasRole("STUDENT");
+                authorize.requestMatchers("/api/auth/stats/**").hasAnyRole("University_ADMIN", "INSTITUTE_ADMIN");
 
 
             //authentication needed for this

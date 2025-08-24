@@ -4,6 +4,7 @@ package com.admissioncrm.applicationmgmtservice.Services;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.Stats.ApplicationStatsDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
@@ -292,5 +293,17 @@ public class ApplicationFormService  {
             log.error("Error fetching all applications", e);
             throw new RuntimeException("Failed to fetch applications", e);
         }
+    }
+
+
+    //Application Stats
+
+    public ApplicationStatsDTO getApplicationStats() {
+        long total = applicationFormRepository.count();
+        long pending = applicationFormRepository.countByApplicationStatus(ApplicationStatus.SUBMITTED);
+        long approved = applicationFormRepository.countByApplicationStatus(ApplicationStatus.APPROVED);
+        long rejected = applicationFormRepository.countByApplicationStatus(ApplicationStatus.REJECTED);
+
+        return new ApplicationStatsDTO(total, pending, approved, rejected);
     }
 }
