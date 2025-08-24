@@ -28,4 +28,6 @@ public interface InstitutionRepository extends JpaRepository<Institution, String
 
     @Query("SELECT i FROM Institution i WHERE :adminId MEMBER OF i.instituteAdmin")
     List<Institution> findByAdminId(@Param("adminId") String adminId);
+
+    Optional<Institution> findByInstituteAdminContains(String adminId);
 }

@@ -1,5 +1,6 @@
 package com.admissioncrm.authenticationservice.Services;
 
+import com.admissioncrm.authenticationservice.DTO.AdminAssignment.AssignAdminRequest;
 import com.admissioncrm.authenticationservice.DTO.ApiResponse;
 import com.admissioncrm.authenticationservice.DTO.InstituteResponse;
 import com.admissioncrm.authenticationservice.DTO.Stats.UserStatsDTO;
@@ -17,6 +18,7 @@ import com.admissioncrm.authenticationservice.Repositories.InstituteAdminDetails
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +46,10 @@ public class UserService {
     @Autowired
     private CounselorDetailsRepository counsellorDetailsRepository;
     private final RestTemplate restTemplate;
+
+    @Value("${lead-service.base-url}")
+    private String leadServiceBaseUrl;
+
 
     public UserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -92,6 +98,10 @@ public class UserService {
 
             instituteAdminDetailsRepository.save(instituteAdminDetails);
 
+
+            // ✅ After saving in Auth DB, notify Lead Service
+            notifyLeadServiceAssignAdmin(request.getInstituteId(), user.getId());
+
         } else if (role == Role.COUNSELOR) {
 
             //add the fields as in future need
@@ -110,6 +120,36 @@ public class UserService {
 
         return ResponseEntity.ok("done");
     }
+
+    //notify lead service to assign admin
+
+    private void notifyLeadServiceAssignAdmin(String instituteId, String userId) {
+        String url = leadServiceBaseUrl + "/institutions/" + instituteId + "/assign-admin";
+        log.debug("Calling Lead Service to assign admin: userId={}, instituteId={}", userId, instituteId);
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            String jwtToken = getJwtToken();
+            if (jwtToken != null) {
+                headers.set("Authorization", "Bearer " + jwtToken);
+            }
+            headers.set("Content-Type", "application/json");
+
+            AssignAdminRequest request = new AssignAdminRequest(userId);
+            HttpEntity<AssignAdminRequest> entity = new HttpEntity<>(request, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url, HttpMethod.POST, entity, String.class
+            );
+
+            log.info("Lead service assign-admin response: {}", response.getBody());
+        } catch (Exception e) {
+            log.error("Failed to call Lead Service for assigning admin. InstituteId={}, userId={}, error={}",
+                    instituteId, userId, e.getMessage());
+        }
+    }
+
+
 
     public List<InstituteAdminDTO> getAllInstituteAdmins() {
         List<InstituteAdminDetails> instituteAdmins = instituteAdminDetailsRepository.findAll();

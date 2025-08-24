@@ -2,6 +2,7 @@ package com.admission_crm.lead_management.Controller;
 
 import com.admission_crm.lead_management.Exception.DuplicateLeadException;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
+import com.admission_crm.lead_management.Payload.Request.AssignAdminRequest;
 import com.admission_crm.lead_management.Payload.Request.InstitutionCreateRequest;
 import com.admission_crm.lead_management.Payload.Request.InstitutionUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,6 +74,31 @@ public class InstitutionController {
             log.error("Error retrieving institutions: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to retrieve institutions", "An unexpected error occurred"));
+        }
+    }
+    // Get assigned institute for logged-in Institute Admin
+    @GetMapping("/admin/assigned")
+//    @PreAuthorize("hasRole('INSTITUTE_ADMIN')")
+    public ResponseEntity<?> getInstituteAdminAssignedInstitute() {
+        try {
+            log.info("REST request to get assigned institute for the logged-in Institute Admin");
+
+
+            InstitutionResponseDTO assignedInstitute = institutionService.getAssignedInstituteForAdmin();
+
+            if (assignedInstitute != null) {
+                return ResponseEntity.ok(
+                        ApiResponse.success("Assigned institute fetched successfully", assignedInstitute)
+                );
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ApiResponse.error("No institute assigned", "The admin is not assigned to any institute"));
+            }
+
+        } catch (Exception e) {
+            log.error("Error retrieving assigned institute: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to fetch assigned institute", "An unexpected error occurred"));
         }
     }
 
@@ -158,6 +185,24 @@ public class InstitutionController {
             log.error("Error retrieving institutions by university: ", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.error("Failed to retrieve institutions", "An unexpected error occurred"));
+        }
+    }
+
+    //assign Institution Admin to Institution
+
+    @PostMapping("/{institutionId}/assign-admin")
+    public ResponseEntity<String> assignAdmin(
+            @PathVariable String institutionId,
+            @RequestBody AssignAdminRequest request
+    ) {
+        log.info("Assigning Admin {} to Institution {}", request.getUserId(), institutionId);
+
+        boolean success = institutionService.assignAdminToInstitution(institutionId, request.getUserId());
+
+        if (success) {
+            return ResponseEntity.ok("Admin assigned successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to assign admin");
         }
     }
 }
