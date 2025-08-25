@@ -69,7 +69,7 @@ public class AuthController {
         System.out.println("Current user: " + username);
 
         // Find user from a database
-        Optional<User> userOpt = userRepository.findByEmail(username);
+        Optional<User> userOpt = userRepository.findById(username);
 
         User user = null;
 

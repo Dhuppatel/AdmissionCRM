@@ -30,8 +30,14 @@ public class CustomUserDetailsService implements UserDetailsService {
             return userRepository.findByEmail(identifier)
                     .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
         } else {
-            return userRepository.findByUsername(identifier)
-                    .orElseThrow(()->new  UsernameNotFoundException("Username not found"));
+//            return userRepository.findById(identifier)
+//                    .orElseThrow(()->new  UsernameNotFoundException("Username not found"));
+                return userRepository.findByUsername(identifier)
+                         .orElseGet(() ->
+                                 // Last fallback: UUID as User ID
+                                  userRepository.findById(identifier)
+                                    .orElseThrow(() -> new UsernameNotFoundException("User ID not found: " + identifier))
+                          );
         }
     }
 

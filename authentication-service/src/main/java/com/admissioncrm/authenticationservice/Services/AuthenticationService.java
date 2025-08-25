@@ -40,7 +40,7 @@ public class AuthenticationService {
         String password = loginRequest.getPassword();
         //fetch the user from DB
 
-        User user = getUserByIdentifier(loginRequest.getIdentifier());
+        User user = getUserByIdentifier(identifier);
 
         //authenticate using spring security
         try {
@@ -51,7 +51,7 @@ public class AuthenticationService {
 
         //generate the token
         try {
-            String jwtToken = jwtUtils.generateToken(identifier, user.getRole());
+            String jwtToken = jwtUtils.generateToken(user.getId(), user.getRole());
             return ResponseEntity.ok(new JwtResponse(jwtToken, user.getRole()));
         } catch (Exception e) {
             throw new ApiException("Failed to generate JWT token");
