@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/institutions")
+@RequestMapping("/api/leads/institutions")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class InstitutionController {
 
     private final InstitutionService institutionService;

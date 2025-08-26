@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @RestController
 @Slf4j
-@RequestMapping("/api/programs")
+@RequestMapping("/api/leads/programs")
 @RequiredArgsConstructor
 public class ProgramController {
 

@@ -45,7 +45,7 @@ public class AdminUserController {
     @GetMapping("/i-admin/getall")
     public ResponseEntity<?> getAllInstituteAdmins() {
         List<UserResponseDTO> instituteAdmins = userService.getInstituteAdmins();
-        return ResponseEntity.ok(ApiResponse.success("Institute Admins retrived successfully", instituteAdmins));
+        return ResponseEntity.ok().body(ApiResponse.success("Institute Admins retrived successfully", instituteAdmins));
     }
 
     // ✅ Get all Counsellors

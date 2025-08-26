@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/queue")
+@RequestMapping("/api/leads/queue")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class QueueController {
 
     private final LeadService leadService;

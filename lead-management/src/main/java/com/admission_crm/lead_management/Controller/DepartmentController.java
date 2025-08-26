@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/departments")
+@RequestMapping("/api/leads/departments")
 @Slf4j
 @RequiredArgsConstructor
 public class DepartmentController {

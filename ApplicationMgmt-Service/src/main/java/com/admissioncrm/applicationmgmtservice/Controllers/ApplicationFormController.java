@@ -7,8 +7,11 @@ import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:5173")
@@ -18,6 +21,18 @@ public class ApplicationFormController {
     @Autowired
     private ApplicationFormService applicationFormService;
 
+
+
+    @GetMapping("/auth")
+    public Map<String, Object> getAuthInfo(Authentication authentication) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("principal", authentication != null ? authentication.getPrincipal() : null);
+        response.put("authorities", authentication != null ? authentication.getAuthorities() : null);
+        response.put("authenticated", authentication != null && authentication.isAuthenticated());
+        return response;
+    }
+
+    @PreAuthorize("hasRole('STUDENT')")
     @GetMapping("/greet")
     public String greet(){
         return "Greetings from AppMGMT service!";

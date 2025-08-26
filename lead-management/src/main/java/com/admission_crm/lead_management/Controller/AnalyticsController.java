@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/analytics")
+@RequestMapping("/api/leads/analytics")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class AnalyticsController {
 
     private final LeadService leadService;

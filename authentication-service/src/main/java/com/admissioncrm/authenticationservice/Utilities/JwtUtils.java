@@ -29,7 +29,7 @@ public class JwtUtils {
                 .claims().add(claims)
                 .subject(username)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+ (60 * 60 * 60*60) ))
+                .expiration(new Date(System.currentTimeMillis()+ (86400*1000) ))//24 hours in seconds
                 .and()
                 .signWith(getKey()).compact();
     }

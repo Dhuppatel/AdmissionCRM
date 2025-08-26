@@ -35,6 +35,7 @@ public class AuthController {
         this.forgetPasswordService = forgetPasswordService;
     }
 
+
     // login
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -110,8 +111,11 @@ public class AuthController {
     //testing endpoints
 
     @GetMapping("/test")
-    public String test(HttpServletRequest request, Principal principal) {
-        return "Logged in as: " + principal.getName();
+    public Map<String, Object> test(HttpServletRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("username", request.getHeader("X-Username"));
+        response.put("roles", request.getHeader("X-User-Roles"));
+        return response;
     }
 
     @GetMapping("/home")
