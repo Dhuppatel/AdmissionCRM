@@ -14,9 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -204,7 +209,10 @@ public class InstitutionService {
 
     public InstitutionResponseDTO getAssignedInstituteForAdmin() {
         // Get the current logged-in user (from SecurityContext or token claims)
-        String currentUserId = "c1cb6070-c520-4f67-a709-967d33de7474";
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String currentUserId =authentication.getName();
+        System.out.println("Current User ID: " + authentication.getName());
 
         // Fetch the assigned institute from DB
         Institution institute = institutionRepository.findByInstituteAdminContains(currentUserId)

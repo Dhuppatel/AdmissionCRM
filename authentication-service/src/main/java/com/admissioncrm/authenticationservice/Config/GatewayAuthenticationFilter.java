@@ -33,13 +33,21 @@ public class GatewayAuthenticationFilter extends OncePerRequestFilter {
         String username = request.getHeader("X-Username");
         String rolesHeader = request.getHeader("X-User-Roles");
 
+        String authHeader = request.getHeader("Authorization");
+        String jwt = null;
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            jwt = authHeader.substring(7);
+        }
+
+
         if (username != null && rolesHeader != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             List<SimpleGrantedAuthority> authorities = Arrays.stream(rolesHeader.split(","))
                     .map(role -> new SimpleGrantedAuthority("ROLE_" + role.trim()))
                     .collect(Collectors.toList());
 
             UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+                    new UsernamePasswordAuthenticationToken(username,jwt, authorities);
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

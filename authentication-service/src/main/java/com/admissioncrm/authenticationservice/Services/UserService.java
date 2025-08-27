@@ -126,7 +126,7 @@ public class UserService {
     private void notifyLeadServiceAssignAdmin(String instituteId, String userId) {
         String url = leadServiceBaseUrl + "/institutions/" + instituteId + "/assign-admin";
         log.debug("Calling Lead Service to assign admin: userId={}, instituteId={}", userId, instituteId);
-
+        System.out.println("Calling Lead Service to assign admin: userId=" + userId + ", instituteId=" + instituteId);
         try {
             HttpHeaders headers = new HttpHeaders();
             String jwtToken = getJwtToken();
@@ -197,7 +197,7 @@ public class UserService {
             return "Unknown Institute";
         }
 
-        String url = "http://localhost:6001/api/institutions/" + instituteId;
+        String url = leadServiceBaseUrl+"/institutions/" + instituteId;
         log.debug("Fetching institute name from URL: {}", url);
 
         try {
