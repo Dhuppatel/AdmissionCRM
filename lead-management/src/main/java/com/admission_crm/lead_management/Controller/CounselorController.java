@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/counselors")
+@RequestMapping("/api/leads/counsellors")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class CounselorController {
 
     private final LeadService leadService;

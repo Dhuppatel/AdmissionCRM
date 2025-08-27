@@ -34,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/api/leads")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class LeadController {
 
     private final LeadService leadService;

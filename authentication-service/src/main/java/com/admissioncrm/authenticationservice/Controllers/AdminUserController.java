@@ -1,6 +1,7 @@
 package com.admissioncrm.authenticationservice.Controllers;
 
 import com.admissioncrm.authenticationservice.DTO.ApiResponse;
+import com.admissioncrm.authenticationservice.DTO.InstituteAdminDTO;
 import com.admissioncrm.authenticationservice.DTO.UserCreationDTO.CreateUserRequest;
 import com.admissioncrm.authenticationservice.DTO.UserResponseDTO;
 import com.admissioncrm.authenticationservice.Services.UserService;
@@ -44,8 +45,8 @@ public class AdminUserController {
     @PreAuthorize("hasRole('UNIVERSITY_ADMIN')")
     @GetMapping("/i-admin/getall")
     public ResponseEntity<?> getAllInstituteAdmins() {
-        List<UserResponseDTO> instituteAdmins = userService.getInstituteAdmins();
-        return ResponseEntity.ok(ApiResponse.success("Institute Admins retrived successfully", instituteAdmins));
+        List<InstituteAdminDTO> instituteAdmins = userService.getAllInstituteAdmins();
+        return ResponseEntity.ok().body(ApiResponse.success("Institute Admins retrived successfully", instituteAdmins));
     }
 
     // ✅ Get all Counsellors

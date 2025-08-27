@@ -1,0 +1,84 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            # Auth Service Routes (No Authentication Required)
+            - id: auth-service
+              uri: http://localhost:6002
+              predicates:
+                - Path=/api/auth/**
+              filters:
+                - StripPrefix=0
+
+            # Lead Management Service Routes
+            - id: lead-service
+              uri: http://localhost:6001
+              predicates:
+                - Path=/api/leads/**
+              filters:
+                - StripPrefix=0
+
+            # Application Service Routes
+            - id: application-service
+              uri: http://localhost:8001
+              predicates:
+                - Path=/api/application/**
+              filters:
+                - StripPrefix=0
+
+            # Document Service Routes
+            - id: document-service
+              uri: http://localhost:8084
+              predicates:
+                - Path=/api/documents/**
+              filters:
+                - StripPrefix=0
+
+            # Workflow Service Routes
+            - id: workflow-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/api/workflows/**
+              filters:
+                - StripPrefix=0
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:1f1dada12ecf13b34cba99d384dc943dfbcbcdb25e6e21fbd37aeedffbcf1c88}
+  expiration: ${JWT_EXPIRATION:86400} # 24 hours in seconds
+  header: Authorization
+  prefix: Bearer
+
+# Eureka Configuration (Optional)
+eureka:
+  client:
+    enabled: false # Set to true if using Eureka
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Management endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# Logging
+logging:
+  level:
+    com.admissioncrm.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG

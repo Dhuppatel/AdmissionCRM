@@ -14,9 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -183,4 +188,37 @@ public class InstitutionService {
             throw new RuntimeException("Failed to fetch institutions", e);
         }
     }
+
+
+//assign admin to institution
+
+    public boolean assignAdminToInstitution(String institutionId, String userId) {
+        Optional<Institution> optionalInstitution = institutionRepository.findById(institutionId);
+
+        if (optionalInstitution.isPresent()) {
+            Institution institution = optionalInstitution.get();
+            institution.getInstituteAdmin().add(userId); // assume `adminUserId` column in table
+            institutionRepository.save(institution);
+            log.info("Admin {} assigned to Institution {}", userId, institutionId);
+            return true;
+        } else {
+            log.warn("Institution {} not found", institutionId);
+            return false;
+        }
+    }
+
+    public InstitutionResponseDTO getAssignedInstituteForAdmin() {
+        // Get the current logged-in user (from SecurityContext or token claims)
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String currentUserId =authentication.getName();
+        System.out.println("Current User ID: " + authentication.getName());
+
+        // Fetch the assigned institute from DB
+        Institution institute = institutionRepository.findByInstituteAdminContains(currentUserId)
+                .orElse(null);
+
+        return institute != null ? entityMapper.toResponseDTO(institute) : null;
+    }
+
 }

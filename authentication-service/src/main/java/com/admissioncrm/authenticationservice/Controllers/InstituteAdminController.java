@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/institute_admin")
+@RequestMapping("/api/auth/institute_admin")
 public class InstituteAdminController {
     private final UserService userService;
 

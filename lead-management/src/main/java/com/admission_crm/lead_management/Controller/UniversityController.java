@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/universities")
+@RequestMapping("/api/leads/universities")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class UniversityController {
 
     private final UniversityService universityService;
