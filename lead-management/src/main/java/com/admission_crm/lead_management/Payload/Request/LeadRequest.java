@@ -20,7 +20,8 @@ public class LeadRequest {
     private String state;
     private String qualification;
     private String institutionId;
-    private String courseInterested;
+    private String departmentId;
+
     private LeadSource leadSource;
     private LeadStatus status;
     private String queryTitle;

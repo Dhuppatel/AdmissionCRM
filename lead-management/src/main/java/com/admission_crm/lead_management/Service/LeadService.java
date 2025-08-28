@@ -15,10 +15,13 @@ import com.admission_crm.lead_management.Repository.AuditLogRepository;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
 import com.admission_crm.lead_management.Repository.LeadRepository;
 import com.admission_crm.lead_management.Repository.UserRepository;
+import com.admission_crm.lead_management.Utills.JwtUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.TextMessage;
@@ -43,8 +46,9 @@ public class LeadService {
     private final InstitutionQueueService queueService;
     private final LeadScoringService scoringService;
     private final EmailService emailService;
+    private final JwtUtil jwtUtil;
 
-    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService) {
+    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService, JwtUtil jwtUtil) {
         this.leadRepository = leadRepository;
         this.userRepository = userRepository;
         this.institutionRepository = institutionRepository;
@@ -52,6 +56,7 @@ public class LeadService {
         this.queueService = queueService;
         this.scoringService = scoringService;
         this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
     }
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -60,7 +65,7 @@ public class LeadService {
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
 
-    public Lead createLead(LeadRequest leadRequest, String userEmail) {
+    public Lead createLead(LeadRequest leadRequest, String userEmail) throws Exception {
         System.out.println(leadRequest);
 
         validateLeadRequest(leadRequest);
@@ -73,8 +78,11 @@ public class LeadService {
         System.out.println("Line 72 lead service "+leadRequest.getInstitutionId());
         Institution institution = institutionRepository.findById(leadRequest.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         Lead lead = mapRequestToLead(leadRequest);
+
+        lead.setUserId(authentication.getName());
         lead.setStatus(LeadStatus.NEW);
 
         Double score = scoringService.calculateLeadScore(lead);
@@ -359,9 +367,9 @@ public class LeadService {
         if (request.getInstitutionId() == null || request.getInstitutionId().trim().isEmpty()) {
             throw new InvalidLeadDataException("Institution ID is required");
         }
-        if (request.getCourseInterested() == null || request.getCourseInterested().trim().isEmpty()) {
-            throw new InvalidLeadDataException("Course interest is required");
-        }
+//        if (request.getCourseInterested() == null || request.getCourseInterested().trim().isEmpty()) {
+//            throw new InvalidLeadDataException("Course interest is required");
+//        }
     }
 
     // Map LeadRequest to Lead entity
@@ -376,7 +384,7 @@ public class LeadService {
         lead.setCountry(request.getCountry());
         lead.setQualification(request.getQualification());
         lead.setInstitutionId(request.getInstitutionId());
-        lead.setCourseInterestId(request.getCourseInterested());
+//        lead.setCourseInterestId(request.getCourseInterested());
         lead.setQueryTitle(request.getQueryTitle());
         lead.setQueryDescription(request.getQueryDescription());
         lead.setLeadSource(request.getLeadSource());
@@ -435,9 +443,9 @@ public class LeadService {
         if (request.getPriority() != null) {
             lead.setPriority(request.getPriority());
         }
-        if (request.getCourseInterestId() != null) {
-            lead.setCourseInterestId(request.getCourseInterestId());
-        }
+//        if (request.getCourseInterestId() != null) {
+//            lead.setCourseInterestId(request.getCourseInterestId());
+//        }
         if(request.getQueryTitle() != null) {
             lead.setQueryTitle(request.getQueryTitle());
         }

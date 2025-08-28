@@ -23,6 +23,8 @@ public class Lead {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String userId;
+
     // Fix: Remove @Column annotations for fields that follow naming convention
     // Hibernate will automatically map firstName -> first_name
     @Column(nullable = false, length = 50)
@@ -71,7 +73,7 @@ public class Lead {
     @Column(length = 100)
     private String qualification;
 
-    private String courseInterestId;
+//    private String courseInterestId;
 
     private String queryTitle;
 

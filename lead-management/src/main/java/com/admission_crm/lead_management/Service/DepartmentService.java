@@ -185,4 +185,12 @@ public class DepartmentService {
     }
 
 
+    public List<DepartmentDTO> getDepartmentsByInstituteId(String instituteId) {
+        // Example: fetch all programs by institute, then fetch departments
+        return departmentRepository.findByProgramInstitutionId(instituteId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
 }
