@@ -60,7 +60,7 @@ jwt:
 # Eureka Configuration (Optional)
 eureka:
   client:
-    enabled: false # Set to true if using Eureka
+    enabled: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
   instance:
