@@ -79,7 +79,6 @@ public class ProgramController {
     }
 
     @GetMapping("/institution/{institutionId}")
-    @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
     public ResponseEntity<ApiResponse> getProgramsByInstitution(@PathVariable String institutionId) {
         try {
             log.info("REST request to get programs by faculty ID: {}", institutionId);

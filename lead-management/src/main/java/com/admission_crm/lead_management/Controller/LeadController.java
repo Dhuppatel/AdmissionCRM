@@ -112,7 +112,6 @@ public class LeadController {
 
     // Get all leads with pagination and filtering
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'COUNSELOR')")
     public ResponseEntity<?> getAllLeads(
             Pageable pageable,
             @RequestParam(required = false) String searchTerm,
