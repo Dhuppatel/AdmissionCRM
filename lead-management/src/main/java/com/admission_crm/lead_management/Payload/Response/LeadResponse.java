@@ -57,7 +57,7 @@ public class LeadResponse {
                 .dateOfBirth(lead.getDateOfBirth())
                 .gender(lead.getGender() != null ? lead.getGender().name() : null)
                 .institutionId(lead.getInstitutionId())
-                .courseInterestId(lead.getCourseInterestId())
+//                .courseInterestId(lead.getCourseInterestId())
                 .status(lead.getStatus() != null ? lead.getStatus().name() : null)
                 .priority(lead.getPriority() != null ? lead.getPriority().name() : null)
                 .source(lead.getLeadSource() != null ? lead.getLeadSource().name() : null)

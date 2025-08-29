@@ -15,4 +15,7 @@ public interface DepartmentRepository extends JpaRepository<Department, String> 
     List<Department> findByProgram_Id(String programId);
 
     boolean existsByProgram_IdAndCode(String programId, String code);
+
+    List<Department> findByProgramInstitutionId(String instituteId);
+
 }

@@ -159,6 +159,27 @@ public class DepartmentController {
                     .body(ApiResponse.error("Failed to update department status", "An unexpected error occurred"));
         }
     }
+    @GetMapping("/institute/{instituteId}")
+    public ResponseEntity<ApiResponse> getDepartmentsByInstitute(@PathVariable String instituteId) {
+        try {
+            log.info("REST request to get departments by Institute ID: {}", instituteId);
+            List<DepartmentDTO> departments = departmentService.getDepartmentsByInstituteId(instituteId);
+
+            if (departments.isEmpty()) {
+                return ResponseEntity.ok(ApiResponse.success("No departments found for this institute", departments));
+            }
+
+            return ResponseEntity.ok(ApiResponse.success("Departments retrieved successfully", departments));
+        } catch (ResourceNotFoundException e) {
+            log.warn("Institute not found: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error("Institute not found", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error retrieving departments by institute: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve departments", "An unexpected error occurred"));
+        }
+    }
 
 
 }

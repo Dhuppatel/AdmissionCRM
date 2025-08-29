@@ -3,6 +3,7 @@ package com.admission_crm.lead_management.Service;
 import com.admission_crm.lead_management.Entity.Academic.Department;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
 import com.admission_crm.lead_management.Payload.DepartmentDTO;
+import com.admission_crm.lead_management.Payload.DepartmentOverviewDTO;
 import com.admission_crm.lead_management.Repository.DepartmentRepository;
 import com.admission_crm.lead_management.Repository.ProgramRepository;
 import lombok.RequiredArgsConstructor;
@@ -164,6 +165,32 @@ public class DepartmentService {
             departmentRepository.save(department);
             return true;
         }).orElse(false);
+    }
+
+    //Institute ADMIN dash
+    public List<DepartmentOverviewDTO> getDepartmentOverviews() {
+
+        DepartmentOverviewDTO dto = new DepartmentOverviewDTO();
+        dto.setId("DEPT001");
+        dto.setName("Computer Science Engineering");
+        dto.setCode("CSE");
+        dto.setTotalStudents(450L);
+        dto.setActiveApplications(67L);
+        dto.setAcceptanceRate(78.5);
+        dto.setAvgProcessingTime("5.2 days");
+        dto.setStatus("active");
+        dto.setHeadOfDepartment("Dr. John Smith");
+
+        return List.of(dto);
+    }
+
+
+    public List<DepartmentDTO> getDepartmentsByInstituteId(String instituteId) {
+        // Example: fetch all programs by institute, then fetch departments
+        return departmentRepository.findByProgramInstitutionId(instituteId)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
 }
