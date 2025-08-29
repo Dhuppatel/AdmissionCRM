@@ -25,6 +25,7 @@ public class EntityMapper {
         institution.setUniversityId(dto.getUniversityId());
         institution.setCurrentCounselors(0);
         institution.setIsActive(true);
+        institution.setLogoUrl(dto.getLogoUrl());
 
         return institution;
     }
@@ -52,6 +53,7 @@ public class EntityMapper {
         dto.setAvailableCounselorSlots(institution.getAvailableCounselorSlots());
         dto.setCreatedAt(institution.getCreatedAt());
         dto.setUpdatedAt(institution.getUpdatedAt());
+        dto.setTotalPrograms(institution.getPrograms().size());
         return dto;
     }
 
@@ -85,6 +87,9 @@ public class EntityMapper {
         }
         if (dto.getIsActive() != null) {
             institution.setIsActive(dto.getIsActive());
+        }
+        if (dto.getLogoUrl() != null) {
+            institution.setLogoUrl(dto.getLogoUrl());
         }
     }
 

@@ -155,6 +155,9 @@ public class DepartmentService {
         dto.setHeadOfDepartment(department.getHeadOfDepartment());
         dto.setIsActive(department.getIsActive());
 //        dto.setCourses(department.getCourses());
+        dto.setFees(department.getFees());
+        dto.setDuration(department.getDuration());
+        dto.setIntakeCapacity(department.getIntakeCapacity());
         return dto;
     }
 

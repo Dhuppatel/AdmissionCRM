@@ -32,4 +32,5 @@ public class InstitutionResponseDTO {
     private Integer availableCounselorSlots;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer totalPrograms;
 }
