@@ -15,4 +15,5 @@ public class InstitutionCreateRequest {
     private String email;
     private String website;
     private String universityId;
+    private String logoUrl;
 }
