@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -195,4 +196,63 @@ public class DocumentService {
                         contentType.equals("image/png")
         );
     }
+    public List<DocumentResponse> saveDocuments(String referenceId, Map<String, MultipartFile> documents) {
+        List<DocumentResponse> responses = new ArrayList<>();
+
+        // Find the application by referenceId
+        ApplicationForm application = applicationRepository.findByReferenceId(referenceId)
+                .orElseThrow(() -> new RuntimeException("Application not found for referenceId: " + referenceId));
+
+        documents.forEach((documentType, file) -> {
+            try {
+                // Validate file
+                validateFile(file);
+
+                // Generate structured filename
+                String structuredFilename = fileNamingService.generateStructuredFilename(
+                        application.getReferenceId(), documentType, file.getOriginalFilename());
+
+                // Generate file path
+                String relativePath = fileNamingService.generateFilePath(
+                        referenceId, structuredFilename);
+
+                String fullPath = uploadDir + "/" + relativePath;
+
+                // Ensure directories exist
+                Path directoryPath = Paths.get(fullPath).getParent();
+                Files.createDirectories(directoryPath);
+
+                // Save file to disk
+                Path filePath = Paths.get(fullPath);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                // Get sequence number per docType
+                int sequenceNumber = fileNamingService.getNextSequenceNumber(application.getReferenceId(), documentType);
+
+                // Save metadata in DB
+                Document document = Document.builder()
+                        .applicationId(application.getReferenceId())
+                        .documentType(documentType)
+                        .originalFilename(file.getOriginalFilename())
+                        .structuredFilename(structuredFilename)
+                        .filePath(relativePath)
+                        .fileSize(file.getSize())
+                        .mimeType(file.getContentType())
+                        .sequenceNumber(sequenceNumber)
+                        .verificationStatus(Document.VerificationStatus.PENDING)
+                        .uploadDate(LocalDateTime.now())
+                        .isActive(true)
+                        .build();
+
+                Document savedDocument = documentRepository.save(document);
+                responses.add(convertToResponse(savedDocument));
+
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to store file: " + file.getOriginalFilename(), e);
+            }
+        });
+
+        return responses;
+    }
+
 }
