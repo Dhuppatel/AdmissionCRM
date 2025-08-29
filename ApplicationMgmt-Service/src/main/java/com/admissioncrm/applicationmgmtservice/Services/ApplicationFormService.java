@@ -4,23 +4,29 @@ package com.admissioncrm.applicationmgmtservice.Services;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.ApplicationResponseDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.Stats.ApplicationStatsDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
 import com.admissioncrm.applicationmgmtservice.Exception.*;
 import com.admissioncrm.applicationmgmtservice.Repositories.ApplicationFormRepository;
+import com.admissioncrm.applicationmgmtservice.Services.Document.DocumentService;
 import com.admissioncrm.applicationmgmtservice.Utills.ApplicationFormMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +44,7 @@ public class ApplicationFormService  {
     private final ApplicationFormRepository applicationFormRepository;
     private final ApplicationFormMapper applicationFormMapper;
     private final ReferenceIdService referenceIdService;
+    private final DocumentService documentService;
 
     public ApplicationFormSummaryDTO createApplication(ApplicationFormSubmissionDTO applicationDto) {
 
@@ -305,5 +312,75 @@ public class ApplicationFormService  {
         long rejected = applicationFormRepository.countByApplicationStatus(ApplicationStatus.REJECTED);
 
         return new ApplicationStatsDTO(total, pending, approved, rejected);
+    }
+
+    public ApplicationResponseDTO submitApplication(ApplicationFormSubmissionDTO applicationDto, Map<String, MultipartFile> documents) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        applicationDto.setIdUser(userId);
+        log.info("Creating new application for user: {}", userId);
+
+        // Validate application data
+//        validateApplicationData(applicationDto);
+
+        // Check for duplicate email
+        if (isEmailAlreadyRegistered(applicationDto.getPersonalInfo().getEmail())) {
+            throw new DuplicateApplicationException(
+                    "Application with email " + applicationDto.getPersonalInfo().getEmail() + " already exists");
+        }
+        //cheak for duplicate phone number
+        if(isStudentMobileAlreadyRegistered(applicationDto.getPersonalInfo().getStudentMobile())){
+            throw new DuplicateApplicationException(
+                    "Application with student mobile " + applicationDto.getPersonalInfo().getStudentMobile() + " already exists"
+            );
+        }
+        try {
+            // Map DTO to Entity
+            ApplicationForm applicationForm = applicationFormMapper.mapToEntity(applicationDto);
+
+            String referenceId = referenceIdService.generateReferenceId();
+            applicationForm.setReferenceId(referenceId);
+            applicationForm.setApplicationStatus(ApplicationStatus.SUBMITTED);
+
+
+
+           //Now save the documents
+
+
+            ApplicationForm savedApplication = applicationFormRepository.save(applicationForm);
+
+
+            documentService.saveDocuments(referenceId, documents);
+
+
+
+
+
+
+           // Save the application
+
+
+            log.info("Application created successfully with ID: {}", savedApplication.getApplicationId());
+
+
+
+            return ApplicationResponseDTO.builder()
+                    .applicationId(savedApplication.getApplicationId())
+                    .referenceId(savedApplication.getReferenceId())
+                    .status(ApplicationStatus.SUBMITTED)
+                  //add this urls
+//                    .documentUrls(savedApplication.getDocumentsSubmitted())
+
+
+
+//                    .studentFullName(savedApplication.getPersonalInfo().getFullName())
+//                    .courseAppliedFor(savedApplication.getSelectedInstitute())
+//                    .email(savedApplication.getEmail())
+//                    .submittedDate(LocalDateTime.now(clock))
+                    .build();
+        } catch (Exception e) {
+            log.error("Error creating application for user: {}", applicationDto.getIdUser(), e);
+            throw new RuntimeException("Failed to create application", e);
+        }
     }
 }
