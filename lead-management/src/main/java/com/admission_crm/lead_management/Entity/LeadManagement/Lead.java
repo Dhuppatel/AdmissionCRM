@@ -1,5 +1,6 @@
 package com.admission_crm.lead_management.Entity.LeadManagement;
 
+import com.admission_crm.lead_management.Entity.CoreEntities.Program;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -54,6 +55,10 @@ public class Lead {
     private String country;
 
     private String institutionId;
+
+    @ManyToOne()
+    @JoinColumn(name = "program_id")
+    private Program program;
 
     @Enumerated(EnumType.STRING)
     private LeadSource leadSource;

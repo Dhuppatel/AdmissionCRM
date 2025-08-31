@@ -4,6 +4,7 @@ import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Payload.*;
+import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.Request.BulkAssignRequest;
@@ -60,6 +61,29 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to create lead", "An unexpected error occurred"));
         }
     }
+
+    //capture lead from Landing page
+    @PostMapping("landing-page/capture")
+    public ResponseEntity<?> captureLeadFromLandingPage(@RequestBody LandingPageLeadRequest leadRequest) {
+        try {
+            Lead createdLead = leadService.captureLeadFromLandingPage(leadRequest);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("Lead captured successfully", LeadResponse.fromEntity(createdLead)));
+        } catch (DuplicateLeadException e) {
+            log.warn("Duplicate lead creation attempt: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error("Lead already exists", e.getMessage()));
+        } catch (InvalidLeadDataException e) {
+            log.warn("Invalid lead data: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error("Invalid lead data", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error creating lead: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to create lead", "An unexpected error occurred"));
+        }
+    }
+
 
     @GetMapping("/my-leads/{username}")
     public ResponseEntity<Page<Lead>> getCurrentUserLeads(

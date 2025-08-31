@@ -4,17 +4,16 @@ import com.admission_crm.lead_management.Entity.AnalyticsAndReporting.AuditLog;
 import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
 import com.admission_crm.lead_management.Entity.CoreEntities.User;
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
+import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Payload.*;
+import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
-import com.admission_crm.lead_management.Repository.AuditLogRepository;
-import com.admission_crm.lead_management.Repository.InstitutionRepository;
-import com.admission_crm.lead_management.Repository.LeadRepository;
-import com.admission_crm.lead_management.Repository.UserRepository;
+import com.admission_crm.lead_management.Repository.*;
 import com.admission_crm.lead_management.Utills.JwtUtil;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +46,9 @@ public class LeadService {
     private final LeadScoringService scoringService;
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
+    private final ProgramRepository programRepository;
 
-    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService, JwtUtil jwtUtil) {
+    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService, JwtUtil jwtUtil, ProgramRepository programRepository) {
         this.leadRepository = leadRepository;
         this.userRepository = userRepository;
         this.institutionRepository = institutionRepository;
@@ -57,6 +57,7 @@ public class LeadService {
         this.scoringService = scoringService;
         this.emailService = emailService;
         this.jwtUtil = jwtUtil;
+        this.programRepository = programRepository;
     }
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -66,7 +67,6 @@ public class LeadService {
     );
 
     public Lead createLead(LeadRequest leadRequest, String userEmail) throws Exception {
-        System.out.println(leadRequest);
 
         validateLeadRequest(leadRequest);
 
@@ -75,7 +75,6 @@ public class LeadService {
 //            throw new DuplicateLeadException("Lead with email " + leadRequest.getEmail() + " already exists");
 //        }
 
-        System.out.println("Line 72 lead service "+leadRequest.getInstitutionId());
         Institution institution = institutionRepository.findById(leadRequest.getInstitutionId())
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -1065,4 +1064,43 @@ public class LeadService {
         return leadRepository.count();
     }
 
+    public Lead captureLeadFromLandingPage(LandingPageLeadRequest leadRequest) {
+
+        Lead lead = new Lead();
+        lead.setFirstName(leadRequest.getFirstName());
+        lead.setLastName(leadRequest.getLastName());
+        lead.setEmail(leadRequest.getEmail());
+        lead.setPhone(leadRequest.getPhone());
+
+
+        lead.setLeadSource(LeadSource.LANDING_PAGE);
+
+        lead.setQueryDescription(leadRequest.getQueryDescription());
+        lead.setQueryTitle(leadRequest.getQueryTitle());
+
+
+        lead.setInstitutionId(leadRequest.getInstitutionId());
+        lead.setProgram(programRepository.findById(leadRequest.getProgramId()).orElseThrow(() -> new RuntimeException("Program not found")));
+        lead.setStatus(LeadStatus.NEW);
+
+//        Double score = scoringService.calculateLeadScore(lead);
+//        lead.setLeadScore(score);
+
+        Lead savedLead = leadRepository.save(lead);
+
+        logAudit("", "CREATED_LEAD", savedLead.getId(), "Lead",
+                "Created lead: " + lead.getEmail());
+
+//        // Add to institution's queue automatically
+//        queueService.addToQueue(savedLead);
+
+        Institution institution = institutionRepository.findById(leadRequest.getInstitutionId())
+                .orElseThrow(() -> new RuntimeException("Institution not found"));
+        institution.getLeads().addLast(savedLead.getId());
+        // Notify counselors
+        notifyCounselors("New lead created and queued: " + lead.getFirstName() + " " + lead.getLastName() +
+                " for " + institution.getName());
+
+        return savedLead;
+    }
 }
