@@ -1079,8 +1079,18 @@ public class LeadService {
         lead.setQueryTitle(leadRequest.getQueryTitle());
 
 
+        // Validate programId
+        if (leadRequest.getProgramId() == null) {
+            throw new IllegalArgumentException("Program ID must not be null");
+        }
+        lead.setProgram(programRepository.findById(leadRequest.getProgramId())
+                .orElseThrow(() -> new RuntimeException("Program not found")));
+
+        // Validate institutionId
+        if (leadRequest.getInstitutionId() == null) {
+            throw new IllegalArgumentException("Institution ID must not be null");
+        }
         lead.setInstitutionId(leadRequest.getInstitutionId());
-        lead.setProgram(programRepository.findById(leadRequest.getProgramId()).orElseThrow(() -> new RuntimeException("Program not found")));
         lead.setStatus(LeadStatus.NEW);
 
 //        Double score = scoringService.calculateLeadScore(lead);

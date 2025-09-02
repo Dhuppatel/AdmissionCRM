@@ -39,6 +39,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             "/api/auth/login",
             "/api/auth/s/register",
             "/api/auth/otp/**",
+            "/api/leads/institutions/getall",
+            "/api/leads/landing-page/capture",
+            "/api/leads/programs/institution/**",
             "/actuator/**",
             "/favicon.ico"
     };

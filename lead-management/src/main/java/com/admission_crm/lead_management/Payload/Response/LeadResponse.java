@@ -60,7 +60,7 @@ public class LeadResponse {
                 .gender(lead.getGender() != null ? lead.getGender().name() : null)
                 .institutionId(lead.getInstitutionId())
                 //show the program name and here courseInterestId=programName
-                .courseInterestId(getProgramNameFromProgramId(lead.getProgram().getName()))
+                .courseInterestId(lead.getProgram().getName())
                 .status(lead.getStatus() != null ? lead.getStatus().name() : null)
                 .priority(lead.getPriority() != null ? lead.getPriority().name() : null)
                 .source(lead.getLeadSource() != null ? lead.getLeadSource().name() : null)
