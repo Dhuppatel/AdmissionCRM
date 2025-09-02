@@ -94,6 +94,7 @@ public class AuthController {
         response.put("id", user.getId());
         response.put("username", user.getUsername());
         response.put("email", user.getEmail());
+        response.put("institutionId", user.getInstitutionId());
         response.put("firstName", user.getFirstName());
         response.put("middleName", user.getMiddleName());
         response.put("lastName", user.getLastName());
