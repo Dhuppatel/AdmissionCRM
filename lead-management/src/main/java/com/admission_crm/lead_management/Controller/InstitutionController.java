@@ -64,7 +64,7 @@ public class InstitutionController {
         }
     }
 
-    @GetMapping
+    @GetMapping("/getall")
     public ResponseEntity<?> getAllInstitutions() {
         try {
             log.info("REST request to get all Institutions");

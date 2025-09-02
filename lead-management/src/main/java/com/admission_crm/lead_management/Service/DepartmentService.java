@@ -196,4 +196,8 @@ public class DepartmentService {
                 .collect(Collectors.toList());
     }
 
+    //count depts by institute id and also remove the duplicates whith the samme dept under different programs using dept code
+    public long countDistinctDepartmentsByInstituteId(String instituteId) {
+        return departmentRepository.countUniqueDepartmentCodesByInstitution(instituteId);
+    }
 }

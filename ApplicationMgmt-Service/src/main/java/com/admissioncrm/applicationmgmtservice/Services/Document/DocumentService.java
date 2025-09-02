@@ -134,7 +134,6 @@ public class DocumentService {
                 throw new DocumentNotFoundException("File not found on disk");
             }
 
-            // Fixed: removed org.springframework.core.io prefix since we import it
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() && resource.isReadable()) {

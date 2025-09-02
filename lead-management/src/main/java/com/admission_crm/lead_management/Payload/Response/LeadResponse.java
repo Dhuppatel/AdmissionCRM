@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class LeadResponse {
+
+
     private String id;
     private String firstName;
     private String lastName;
@@ -57,7 +59,8 @@ public class LeadResponse {
                 .dateOfBirth(lead.getDateOfBirth())
                 .gender(lead.getGender() != null ? lead.getGender().name() : null)
                 .institutionId(lead.getInstitutionId())
-//                .courseInterestId(lead.getCourseInterestId())
+                //show the program name and here courseInterestId=programName
+                .courseInterestId(lead.getProgram().getName())
                 .status(lead.getStatus() != null ? lead.getStatus().name() : null)
                 .priority(lead.getPriority() != null ? lead.getPriority().name() : null)
                 .source(lead.getLeadSource() != null ? lead.getLeadSource().name() : null)
@@ -68,7 +71,13 @@ public class LeadResponse {
                 .updatedAt(lead.getUpdatedAt())
                 .assignedAt(lead.getAssignedAt())
                 .completedAt(lead.getCompletedAt())
+
                 .build();
+    }
+    public static String getProgramNameFromProgramId(String programId)
+    {
+
+        return "Program Name"; // Replace with actual logic to fetch program name
     }
 }
 

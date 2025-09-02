@@ -1,6 +1,7 @@
 package com.admission_crm.lead_management.Entity.CoreEntities;
 
 import com.admission_crm.lead_management.Entity.Academic.Department;
+import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -45,6 +46,9 @@ public class Program {
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Department> departments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Lead> leads;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

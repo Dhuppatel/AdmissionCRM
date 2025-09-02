@@ -35,6 +35,9 @@ public class SecurityConfig {
                                 "/api/auth/s/register",
                                 "/api/auth/request-password-reset",
                                 "/api/auth/reset-password",
+                                "/api/leads/institutions/getall",
+                                "/api/leads/programs/institution/**",
+                                "/api/leads/landing-page/capture",
                                 "/api/auth/otp/**",
                                 "/actuator/**", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()

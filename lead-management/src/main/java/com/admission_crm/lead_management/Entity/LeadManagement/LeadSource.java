@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum LeadSource {
-    WEBSITE, REFERRAL, SOCIAL_MEDIA, ADVERTISEMENT, PHONE_CALL, WALK_IN, EMAIL_CAMPAIGN, OTHER;
+WEBSITE, REFERRAL, SOCIAL_MEDIA, ADVERTISEMENT, PHONE_CALL, WALK_IN, EMAIL_CAMPAIGN, OTHER,LANDING_PAGE;
 
     @JsonValue
     public String getValue() {
