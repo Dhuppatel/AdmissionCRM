@@ -5,10 +5,12 @@ import jakarta.ws.rs.core.Application;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.net.URL;
 
 @SpringBootApplication
+@EnableFeignClients
 public class AuthenticationServiceApplication {
 
     @Value("${env.path")

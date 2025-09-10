@@ -205,4 +205,20 @@ public class InstitutionController {
             return ResponseEntity.badRequest().body("Failed to assign admin");
         }
     }
+
+    @PostMapping("/{institutionId}/assign-counsellor")
+    public ResponseEntity<String> assignCounsellorToInstitute(
+            @PathVariable String institutionId,
+            @RequestBody AssignAdminRequest request
+    ) {
+        log.info("Assigning Admin {} to Institution {}", request.getUserId(), institutionId);
+
+        boolean success = institutionService.assignCounsellorToInstitution(institutionId, request.getUserId());
+
+        if (success) {
+            return ResponseEntity.ok("Counsellor assigned successfully");
+        } else {
+            return ResponseEntity.badRequest().body("Failed to assign Counsellor to Institute");
+        }
+    }
 }

@@ -137,4 +137,6 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
                                    @Param("fromDate") LocalDateTime fromDate,
                                    @Param("toDate") LocalDateTime toDate,
                                    Pageable pageable);
+
+    Page<Lead> findByInstitutionIdAndStatusAndAssignedCounselorIsNull(String institutionId, LeadStatus leadStatus, Pageable pageable);
 }

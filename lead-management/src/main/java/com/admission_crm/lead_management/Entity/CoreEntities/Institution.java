@@ -69,11 +69,11 @@ public class Institution {
     @CollectionTable(name = "institution_departments", joinColumns = @JoinColumn(name = "institution_id"))
     @Column(name = "department_id")
     private List<String> departments = new ArrayList<>();
-
-    @ElementCollection
-    @CollectionTable(name = "institution_courses", joinColumns = @JoinColumn(name = "institution_id"))
-    @Column(name = "course_id")
-    private List<String> courses = new ArrayList<>();
+//
+//    @ElementCollection
+//    @CollectionTable(name = "institution_courses", joinColumns = @JoinColumn(name = "institution_id"))
+//    @Column(name = "course_id")
+//    private List<String> courses = new ArrayList<>();
 
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Program> programs ;

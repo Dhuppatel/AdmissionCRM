@@ -157,6 +157,29 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to retrieve leads", "An unexpected error occurred"));
         }
     }
+    // get leads that are not assigned to any counselor (queued leads) for a specific institution with optional search term
+    @GetMapping("/queue/{institutionId}")
+    public ResponseEntity<?> getQueuedLeadsByInstitute(
+            @PathVariable String institutionId,
+            Pageable pageable,
+            @RequestParam(required = false) String searchTerm) {
+        try {
+            Page<Lead> queuedLeads;
+
+
+                queuedLeads = leadService.getQueuedLeadsByInstitute(institutionId, pageable);
+
+
+            Page<LeadResponse> leadResponses = queuedLeads.map(LeadResponse::fromEntity);
+            return ResponseEntity.ok(ApiResponse.success("Queued leads retrieved successfully", leadResponses));
+
+        } catch (Exception e) {
+            log.error("Error retrieving queued leads: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve queued leads", "An unexpected error occurred"));
+        }
+    }
+
 
     // Get leads by institution
     @GetMapping("/institution/{institutionCode}")
@@ -360,8 +383,7 @@ public class LeadController {
         try {
             List<Lead> assignedLeads = leadService.bulkAssignLeads(
                     request.getLeadIds(),
-                    request.getCounselorId(),
-                    authentication.getName()
+                    request.getCounselorId()
             );
             List<LeadResponse> leadResponses = assignedLeads.stream()
                     .map(LeadResponse::fromEntity)

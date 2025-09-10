@@ -47,7 +47,7 @@ public class EntityMapper {
         dto.setIsActive(institution.getIsActive());
         dto.setCounselors(institution.getCounselors());
         dto.setDepartments(institution.getDepartments());
-        dto.setCourses(institution.getCourses());
+//        dto.setCourses(institution.getCourses());
         dto.setLeads(institution.getLeads());
         dto.setQueueSize(institution.getQueueSize());
         dto.setAvailableCounselorSlots(institution.getAvailableCounselorSlots());
