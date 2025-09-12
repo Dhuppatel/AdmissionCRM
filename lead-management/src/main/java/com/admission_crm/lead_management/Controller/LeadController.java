@@ -18,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,14 +163,22 @@ public class LeadController {
     @GetMapping("/queue/{institutionId}")
     public ResponseEntity<?> getQueuedLeadsByInstitute(
             @PathVariable String institutionId,
-            Pageable pageable,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @RequestParam(required = false) String searchTerm) {
         try {
-            Page<Lead> queuedLeads;
+            // Sanitize sort fields
+            Sort safeSort = Sort.by("createdAt"); // default safe sort
+            if (pageable.getSort().isSorted()) {
+                for (Sort.Order order : pageable.getSort()) {
+                    if (List.of("createdAt", "status", "priority", "leadScore").contains(order.getProperty())) {
+                        safeSort = Sort.by(order);
+                    }
+                }
+            }
 
+            Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
 
-                queuedLeads = leadService.getQueuedLeadsByInstitute(institutionId, pageable);
-
+            Page<Lead> queuedLeads = leadService.getQueuedLeadsByInstitute(institutionId, safePageable);
 
             Page<LeadResponse> leadResponses = queuedLeads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Queued leads retrieved successfully", leadResponses));
@@ -179,6 +189,7 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to retrieve queued leads", "An unexpected error occurred"));
         }
     }
+
 
 
     // Get leads by institution
@@ -201,7 +212,15 @@ public class LeadController {
     public ResponseEntity<?> getLeadsByCounselor(@PathVariable String counselorId,
                                                  Pageable pageable) {
         try {
-            Page<Lead> leads = leadService.getLeadsByCounselor(counselorId, pageable);
+            Pageable validatedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("createdAt").descending()
+            );
+            Page<Lead> leads = leadService.getLeadsByCounselor(counselorId, validatedPageable);
+
+
+
             Page<LeadResponse> leadResponses = leads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Counselor leads retrieved successfully", leadResponses));
         } catch (Exception e) {
