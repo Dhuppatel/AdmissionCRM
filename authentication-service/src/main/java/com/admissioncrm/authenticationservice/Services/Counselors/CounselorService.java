@@ -68,7 +68,10 @@ public class CounselorService {
                 .role(user.getRole())
                 .isActive(user.getIsActive())
                 .department(counselorDetails.getExpertiseArea())
+                .lastActive(user.getLastLogin())
+                .joinedDate(user.getCreatedAt())
                 .build();
+
     }
 
     public String fetchInstituteName(String instituteId) {

@@ -16,6 +16,7 @@ import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.*;
 import com.admission_crm.lead_management.Utills.JwtUtil;
+import com.admission_crm.lead_management.Utills.LeadResponseAssembler;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -57,6 +58,7 @@ public class LeadService {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
+    private final LeadResponseAssembler leadResponseAssembler;
 
     public Lead createLead(LeadRequest leadRequest, String userEmail) throws Exception {
 
@@ -114,19 +116,24 @@ public class LeadService {
     }
 
     // Get All leads with pagination
-    public Page<Lead> getAllLeads(Pageable pageable) {
-        return leadRepository.findAll(pageable);
+    public Page<LeadResponse> getAllLeads(Pageable pageable) {
+        Page<Lead> leads = leadRepository.findAll(pageable);
+        return leadResponseAssembler.toResponsePage(leads);
+    }
+
+    // Get Leads by filter
+    public Page<LeadResponse> getLeadsByFilter(String searchTerm,
+                                               String institutionId,
+                                               LeadStatus status,
+                                               Pageable pageable) {
+        Page<Lead> leads = leadRepository.searchLeads(searchTerm, institutionId, status, pageable);
+        return leadResponseAssembler.toResponsePage(leads);
     }
 
     public Page<Lead> findAllLeads(Pageable pageable) {
         return leadRepository.findAll(pageable);
     }
 
-    // Get Leads by filter
-    public Page<Lead> getLeadsByFilter(String searchTerm, String institutionId,
-                                       LeadStatus status, Pageable pageable) {
-        return leadRepository.searchLeads(searchTerm, institutionId, status, pageable);
-    }
 
     // Get Leads by institution
     public Page<Lead> getLeadsByInstitution(String institutionId, Pageable pageable) {

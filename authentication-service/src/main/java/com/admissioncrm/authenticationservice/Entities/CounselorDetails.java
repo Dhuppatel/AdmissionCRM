@@ -24,6 +24,9 @@ public class CounselorDetails {
     private String assignedInstitute;
     private String expertiseArea;
 
+    private long totalLeadsAssigned;
+    private long totalLeadsConverted;
+
 
     // more counsellor-specific fields
 }

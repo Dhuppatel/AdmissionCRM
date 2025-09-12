@@ -11,4 +11,5 @@ public interface AuthClient {
 
     @GetMapping("api/auth/counsellor/{counsellorId}")
     CounsellorDTO getCounsellorDetailsById(@PathVariable String counsellorId);
+
 }

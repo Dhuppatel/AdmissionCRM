@@ -22,6 +22,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class AuthenticationService {
     @Autowired
@@ -52,6 +54,9 @@ public class AuthenticationService {
         //generate the token
         try {
             String jwtToken = jwtUtils.generateToken(user.getId(), user.getRole());
+
+            user.setLastLogin(LocalDateTime.now());// set last active
+            userRepository.save(user);
             return ResponseEntity.ok(new JwtResponse(jwtToken, user.getRole()));
         } catch (Exception e) {
             throw new ApiException("Failed to generate JWT token");

@@ -106,19 +106,6 @@ public class LeadController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-//    private String getCurrentUsername() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        System.out.println(principal.toString());
-//        if (principal instanceof UserDetails) {
-//            System.out.println(((UserDetails) principal).getUsername());
-//            return ((UserDetails) principal).getUsername(); // Typically email or username
-//        } else {
-//            System.out.println("Line 88");
-//            return principal.toString();
-//        }
-//    }
-
     // Get a lead by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getLeadById(@PathVariable String id) {
@@ -144,14 +131,12 @@ public class LeadController {
             @RequestParam(required = false) String institutionId,
             @RequestParam(required = false) LeadStatus status) {
         try {
-            Page<Lead> leads;
+            Page<LeadResponse> leadResponses;
             if (searchTerm != null || institutionId != null || status != null) {
-                leads = leadService.getLeadsByFilter(searchTerm, institutionId, status, pageable);
+                leadResponses = leadService.getLeadsByFilter(searchTerm, institutionId, status, pageable);
             } else {
-                leads = leadService.getAllLeads(pageable);
+                leadResponses = leadService.getAllLeads(pageable);
             }
-
-            Page<LeadResponse> leadResponses = leads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Leads retrieved successfully", leadResponses));
         } catch (Exception e) {
             log.error("Error retrieving leads: ", e);

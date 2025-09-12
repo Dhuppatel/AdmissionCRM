@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,6 +23,12 @@ public class CounselorDTO {
     private boolean isActive;
     private String department;
     private Role role;
+    private LocalDateTime lastActive;
+    private LocalDateTime joinedDate;
+    private String status;
+    private long totalLeads;
+    private long convertedLeads;
 
-
+    private long assignedApplications;
+    private long completedApplications;
 }
