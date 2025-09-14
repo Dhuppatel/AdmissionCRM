@@ -758,10 +758,6 @@ public class LeadService {
 //                    break; // Stop assigning if counselor is at capacity
 //                }
 
-                // Remove from queue if queued
-//                if (lead.getStatus() == LeadStatus.QUEUED) {
-//                    queueService.removeFromQueue(leadId);
-//                }
 
                 // Assign lead
                 lead.setAssignedCounselor(counselorId);
@@ -1124,6 +1120,104 @@ public class LeadService {
                 pageable
         );
     }
+// Auto-assign leads based on strategy
+
+    @Transactional
+    public List<LeadResponse> autoAssignLeads(List<String> leadIds, String strategy, String institutionId) {
+        List<Lead> leads = leadRepository.findAllById(leadIds)
+                .stream()
+                .filter(lead -> lead.getStatus() == LeadStatus.NEW && lead.getAssignedCounselor() == null)
+                .toList();
+
+        Institution institution = institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new RuntimeException("Institution not found"));
+
+        List<String> counselorIds = institution.getCounselors();
+        if (counselorIds.isEmpty()) return Collections.emptyList();
+
+        List<Lead> assignedLeads = new ArrayList<>();
+
+        switch (strategy.toUpperCase()) {
+            case "ROUND_ROBIN" -> assignedLeads = assignRoundRobin(leads, counselorIds);
+            case "PRIORITY_BASED" -> assignedLeads = assignPriorityBased(leads, counselorIds);
+            case "AVAILABILITY_BASED" -> assignedLeads = assignAvailabilityBased(leads, counselorIds);
+            default -> throw new IllegalArgumentException("Invalid strategy: " + strategy);
+        }
+
+        List<LeadResponse> responses = assignedLeads.stream()
+                .map(LeadResponse::fromEntity)
+                .toList();
+
+        return responses;
+    }
+
+    private List<Lead> assignRoundRobin(List<Lead> leads, List<String> counselors) {
+        List<Lead> assigned = new ArrayList<>();
+
+        // Step 1: Load current active leads per counselor
+        Map<String, Long> counselorLoad = counselors.stream()
+                .collect(Collectors.toMap(
+                        id -> id,
+                        id -> leadRepository.countActiveLeadsByCounselor(
+                                id,
+                                List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED)
+                        )
+                ));
+
+        // Step 2: Sort counselors by load (least → most)
+        List<String> sortedCounselors = counselorLoad.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+
+        // Step 3: Round robin assignment starting from least-loaded counselor
+        int index = 0;
+        for (Lead lead : leads) {
+            String counselor = sortedCounselors.get(index % sortedCounselors.size());
+            assignLead(lead, counselor, assigned);
+            index++;
+        }
+
+        return assigned;
+    }
+    private List<Lead> assignPriorityBased(List<Lead> leads, List<String> counselors) {
+        leads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+
+        return leads.stream()
+                .map(lead -> {
+                    String counselor = counselors.stream()
+                            .min(Comparator.comparingLong(
+                                    c -> leadRepository.countActiveLeadsByCounselor(c,
+                                            List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED))
+                            )).orElseThrow();
+                    return assignLead(lead, counselor, new ArrayList<>());
+                })
+                .toList();
+    }
+    private List<Lead> assignAvailabilityBased(List<Lead> leads, List<String> counselors) {
+        List<Lead> assigned = new ArrayList<>();
+        for (Lead lead : leads) {
+            String counselor = counselors.stream()
+                    .min(Comparator.comparingLong(
+                            c -> leadRepository.countActiveLeadsByCounselor(c,
+                                    List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED))
+                    )).orElseThrow();
+
+            assignLead(lead, counselor, assigned);
+        }
+        return assigned;
+    }
+
+    private Lead assignLead(Lead lead, String counselorId, List<Lead> assignedList) {
+        lead.setAssignedCounselor(counselorId);
+        lead.setStatus(LeadStatus.ASSIGNED);
+        lead.setAssignedAt(LocalDateTime.now());
+        Lead saved = leadRepository.save(lead);
+        assignedList.add(saved);
+        return saved;
+    }
+
+
 
 //    public Page<Lead> getQueuedLeadsByInstituteWithSearch(String institutionId, String searchTerm, Pageable pageable) {
 //        return leadRepository.searchQueuedLeads(institutionId, searchTerm, LeadStatus.NEW, pageable);

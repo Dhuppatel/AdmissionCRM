@@ -4,11 +4,8 @@ import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Payload.*;
-import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
+import com.admission_crm.lead_management.Payload.Request.*;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
-import com.admission_crm.lead_management.Payload.Request.BulkAssignRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Service.LeadService;
@@ -403,6 +400,29 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to assign leads", "An unexpected error occurred"));
         }
     }
+
+    //auto assign leads to counselors with i-admin intervention
+
+    @PostMapping("/auto-assign")
+    public ResponseEntity<?> autoAssignLeads(
+            @RequestBody AutoAssignRequest request,
+            Authentication authentication) {
+        try {
+            List<LeadResponse> assigned = leadService.autoAssignLeads(
+                    request.getLeadIds(),
+                    request.getStrategy(),
+                    request.getInstitutionId()
+            );
+
+
+            return ResponseEntity.ok(ApiResponse.success("Auto-assignment completed", assigned));
+        } catch (Exception e) {
+            log.error("Error in auto assignment", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to auto-assign leads", e.getMessage()));
+        }
+    }
+
 
     // Transfer lead from one counselor to another
     @PostMapping("/{leadId}/transfer")
