@@ -1230,6 +1230,13 @@ public class LeadService {
         lead.setAssignedAt(LocalDateTime.now());
         Lead saved = leadRepository.save(lead);
         assignedList.add(saved);
+        //send notification to the user that lead has assigned to specific counselor
+        CounsellorDTO counsellorDetails=authClient.getCounsellorDetailsById(counselorId);
+
+        whatsAppService.sendLeadAssignmentNotification(saved.getPhone(),saved.getFirstName()+" "+saved.getLastName(),
+                saved.getProgram().getName(),saved.getProgram().getInstitution().getName(),counsellorDetails.getFullName(),counsellorDetails.getPhone());
+
+
         return saved;
     }
 
