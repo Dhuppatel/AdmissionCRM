@@ -2,10 +2,10 @@ package com.admission_crm.lead_management.Service;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
+import com.admission_crm.lead_management.Service.Whatsapp.WhatsAppService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;

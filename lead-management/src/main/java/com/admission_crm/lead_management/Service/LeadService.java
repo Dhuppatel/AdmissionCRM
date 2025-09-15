@@ -15,6 +15,7 @@ import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.*;
+import com.admission_crm.lead_management.Service.Whatsapp.WhatsAppService;
 import com.admission_crm.lead_management.Utills.JwtUtil;
 import com.admission_crm.lead_management.Utills.LeadResponseAssembler;
 import jakarta.mail.MessagingException;
@@ -51,6 +52,7 @@ public class LeadService {
     private final JwtUtil jwtUtil;
     private final ProgramRepository programRepository;
     private final AuthClient authClient;
+    private final WhatsAppService whatsAppService;
 
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
@@ -766,6 +768,12 @@ public class LeadService {
 
                 Lead assignedLead = leadRepository.save(lead);
                 assignedLeads.add(assignedLead);
+                //send wp messsage to user that lead has assgined to specific counselor
+
+                CounsellorDTO counsellorDetails=authClient.getCounsellorDetailsById(counselorId);
+
+                whatsAppService.sendLeadAssignmentNotification(assignedLead.getPhone(),assignedLead.getFirstName()+" "+assignedLead.getLastName(),
+                        assignedLead.getProgram().getName(),assignedLead.getProgram().getInstitution().getName(),counsellorDetails.getFullName(),counsellorDetails.getPhone());
 
             } catch (Exception e) {
                 // Log error but continue with other leads
@@ -1096,6 +1104,14 @@ public class LeadService {
 //        lead.setLeadScore(score);
 
         Lead savedLead = leadRepository.save(lead);
+
+        //send whatsapp notification
+        whatsAppService.sendLeadAcknowledgement(savedLead.getPhone(), savedLead.getFirstName()+" "+savedLead.getLastName(),
+                                                savedLead.getProgram().getName(), savedLead.getProgram().getInstitution().getName());
+
+
+
+
 
         logAudit("", "CREATED_LEAD", savedLead.getId(), "Lead",
                 "Created lead: " + lead.getEmail());
