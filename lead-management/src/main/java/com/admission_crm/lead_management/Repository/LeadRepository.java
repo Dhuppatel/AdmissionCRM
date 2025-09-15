@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 
 @Repository
@@ -62,7 +61,7 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
     List<Lead> findByInstitutionIdAndStatusIn(String institutionId, List<LeadStatus> statuses);
 
     @Query("SELECT l FROM Lead l WHERE l.institutionId = :institutionId AND l.assignedCounselor = :counselorId AND l.status IN :statuses")
-    List<Lead> findActiveLearsByCounselorAndInstitution(@Param("counselorId") String counselorId,
+    List<Lead> findActiveLeadsByCounselorAndInstitution(@Param("counselorId") String counselorId,
                                                         @Param("institutionId") String institutionId,
                                                         @Param("statuses") List<LeadStatus> statuses);
 
@@ -137,4 +136,7 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
                                    @Param("fromDate") LocalDateTime fromDate,
                                    @Param("toDate") LocalDateTime toDate,
                                    Pageable pageable);
+
+    Page<Lead> findByInstitutionIdAndStatusAndAssignedCounselorIsNull(String institutionId, LeadStatus leadStatus,
+                                                                      Pageable pageable);
 }

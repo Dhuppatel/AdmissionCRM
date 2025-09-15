@@ -4,11 +4,8 @@ import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Payload.*;
-import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
+import com.admission_crm.lead_management.Payload.Request.*;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
-import com.admission_crm.lead_management.Payload.Request.BulkAssignRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Service.LeadService;
@@ -18,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -104,19 +103,6 @@ public class LeadController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-//    private String getCurrentUsername() {
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        System.out.println(principal.toString());
-//        if (principal instanceof UserDetails) {
-//            System.out.println(((UserDetails) principal).getUsername());
-//            return ((UserDetails) principal).getUsername(); // Typically email or username
-//        } else {
-//            System.out.println("Line 88");
-//            return principal.toString();
-//        }
-//    }
-
     // Get a lead by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getLeadById(@PathVariable String id) {
@@ -142,14 +128,12 @@ public class LeadController {
             @RequestParam(required = false) String institutionId,
             @RequestParam(required = false) LeadStatus status) {
         try {
-            Page<Lead> leads;
+            Page<LeadResponse> leadResponses;
             if (searchTerm != null || institutionId != null || status != null) {
-                leads = leadService.getLeadsByFilter(searchTerm, institutionId, status, pageable);
+                leadResponses = leadService.getLeadsByFilter(searchTerm, institutionId, status, pageable);
             } else {
-                leads = leadService.getAllLeads(pageable);
+                leadResponses = leadService.getAllLeads(pageable);
             }
-
-            Page<LeadResponse> leadResponses = leads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Leads retrieved successfully", leadResponses));
         } catch (Exception e) {
             log.error("Error retrieving leads: ", e);
@@ -157,6 +141,38 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to retrieve leads", "An unexpected error occurred"));
         }
     }
+    // get leads that are not assigned to any counselor (queued leads) for a specific institution with optional search term
+    @GetMapping("/queue/{institutionId}")
+    public ResponseEntity<?> getQueuedLeadsByInstitute(
+            @PathVariable String institutionId,
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
+            @RequestParam(required = false) String searchTerm) {
+        try {
+            // Sanitize sort fields
+            Sort safeSort = Sort.by("createdAt"); // default safe sort
+            if (pageable.getSort().isSorted()) {
+                for (Sort.Order order : pageable.getSort()) {
+                    if (List.of("createdAt", "status", "priority", "leadScore").contains(order.getProperty())) {
+                        safeSort = Sort.by(order);
+                    }
+                }
+            }
+
+            Pageable safePageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), safeSort);
+
+            Page<Lead> queuedLeads = leadService.getQueuedLeadsByInstitute(institutionId, safePageable);
+
+            Page<LeadResponse> leadResponses = queuedLeads.map(LeadResponse::fromEntity);
+            return ResponseEntity.ok(ApiResponse.success("Queued leads retrieved successfully", leadResponses));
+
+        } catch (Exception e) {
+            log.error("Error retrieving queued leads: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to retrieve queued leads", "An unexpected error occurred"));
+        }
+    }
+
+
 
     // Get leads by institution
     @GetMapping("/institution/{institutionCode}")
@@ -178,7 +194,15 @@ public class LeadController {
     public ResponseEntity<?> getLeadsByCounselor(@PathVariable String counselorId,
                                                  Pageable pageable) {
         try {
-            Page<Lead> leads = leadService.getLeadsByCounselor(counselorId, pageable);
+            Pageable validatedPageable = PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    Sort.by("createdAt").descending()
+            );
+            Page<Lead> leads = leadService.getLeadsByCounselor(counselorId, validatedPageable);
+
+
+
             Page<LeadResponse> leadResponses = leads.map(LeadResponse::fromEntity);
             return ResponseEntity.ok(ApiResponse.success("Counselor leads retrieved successfully", leadResponses));
         } catch (Exception e) {
@@ -360,8 +384,7 @@ public class LeadController {
         try {
             List<Lead> assignedLeads = leadService.bulkAssignLeads(
                     request.getLeadIds(),
-                    request.getCounselorId(),
-                    authentication.getName()
+                    request.getCounselorId()
             );
             List<LeadResponse> leadResponses = assignedLeads.stream()
                     .map(LeadResponse::fromEntity)
@@ -377,6 +400,29 @@ public class LeadController {
                     .body(ApiResponse.error("Failed to assign leads", "An unexpected error occurred"));
         }
     }
+
+    //auto assign leads to counselors with i-admin intervention
+
+    @PostMapping("/auto-assign")
+    public ResponseEntity<?> autoAssignLeads(
+            @RequestBody AutoAssignRequest request,
+            Authentication authentication) {
+        try {
+            List<LeadResponse> assigned = leadService.autoAssignLeads(
+                    request.getLeadIds(),
+                    request.getStrategy(),
+                    request.getInstitutionId()
+            );
+
+
+            return ResponseEntity.ok(ApiResponse.success("Auto-assignment completed", assigned));
+        } catch (Exception e) {
+            log.error("Error in auto assignment", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ApiResponse.error("Failed to auto-assign leads", e.getMessage()));
+        }
+    }
+
 
     // Transfer lead from one counselor to another
     @PostMapping("/{leadId}/transfer")

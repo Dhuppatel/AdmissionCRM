@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/counsellor")
+@RequestMapping("/api/auth/counsellor")
 @RequiredArgsConstructor
 public class CounselorController {
 
@@ -27,8 +27,8 @@ public class CounselorController {
 
 
     @GetMapping("/{counsellorId}")
-    public ResponseEntity<CounselorDTO> getCounsellorById(@PathVariable String counselorId) {
-        CounselorDTO counselor = counselorService.getCounselorById(counselorId);
+    public ResponseEntity<CounselorDTO> getCounsellorById(@PathVariable String counsellorId) {
+        CounselorDTO counselor = counselorService.getCounselorById(counsellorId);
         if (counselor != null) {
             return ResponseEntity.ok(counselor);
         }

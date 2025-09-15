@@ -59,15 +59,9 @@ public class User  {
     @JoinColumn(name = "institution_id")
     private String institutionId;
 
-//    @OneToMany(mappedBy = "assignedCounselor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @ElementCollection
-    private List<String> assignedLeads = new ArrayList<>();
 
-    @Column(name = "max_leads_assignment")
-    private Integer maxLeadsAssignment = 50;
-
-    @Column(name = "current_leads_count")
-    private Integer currentLeadsCount = 0;
+//    @Column(name = "current_leads_count")
+//    private Integer currentLeadsCount = 0;
 
     @Column(name = "is_active")
     private Boolean isActive = true;

@@ -13,6 +13,7 @@ import com.admissioncrm.authenticationservice.Entities.CounselorDetails;
 import com.admissioncrm.authenticationservice.Entities.InstituteAdminDetails;
 import com.admissioncrm.authenticationservice.ExceptionHandling.ApiException;
 import com.admissioncrm.authenticationservice.ExceptionHandling.UsernameAlreadyExistsException;
+import com.admissioncrm.authenticationservice.Feign.LeadsClient;
 import com.admissioncrm.authenticationservice.Repositories.CounselorDetailsRepository;
 import com.admissioncrm.authenticationservice.Repositories.InstituteAdminDetailsRepository;
 import com.admissioncrm.authenticationservice.Repositories.UserRepository;
@@ -27,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,12 +47,13 @@ public class UserService {
     private InstituteAdminDetailsRepository instituteAdminDetailsRepository;
     @Autowired
     private CounselorDetailsRepository counsellorDetailsRepository;
-    private final RestTemplate restTemplate;
+    @Autowired
+    private  LeadsClient leadsClient;
 
     @Value("${lead-service.base-url}")
     private String leadServiceBaseUrl;
 
-
+    private final RestTemplate restTemplate;
     public UserService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
@@ -62,8 +65,8 @@ public class UserService {
     public ResponseEntity<?> createCounsellor(CreateUserRequest request) {
         return createUserFromDTO(request, Role.COUNSELOR);
     }
-
-    private ResponseEntity<?> createUserFromDTO(CreateUserRequest request, Role role) {
+    @Transactional
+    protected ResponseEntity<?> createUserFromDTO(CreateUserRequest request, Role role) {
         //cheak username is available or not
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new UsernameAlreadyExistsException("Username " + request.getUsername() + " is already taken");
@@ -113,6 +116,9 @@ public class UserService {
                     .build();
 
             counsellorDetailsRepository.save(counselorDetails);
+
+            //Notify lead service to assign counsellor
+            notifyLeadServiceAssignCounsellor(request.getInstituteId(), user.getId());
         }
 
 
@@ -124,27 +130,26 @@ public class UserService {
     //notify lead service to assign admin
 
     private void notifyLeadServiceAssignAdmin(String instituteId, String userId) {
-        String url = leadServiceBaseUrl + "/institutions/" + instituteId + "/assign-admin";
         log.debug("Calling Lead Service to assign admin: userId={}, instituteId={}", userId, instituteId);
-        System.out.println("Calling Lead Service to assign admin: userId=" + userId + ", instituteId=" + instituteId);
         try {
-            HttpHeaders headers = new HttpHeaders();
-            String jwtToken = getJwtToken();
-            if (jwtToken != null) {
-                headers.set("Authorization", "Bearer " + jwtToken);
-            }
-            headers.set("Content-Type", "application/json");
-
             AssignAdminRequest request = new AssignAdminRequest(userId);
-            HttpEntity<AssignAdminRequest> entity = new HttpEntity<>(request, headers);
-
-            ResponseEntity<String> response = restTemplate.exchange(
-                    url, HttpMethod.POST, entity, String.class
-            );
+            ResponseEntity<String> response = leadsClient.assignAdminToInstitute(instituteId, request);
 
             log.info("Lead service assign-admin response: {}", response.getBody());
         } catch (Exception e) {
             log.error("Failed to call Lead Service for assigning admin. InstituteId={}, userId={}, error={}",
+                    instituteId, userId, e.getMessage());
+        }
+    }
+    private void notifyLeadServiceAssignCounsellor(String instituteId, String userId) {
+        log.debug("Calling Lead Service to assign Counsellor: userId={}, instituteId={}", userId, instituteId);
+        try {
+            AssignAdminRequest request = new AssignAdminRequest(userId);
+            ResponseEntity<String> response = leadsClient.assingCounsellorToInstitute(instituteId, request);
+
+            log.info("Lead service assign-Counsellor response: {}", response.getBody());
+        } catch (Exception e) {
+            log.error("Failed to call Lead Service for assigning Counsellor. InstituteId={}, userId={}, error={}",
                     instituteId, userId, e.getMessage());
         }
     }

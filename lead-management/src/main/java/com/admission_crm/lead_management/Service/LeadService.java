@@ -7,6 +7,7 @@ import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
+import com.admission_crm.lead_management.Feign.AuthClient;
 import com.admission_crm.lead_management.Payload.*;
 import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
 import com.admission_crm.lead_management.Payload.Request.LeadRequest;
@@ -14,7 +15,9 @@ import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.*;
+import com.admission_crm.lead_management.Service.Whatsapp.WhatsAppService;
 import com.admission_crm.lead_management.Utills.JwtUtil;
+import com.admission_crm.lead_management.Utills.LeadResponseAssembler;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class LeadService {
 
     private final LeadRepository leadRepository;
@@ -47,24 +51,16 @@ public class LeadService {
     private final EmailService emailService;
     private final JwtUtil jwtUtil;
     private final ProgramRepository programRepository;
+    private final AuthClient authClient;
+    private final WhatsAppService whatsAppService;
 
-    public LeadService(LeadRepository leadRepository, UserRepository userRepository, InstitutionRepository institutionRepository, AuditLogRepository auditLogRepository, InstitutionQueueService queueService, LeadScoringService scoringService, EmailService emailService, JwtUtil jwtUtil, ProgramRepository programRepository) {
-        this.leadRepository = leadRepository;
-        this.userRepository = userRepository;
-        this.institutionRepository = institutionRepository;
-        this.auditLogRepository = auditLogRepository;
-        this.queueService = queueService;
-        this.scoringService = scoringService;
-        this.emailService = emailService;
-        this.jwtUtil = jwtUtil;
-        this.programRepository = programRepository;
-    }
 
     private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
 
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
+    private final LeadResponseAssembler leadResponseAssembler;
 
     public Lead createLead(LeadRequest leadRequest, String userEmail) throws Exception {
 
@@ -122,19 +118,24 @@ public class LeadService {
     }
 
     // Get All leads with pagination
-    public Page<Lead> getAllLeads(Pageable pageable) {
-        return leadRepository.findAll(pageable);
+    public Page<LeadResponse> getAllLeads(Pageable pageable) {
+        Page<Lead> leads = leadRepository.findAll(pageable);
+        return leadResponseAssembler.toResponsePage(leads);
+    }
+
+    // Get Leads by filter
+    public Page<LeadResponse> getLeadsByFilter(String searchTerm,
+                                               String institutionId,
+                                               LeadStatus status,
+                                               Pageable pageable) {
+        Page<Lead> leads = leadRepository.searchLeads(searchTerm, institutionId, status, pageable);
+        return leadResponseAssembler.toResponsePage(leads);
     }
 
     public Page<Lead> findAllLeads(Pageable pageable) {
         return leadRepository.findAll(pageable);
     }
 
-    // Get Leads by filter
-    public Page<Lead> getLeadsByFilter(String searchTerm, String institutionId,
-                                       LeadStatus status, Pageable pageable) {
-        return leadRepository.searchLeads(searchTerm, institutionId, status, pageable);
-    }
 
     // Get Leads by institution
     public Page<Lead> getLeadsByInstitution(String institutionId, Pageable pageable) {
@@ -501,7 +502,7 @@ public class LeadService {
         Long currentLeadCount = leadRepository.countActiveLeadsByCounselor(counselorId, activeStatuses);
 
         // Assume a max capacity of 10 leads per counselor (this can be configurable)
-        int maxCapacity = 10;
+        int maxCapacity = 50;
 
         return currentLeadCount < maxCapacity;
     }
@@ -668,9 +669,14 @@ public class LeadService {
                 .orElseThrow(() -> new RuntimeException("Institution not found"));
 
         List<CounselorWorkload> workloads = new ArrayList<>();
-
+//
         for (String counselorId : institution.getCounselors()) {
-            User counselor = userRepository.findById(counselorId).orElse(null);
+//            User counselor = userRepository.findById(counselorId).orElse(null);
+
+        //fetch counsellor details from Auth serivce
+
+        CounsellorDTO counselor = authClient.getCounsellorDetailsById(counselorId);
+
             if (counselor == null) continue;
 
             List<LeadStatus> activeStatuses = Arrays.asList(
@@ -681,14 +687,14 @@ public class LeadService {
             );
 
             Long currentLeadCount = leadRepository.countActiveLeadsByCounselor(counselorId, activeStatuses);
-            int maxCapacity = 10; // This should be configurable
+            int maxCapacity = 50; // This should be configurable
             double utilization = (currentLeadCount.doubleValue() / maxCapacity) * 100;
 
             String status = currentLeadCount >= maxCapacity ? "BUSY" : "AVAILABLE";
 
             CounselorWorkload workload = CounselorWorkload.builder()
                     .counselorId(counselorId)
-                    .counselorName(counselor.getFirstName() + " " + counselor.getLastName())
+                    .counselorName(counselor.getFullName())
                     .counselorEmail(counselor.getEmail())
                     .currentLeadCount(currentLeadCount.intValue())
                     .maxCapacity(maxCapacity)
@@ -734,9 +740,8 @@ public class LeadService {
     /**
      * Bulk assign leads to counselor
      */
-    public List<Lead> bulkAssignLeads(List<String> leadIds, String counselorId, String userEmail) {
-        User counselor = userRepository.findById(counselorId)
-                .orElseThrow(() -> new CounselorNotFoundException("Counselor not found"));
+    public List<Lead> bulkAssignLeads(List<String> leadIds, String counselorId) {
+//
 
         List<Lead> assignedLeads = new ArrayList<>();
 
@@ -750,15 +755,11 @@ public class LeadService {
                     continue; // Skip this lead
                 }
 
-                // Check counselor capacity
-                if (!isCounselorAvailable(counselorId, lead.getInstitutionId())) {
-                    break; // Stop assigning if counselor is at capacity
-                }
+                // Check counselor capacity   , add this in future
+//                if (!isCounselorAvailable(counselorId, lead.getInstitutionId())) {
+//                    break; // Stop assigning if counselor is at capacity
+//                }
 
-                // Remove from queue if queued
-                if (lead.getStatus() == LeadStatus.QUEUED) {
-                    queueService.removeFromQueue(leadId);
-                }
 
                 // Assign lead
                 lead.setAssignedCounselor(counselorId);
@@ -767,19 +768,25 @@ public class LeadService {
 
                 Lead assignedLead = leadRepository.save(lead);
                 assignedLeads.add(assignedLead);
+                //send wp messsage to user that lead has assgined to specific counselor
+
+                CounsellorDTO counsellorDetails=authClient.getCounsellorDetailsById(counselorId);
+
+                whatsAppService.sendLeadAssignmentNotification(assignedLead.getPhone(),assignedLead.getFirstName()+" "+assignedLead.getLastName(),
+                        assignedLead.getProgram().getName(),assignedLead.getProgram().getInstitution().getName(),counsellorDetails.getFullName(),counsellorDetails.getPhone());
 
             } catch (Exception e) {
                 // Log error but continue with other leads
                 System.err.println("Failed to assign lead " + leadId + ": " + e.getMessage());
             }
         }
-
-        if (!assignedLeads.isEmpty()) {
-            logAudit(userEmail, "BULK_ASSIGNED_LEADS", counselorId, "Counselor",
-                    "Bulk assigned " + assignedLeads.size() + " leads to counselor: " + counselor.getEmail());
-
-            notifyCounselors("Bulk assigned " + assignedLeads.size() + " leads to " + counselor.getFirstName());
-        }
+//
+//        if (!assignedLeads.isEmpty()) {
+//            logAudit( "BULK_ASSIGNED_LEADS", counselorId, "Counselor",
+//                    "Bulk assigned " + assignedLeads.size() + " leads to counselor: " + counselorId);
+//
+//            notifyCounselors("Bulk assigned " + assignedLeads.size() + " leads to " +counselorId);
+//        }
 
         return assignedLeads;
     }
@@ -1098,6 +1105,14 @@ public class LeadService {
 
         Lead savedLead = leadRepository.save(lead);
 
+        //send whatsapp notification
+        whatsAppService.sendLeadAcknowledgement(savedLead.getPhone(), savedLead.getFirstName()+" "+savedLead.getLastName(),
+                                                savedLead.getProgram().getName(), savedLead.getProgram().getInstitution().getName());
+
+
+
+
+
         logAudit("", "CREATED_LEAD", savedLead.getId(), "Lead",
                 "Created lead: " + lead.getEmail());
 
@@ -1113,4 +1128,114 @@ public class LeadService {
 
         return savedLead;
     }
+    // get queued leads by institute with pagination and search
+    public Page<Lead> getQueuedLeadsByInstitute(String institutionId, Pageable pageable) {
+        return leadRepository.findByInstitutionIdAndStatusAndAssignedCounselorIsNull(
+                institutionId,
+                LeadStatus.NEW,
+                pageable
+        );
+    }
+// Auto-assign leads based on strategy
+
+    @Transactional
+    public List<LeadResponse> autoAssignLeads(List<String> leadIds, String strategy, String institutionId) {
+        List<Lead> leads = leadRepository.findAllById(leadIds)
+                .stream()
+                .filter(lead -> lead.getStatus() == LeadStatus.NEW && lead.getAssignedCounselor() == null)
+                .toList();
+
+        Institution institution = institutionRepository.findById(institutionId)
+                .orElseThrow(() -> new RuntimeException("Institution not found"));
+
+        List<String> counselorIds = institution.getCounselors();
+        if (counselorIds.isEmpty()) return Collections.emptyList();
+
+        List<Lead> assignedLeads = new ArrayList<>();
+
+        switch (strategy.toUpperCase()) {
+            case "ROUND_ROBIN" -> assignedLeads = assignRoundRobin(leads, counselorIds);
+            case "PRIORITY_BASED" -> assignedLeads = assignPriorityBased(leads, counselorIds);
+            case "AVAILABILITY_BASED" -> assignedLeads = assignAvailabilityBased(leads, counselorIds);
+            default -> throw new IllegalArgumentException("Invalid strategy: " + strategy);
+        }
+
+        List<LeadResponse> responses = assignedLeads.stream()
+                .map(LeadResponse::fromEntity)
+                .toList();
+
+        return responses;
+    }
+
+    private List<Lead> assignRoundRobin(List<Lead> leads, List<String> counselors) {
+        List<Lead> assigned = new ArrayList<>();
+
+        // Step 1: Load current active leads per counselor
+        Map<String, Long> counselorLoad = counselors.stream()
+                .collect(Collectors.toMap(
+                        id -> id,
+                        id -> leadRepository.countActiveLeadsByCounselor(
+                                id,
+                                List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED)
+                        )
+                ));
+
+        // Step 2: Sort counselors by load (least → most)
+        List<String> sortedCounselors = counselorLoad.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+
+        // Step 3: Round robin assignment starting from least-loaded counselor
+        int index = 0;
+        for (Lead lead : leads) {
+            String counselor = sortedCounselors.get(index % sortedCounselors.size());
+            assignLead(lead, counselor, assigned);
+            index++;
+        }
+
+        return assigned;
+    }
+    private List<Lead> assignPriorityBased(List<Lead> leads, List<String> counselors) {
+        leads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+
+        return leads.stream()
+                .map(lead -> {
+                    String counselor = counselors.stream()
+                            .min(Comparator.comparingLong(
+                                    c -> leadRepository.countActiveLeadsByCounselor(c,
+                                            List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED))
+                            )).orElseThrow();
+                    return assignLead(lead, counselor, new ArrayList<>());
+                })
+                .toList();
+    }
+    private List<Lead> assignAvailabilityBased(List<Lead> leads, List<String> counselors) {
+        List<Lead> assigned = new ArrayList<>();
+        for (Lead lead : leads) {
+            String counselor = counselors.stream()
+                    .min(Comparator.comparingLong(
+                            c -> leadRepository.countActiveLeadsByCounselor(c,
+                                    List.of(LeadStatus.ASSIGNED, LeadStatus.IN_PROGRESS, LeadStatus.CONTACTED))
+                    )).orElseThrow();
+
+            assignLead(lead, counselor, assigned);
+        }
+        return assigned;
+    }
+
+    private Lead assignLead(Lead lead, String counselorId, List<Lead> assignedList) {
+        lead.setAssignedCounselor(counselorId);
+        lead.setStatus(LeadStatus.ASSIGNED);
+        lead.setAssignedAt(LocalDateTime.now());
+        Lead saved = leadRepository.save(lead);
+        assignedList.add(saved);
+        return saved;
+    }
+
+
+
+//    public Page<Lead> getQueuedLeadsByInstituteWithSearch(String institutionId, String searchTerm, Pageable pageable) {
+//        return leadRepository.searchQueuedLeads(institutionId, searchTerm, LeadStatus.NEW, pageable);
+//    }
 }

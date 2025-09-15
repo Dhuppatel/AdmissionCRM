@@ -206,6 +206,21 @@ public class InstitutionService {
             return false;
         }
     }
+    //Assign counsellor to institution
+    public boolean assignCounsellorToInstitution(String institutionId, String userId) {
+        Optional<Institution> optionalInstitution = institutionRepository.findById(institutionId);
+
+        if (optionalInstitution.isPresent()) {
+            Institution institution = optionalInstitution.get();
+            institution.getCounselors().add(userId); // assume `adminUserId` column in table
+            institutionRepository.save(institution);
+            log.info("Counsellor  {} assigned to Institution {}", userId, institutionId);
+            return true;
+        } else {
+            log.warn("Institution {} not found", institutionId);
+            return false;
+        }
+    }
 
     public InstitutionResponseDTO getAssignedInstituteForAdmin() {
         // Get the current logged-in user (from SecurityContext or token claims)
@@ -220,5 +235,6 @@ public class InstitutionService {
 
         return institute != null ? entityMapper.toResponseDTO(institute) : null;
     }
+
 
 }
