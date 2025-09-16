@@ -1,9 +1,7 @@
-package com.admission_crm.lead_management.Payload.Request;
+package com.admission_crm.lead_management.Payload.Request.Leads;
 
 import lombok.Builder;
 import lombok.Data;
-
-import java.awt.*;
 
 @Data
 @Builder

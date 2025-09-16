@@ -2,13 +2,11 @@ package com.admission_crm.lead_management.Controller;
 
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.CounselorWorkload;
-import com.admission_crm.lead_management.Payload.Response.LeadResponse;
-import com.admission_crm.lead_management.Service.LeadService;
+import com.admission_crm.lead_management.Service.Leads.LeadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -322,34 +320,34 @@ public class CounselorController {
         }
     }
 
-    /**
-     * Request next lead for counselor (pull from queue)
-     */
-    @PostMapping("/{counselorId}/next-lead")
-    public ResponseEntity<?> requestNextLead(@PathVariable String counselorId,
-                                             @RequestParam String institutionId,
-                                             Authentication authentication) {
-        try {
-            var nextLead = leadService.getNextLeadForCounselor(counselorId, institutionId, authentication.getName());
-
-            if (nextLead == null) {
-                return ResponseEntity.ok(ApiResponse.success("No leads available in queue", null));
-            }
-
-            return ResponseEntity.ok(ApiResponse.success("Next lead assigned successfully",
-                    LeadResponse.fromEntity(nextLead)));
-        } catch (com.admission_crm.lead_management.Exception.CounselorUnavailableException e) {
-            log.warn("Counselor unavailable for next lead: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ApiResponse.error("Counselor unavailable", e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            log.warn("Invalid counselor for institution: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.error("Invalid request", e.getMessage()));
-        } catch (Exception e) {
-            log.error("Error requesting next lead: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to get next lead", "An unexpected error occurred"));
-        }
-    }
+//    /**
+//     * Request next lead for counselor (pull from queue)
+//     */
+//    @PostMapping("/{counselorId}/next-lead")
+//    public ResponseEntity<?> requestNextLead(@PathVariable String counselorId,
+//                                             @RequestParam String institutionId,
+//                                             Authentication authentication) {
+//        try {
+//            var nextLead = leadService.getNextLeadForCounselor(counselorId, institutionId, authentication.getName());
+//
+//            if (nextLead == null) {
+//                return ResponseEntity.ok(ApiResponse.success("No leads available in queue", null));
+//            }
+//
+//            return ResponseEntity.ok(ApiResponse.success("Next lead assigned successfully",
+//                    LeadResponse.fromEntity(nextLead)));
+//        } catch (com.admission_crm.lead_management.Exception.CounselorUnavailableException e) {
+//            log.warn("Counselor unavailable for next lead: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(ApiResponse.error("Counselor unavailable", e.getMessage()));
+//        } catch (IllegalArgumentException e) {
+//            log.warn("Invalid counselor for institution: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(ApiResponse.error("Invalid request", e.getMessage()));
+//        } catch (Exception e) {
+//            log.error("Error requesting next lead: ", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(ApiResponse.error("Failed to get next lead", "An unexpected error occurred"));
+//        }
+//    }
 }

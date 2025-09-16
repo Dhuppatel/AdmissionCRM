@@ -1,14 +1,17 @@
-package com.admission_crm.lead_management.Controller;
+package com.admission_crm.lead_management.Controller.Leads;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Payload.*;
 import com.admission_crm.lead_management.Payload.Request.*;
+import com.admission_crm.lead_management.Payload.Request.Leads.LandingPageLeadRequest;
+import com.admission_crm.lead_management.Payload.Request.Leads.LeadRequest;
+import com.admission_crm.lead_management.Payload.Request.Leads.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
-import com.admission_crm.lead_management.Service.LeadService;
+import com.admission_crm.lead_management.Service.Leads.LeadService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,10 +23,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -284,31 +284,31 @@ public class LeadController {
         }
     }
 
-    // Get next lead from queue for counselor
-    @PostMapping("/queue/next")
-    public ResponseEntity<?> getNextLeadForCounselor(@RequestParam String counselorId,
-                                                     @RequestParam String institutionId,
-                                                     Authentication authentication) {
-        try {
-            Lead nextLead = leadService.getNextLeadForCounselor(counselorId, institutionId, authentication.getName());
-            if (nextLead == null) {
-                return ResponseEntity.ok(ApiResponse.success("No leads available in queue", null));
-            }
-            return ResponseEntity.ok(ApiResponse.success("Next lead assigned", LeadResponse.fromEntity(nextLead)));
-        } catch (CounselorUnavailableException e) {
-            log.warn("Counselor unavailable for next lead: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(ApiResponse.error("Counselor unavailable", e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            log.warn("Invalid counselor for institution: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.error("Invalid request", e.getMessage()));
-        } catch (Exception e) {
-            log.error("Error getting next lead: ", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.error("Failed to get next lead", "An unexpected error occurred"));
-        }
-    }
+//    // Get next lead from queue for counselor
+//    @PostMapping("/queue/next")
+//    public ResponseEntity<?> getNextLeadForCounselor(@RequestParam String counselorId,
+//                                                     @RequestParam String institutionId,
+//                                                     Authentication authentication) {
+//        try {
+//            Lead nextLead = leadService.getNextLeadForCounselor(counselorId, institutionId, authentication.getName());
+//            if (nextLead == null) {
+//                return ResponseEntity.ok(ApiResponse.success("No leads available in queue", null));
+//            }
+//            return ResponseEntity.ok(ApiResponse.success("Next lead assigned", LeadResponse.fromEntity(nextLead)));
+//        } catch (CounselorUnavailableException e) {
+//            log.warn("Counselor unavailable for next lead: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body(ApiResponse.error("Counselor unavailable", e.getMessage()));
+//        } catch (IllegalArgumentException e) {
+//            log.warn("Invalid counselor for institution: {}", e.getMessage());
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(ApiResponse.error("Invalid request", e.getMessage()));
+//        } catch (Exception e) {
+//            log.error("Error getting next lead: ", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body(ApiResponse.error("Failed to get next lead", "An unexpected error occurred"));
+//        }
+//    }
 
     // Complete lead
     @PostMapping("/{leadId}/complete")

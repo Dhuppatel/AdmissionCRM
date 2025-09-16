@@ -3,7 +3,7 @@ package com.admission_crm.lead_management.Controller;
 
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.LeadQueueInfo;
-import com.admission_crm.lead_management.Service.LeadService;
+import com.admission_crm.lead_management.Service.Leads.LeadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

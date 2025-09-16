@@ -5,11 +5,11 @@ import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Payload.LeadQueueInfo;
 import com.admission_crm.lead_management.Repository.InstitutionRepository;
-import com.admission_crm.lead_management.Repository.LeadRepository;
+import com.admission_crm.lead_management.Repository.Leads.LeadRepository;
+import com.admission_crm.lead_management.Service.Leads.LeadScoringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;

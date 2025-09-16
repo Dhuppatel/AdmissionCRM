@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Service;
+package com.admission_crm.lead_management.Service.Leads;
 
 import com.admission_crm.lead_management.Entity.AnalyticsAndReporting.AuditLog;
 import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
@@ -9,16 +9,18 @@ import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
 import com.admission_crm.lead_management.Exception.*;
 import com.admission_crm.lead_management.Feign.AuthClient;
 import com.admission_crm.lead_management.Payload.*;
-import com.admission_crm.lead_management.Payload.Request.LandingPageLeadRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadRequest;
-import com.admission_crm.lead_management.Payload.Request.LeadUpdateRequest;
+import com.admission_crm.lead_management.Payload.Request.Leads.LandingPageLeadRequest;
+import com.admission_crm.lead_management.Payload.Request.Leads.LeadRequest;
+import com.admission_crm.lead_management.Payload.Request.Leads.LeadUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.*;
+import com.admission_crm.lead_management.Repository.Leads.LeadRepository;
+import com.admission_crm.lead_management.Service.EmailService;
+import com.admission_crm.lead_management.Service.InstitutionQueueService;
 import com.admission_crm.lead_management.Service.Whatsapp.WhatsAppService;
 import com.admission_crm.lead_management.Utills.JwtUtil;
 import com.admission_crm.lead_management.Utills.LeadResponseAssembler;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -1230,11 +1232,15 @@ public class LeadService {
         lead.setAssignedAt(LocalDateTime.now());
         Lead saved = leadRepository.save(lead);
         assignedList.add(saved);
-        //send notification to the user that lead has assigned to specific counselor
-        CounsellorDTO counsellorDetails=authClient.getCounsellorDetailsById(counselorId);
 
-        whatsAppService.sendLeadAssignmentNotification(saved.getPhone(),saved.getFirstName()+" "+saved.getLastName(),
-                saved.getProgram().getName(),saved.getProgram().getInstitution().getName(),counsellorDetails.getFullName(),counsellorDetails.getPhone());
+
+        //enable it whenever needed currently turend off due to twilio limits
+
+//        //send notification to the user that lead has assigned to specific counselor
+//        CounsellorDTO counsellorDetails=authClient.getCounsellorDetailsById(counselorId);
+//
+//        whatsAppService.sendLeadAssignmentNotification(saved.getPhone(),saved.getFirstName()+" "+saved.getLastName(),
+//                saved.getProgram().getName(),saved.getProgram().getInstitution().getName(),counsellorDetails.getFullName(),counsellorDetails.getPhone());
 
 
         return saved;
