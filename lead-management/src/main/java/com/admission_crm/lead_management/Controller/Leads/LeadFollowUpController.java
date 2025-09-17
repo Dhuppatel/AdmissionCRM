@@ -1,6 +1,8 @@
 package com.admission_crm.lead_management.Controller.Leads;
 
 import com.admission_crm.lead_management.Entity.FollowUp.LeadFollowUp;
+import com.admission_crm.lead_management.Payload.Request.Leads.LeadFollowUpRequest;
+import com.admission_crm.lead_management.Payload.Response.Leads.LeadFollowUpResponse;
 import com.admission_crm.lead_management.Service.Leads.LeadFollowUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,22 +18,22 @@ public class LeadFollowUpController {
     private final LeadFollowUpService followUpService;
 
     @PostMapping
-    public ResponseEntity<LeadFollowUp> createFollowUp(@RequestBody LeadFollowUp followUp) {
+    public ResponseEntity<LeadFollowUp> createFollowUp(@RequestBody LeadFollowUpRequest followUp) {
         return ResponseEntity.ok(followUpService.scheduleFollowUp(followUp));
     }
 
     @GetMapping("/lead/{leadId}")
-    public ResponseEntity<List<LeadFollowUp>> getFollowUpsByLead(@PathVariable String leadId) {
+    public ResponseEntity<List<LeadFollowUpResponse>> getFollowUpsByLead(@PathVariable String leadId) {
         return ResponseEntity.ok(followUpService.getFollowUpsByLead(leadId));
     }
 
-    @GetMapping("/assigned/{userId}")
-    public ResponseEntity<List<LeadFollowUp>> getFollowUpsAssignedTo(@PathVariable String userId) {
-        return ResponseEntity.ok(followUpService.getFollowUpsAssignedTo(userId));
+    @GetMapping("/assigned/{counsellorId}")
+    public ResponseEntity<List<LeadFollowUpResponse>> getFollowUpsAssignedTo(@PathVariable String counsellorId) {
+        return ResponseEntity.ok(followUpService.getFollowUpsAssignedTo(counsellorId));
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<LeadFollowUp> updateFollowUpStatus(
+    public ResponseEntity<LeadFollowUpResponse> updateFollowUpStatus(
             @PathVariable String id,
             @RequestParam LeadFollowUp.FollowUpStatus status,
             @RequestParam(required = false) String outcome) {

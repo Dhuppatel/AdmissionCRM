@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Controller;
+package com.admission_crm.lead_management.Controller.Academic;
 
 import com.admission_crm.lead_management.Exception.DuplicateLeadException;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
@@ -15,7 +15,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 

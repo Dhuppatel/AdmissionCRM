@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Controller;
+package com.admission_crm.lead_management.Controller.Academic;
 
 import com.admission_crm.lead_management.Entity.CoreEntities.University;
 import com.admission_crm.lead_management.Exception.InvalidRequestException;

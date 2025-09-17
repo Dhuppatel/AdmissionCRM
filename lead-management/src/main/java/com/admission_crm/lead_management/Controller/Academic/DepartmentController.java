@@ -1,6 +1,5 @@
-package com.admission_crm.lead_management.Controller;
+package com.admission_crm.lead_management.Controller.Academic;
 
-import com.admission_crm.lead_management.Entity.Academic.Department;
 import com.admission_crm.lead_management.Exception.ResourceNotFoundException;
 import com.admission_crm.lead_management.Payload.DepartmentDTO;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;

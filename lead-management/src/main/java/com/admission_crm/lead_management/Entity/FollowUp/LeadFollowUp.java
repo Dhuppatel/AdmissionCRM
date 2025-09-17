@@ -59,10 +59,10 @@ public class LeadFollowUp {
     private LocalDateTime updatedAt;
 
     public enum FollowUpType {
-        PHONE_CALL,
+        CALL,
         EMAIL,
         VIDEO_CALL,
-        IN_PERSON_MEETING
+        MEETING
     }
 
     public enum FollowUpStatus {
