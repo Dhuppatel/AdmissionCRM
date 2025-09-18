@@ -445,14 +445,25 @@ public class LeadService {
         if (request.getPriority() != null) {
             lead.setPriority(request.getPriority());
         }
-//        if (request.getCourseInterestId() != null) {
-//            lead.setCourseInterestId(request.getCourseInterestId());
-//        }
+
         if(request.getQueryTitle() != null) {
             lead.setQueryTitle(request.getQueryTitle());
         }
         if(request.getQueryDescription() != null) {
             lead.setQueryDescription(request.getQueryDescription());
+        }
+        if(request.getLeadPriority()!=null)
+        {
+            lead.setPriority(request.getLeadPriority());
+
+        }
+        if(request.getDob()!=null)
+        {
+            lead.setDateOfBirth(request.getDob());
+        }
+        if(request.getEmail()!=null)
+        {
+            lead.setEmail(request.getEmail());
         }
     }
 
