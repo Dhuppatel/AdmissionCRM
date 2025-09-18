@@ -94,6 +94,9 @@ public class Lead {
     @Column(name = "follow_up_id")
     private List<String> followUps = new ArrayList<>();
 
+    @OneToMany(mappedBy = "lead",cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LeadActivity> leadActivities = new ArrayList<>();
+
     @ElementCollection
     @CollectionTable(name = "lead_applications", joinColumns = @JoinColumn(name = "lead_id"))
     @Column(name = "application_id")

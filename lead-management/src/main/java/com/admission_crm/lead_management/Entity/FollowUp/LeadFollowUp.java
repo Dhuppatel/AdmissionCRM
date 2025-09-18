@@ -43,6 +43,8 @@ public class LeadFollowUp {
     @Column(columnDefinition = "TEXT")
     private String notes;
 
+    private Integer reminderMinutesBefore;
+
     @Column(columnDefinition = "TEXT")
     private String outcome;
 
@@ -57,7 +59,10 @@ public class LeadFollowUp {
     private LocalDateTime updatedAt;
 
     public enum FollowUpType {
-        CALL, EMAIL, SMS, MEETING, VISIT
+        CALL,
+        EMAIL,
+        VIDEO_CALL,
+        MEETING
     }
 
     public enum FollowUpStatus {

@@ -1,4 +1,4 @@
-package com.admission_crm.lead_management.Repository;
+package com.admission_crm.lead_management.Repository.Leads;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
