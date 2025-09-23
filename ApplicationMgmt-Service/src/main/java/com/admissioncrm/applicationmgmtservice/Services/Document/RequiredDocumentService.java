@@ -15,7 +15,7 @@ public class RequiredDocumentService {
 
 
     public List<RequiredDocument> getActiveDocuments(String programId) {
-        return repository.findByProgramIdAndActiveTrue(programId);
+        return repository.findByProgramId(programId);
     }
 
     public RequiredDocument createDocument(String programId, RequiredDocument doc) {

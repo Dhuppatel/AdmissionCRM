@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RequiredDocumentRepository extends JpaRepository<RequiredDocument, String> {
-    List<RequiredDocument> findByProgramIdAndActiveTrue(String instituteId);
+    List<RequiredDocument> findByProgramId(String programId);
 }
