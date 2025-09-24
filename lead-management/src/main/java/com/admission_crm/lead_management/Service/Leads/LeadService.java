@@ -871,6 +871,7 @@ public class LeadService {
         funnel.put("CONTACTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.CONTACTED));
         funnel.put("QUALIFIED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.FOLLOW_UP));
         funnel.put("CONVERTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.COMPLETED));
+        funnel.put("FOLLOW_UP", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.COMPLETED));
         funnel.put("REJECTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.REJECTED));
 
         return funnel;
