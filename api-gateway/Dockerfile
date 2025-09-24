@@ -1,17 +1,3 @@
-## Step 1: Use a JDK base image
-#FROM openjdk:21-oracle
-#
-## Step 2: Set working directory
-#WORKDIR /app
-#
-## Step 3: Copy built jar from host
-#COPY target/*.jar app.jar
-#
-## Step 4: Expose port
-#EXPOSE 8080
-#
-## Step 5: Run the jar
-#ENTRYPOINT ["java","-jar","app.jar"]
 # Stage 1: Build the jar using Maven
 FROM maven:3.9.8-eclipse-temurin-21 AS build
 WORKDIR /app
@@ -23,9 +9,5 @@ RUN mvn clean package -DskipTests
 FROM openjdk:21-oracle
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-
-
-COPY .env .env
-
-EXPOSE 6001
+EXPOSE 8080   # change per service
 ENTRYPOINT ["java", "-jar", "app.jar"]

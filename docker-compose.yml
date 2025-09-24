@@ -1,0 +1,52 @@
+services:
+
+  eureka:
+    build:
+      context: ./eureka_server
+    container_name: eureka
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_SERVER_URL=http://eureka:8761/eureka
+
+  lead-service:
+    build:
+      context: ./lead-management
+    container_name: lead-service
+    ports:
+      - "6001:6001"
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_SERVER_URL=http://eureka:8761/eureka
+
+  applicationmgmt-service:
+    build:
+      context: ./ApplicationMgmt-Service
+    container_name: applicationmgmt-service
+    ports:
+      - "8001:8001"
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_SERVER_URL=http://eureka:8761/eureka
+
+  auth-service:
+    build:
+      context: ./authentication-service
+    container_name: auth-service
+    ports:
+      - "6002:6002"
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_SERVER_URL=http://eureka:8761/eureka
