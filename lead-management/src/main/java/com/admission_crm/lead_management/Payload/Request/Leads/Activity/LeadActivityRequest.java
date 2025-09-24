@@ -12,6 +12,8 @@ public class LeadActivityRequest {
     private String description;
     private LeadStatus updatedStatus;
 
+    private boolean important; // For notes, indicates if it's marked as important
+
     private LeadActivity.CallOutcome callOutcome; // INTERESTED, NOT_INTERESTED, etc.
 
     public enum ActivityType {

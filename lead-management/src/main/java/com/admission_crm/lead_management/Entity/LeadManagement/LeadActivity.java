@@ -31,10 +31,13 @@ public class LeadActivity {
     private ActivityType activityType; //call , email, meeting, note, follow-up scheduled, status update
 
     @Column(columnDefinition = "TEXT")
-    private String description;// Details about the activity
+    private String description;// Details about the activity or Notes
 
     @Enumerated(EnumType.STRING)
     private LeadStatus updatedStatus; //Optional==> New status of the lead after the activity, if applicable
+
+
+    private boolean important;// For notes, indicates if it's marked as important
 
 
     //only for call activity
