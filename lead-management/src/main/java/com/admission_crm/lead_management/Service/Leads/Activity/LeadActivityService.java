@@ -2,6 +2,7 @@ package com.admission_crm.lead_management.Service.Leads.Activity;
 
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadActivity;
+import com.admission_crm.lead_management.Feign.AuthClient;
 import com.admission_crm.lead_management.Payload.Request.Leads.Activity.LeadActivityRequest;
 import com.admission_crm.lead_management.Payload.Response.Leads.Activity.LeadActivityResponse;
 import com.admission_crm.lead_management.Repository.Leads.Activity.LeadActivityRepository;
@@ -18,6 +19,7 @@ public class LeadActivityService {
 
     private final LeadRepository leadRepository;
     private final LeadActivityRepository leadActivityRepository;
+    private final AuthClient authClient;
 
     @Transactional
     public LeadActivityResponse logActivity(LeadActivityRequest request) {
@@ -42,13 +44,16 @@ public class LeadActivityService {
         }
 
         LeadActivity saved = leadActivityRepository.save(activity);
-        return LeadActivityResponse.fromEntity(saved);
+
+        String counselorName = fetchCounselorName(saved.getUserId());
+
+        return LeadActivityResponse.fromEntity(saved, counselorName);
     }
 
     public List<LeadActivityResponse> getActivitiesByLead(String leadId) {
         return leadActivityRepository.findByLeadIdOrderByCreatedAtDesc(leadId)
                 .stream()
-                .map(LeadActivityResponse::fromEntity)
+                .map(activity -> LeadActivityResponse.fromEntity(activity, fetchCounselorName(activity.getUserId())))
                 .toList();
     }
 
@@ -56,9 +61,16 @@ public class LeadActivityService {
         return leadActivityRepository
                 .findByLeadIdAndActivityTypeOrderByCreatedAtDesc(leadId, LeadActivity.ActivityType.NOTE)
                 .stream()
-                .map(LeadActivityResponse::fromEntity)
+                .map(activity -> LeadActivityResponse.fromEntity(activity, fetchCounselorName(activity.getUserId())))
                 .toList();
     }
 
-
+    private String fetchCounselorName(String counselorId) {
+        try {
+            return authClient.getCounsellorDetailsById(counselorId).getFullName();
+        } catch (Exception e) {
+            System.err.println("Failed to fetch counselor: " + e.getMessage());
+            return "Unknown";
+        }
+    }
 }

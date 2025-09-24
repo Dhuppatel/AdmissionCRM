@@ -20,10 +20,11 @@ public class LeadActivityResponse {
     private LeadActivity.CallOutcome callOutcome;
     private LocalDateTime createdAt;
 
+    private String counselorName;
 
     private boolean important;// For notes, indicates if it's marked as important
 
-    public static LeadActivityResponse fromEntity(LeadActivity activity) {
+    public static LeadActivityResponse fromEntity(LeadActivity activity,String counselorName) {
         return LeadActivityResponse.builder()
                 .id(activity.getId())
                 .leadId(activity.getLead().getId())
@@ -34,6 +35,7 @@ public class LeadActivityResponse {
                 .callOutcome(activity.getCallOutcome())
                 .createdAt(activity.getCreatedAt())
                 .important(activity.isImportant())
+                .counselorName(counselorName)
                 .build();
     }
 }
