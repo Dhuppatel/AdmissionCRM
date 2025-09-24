@@ -10,9 +10,9 @@ spring:
       server:
         webmvc:
           routes:
-            # Auth Service Routes (No Authentication Required)
+            # Auth Service Routes
             - id: auth-service
-              uri: http://localhost:6002
+              uri: ${AuthServiceUrl}
               predicates:
                 - Path=/api/auth/**
               filters:
@@ -20,7 +20,7 @@ spring:
 
             # Lead Management Service Routes
             - id: lead-service
-              uri: http://localhost:6001
+              uri: ${LeadServiceUrl}
               predicates:
                 - Path=/api/leads/**
               filters:
@@ -28,27 +28,13 @@ spring:
 
             # Application Service Routes
             - id: application-service
-              uri: http://localhost:8001
+              uri: ${ApplicationServiceUrl}
               predicates:
                 - Path=/api/application/**
               filters:
                 - StripPrefix=0
 
-            # Document Service Routes
-            - id: document-service
-              uri: http://localhost:8084
-              predicates:
-                - Path=/api/documents/**
-              filters:
-                - StripPrefix=0
 
-            # Workflow Service Routes
-            - id: workflow-service
-              uri: http://localhost:8085
-              predicates:
-                - Path=/api/workflows/**
-              filters:
-                - StripPrefix=0
 
 # JWT Configuration
 jwt:
