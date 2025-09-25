@@ -26,8 +26,6 @@ public class Lead {
 
     private String userId;
 
-    // Fix: Remove @Column annotations for fields that follow naming convention
-    // Hibernate will automatically map firstName -> first_name
     @Column(nullable = false, length = 50)
     private String firstName;
 

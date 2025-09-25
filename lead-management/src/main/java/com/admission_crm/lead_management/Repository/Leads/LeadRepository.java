@@ -27,6 +27,7 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
     Page<Lead> findByAssignedCounselor(String counselorId, Pageable pageable);
     Page<Lead> findByInstitutionIdAndStatus(String institutionId, LeadStatus status, Pageable pageable);
 
+    List<Lead> findByStatus(LeadStatus status);
     // Queue management queries
     List<Lead> findByInstitutionIdAndStatusOrderByCreatedAtAsc(String institutionId, LeadStatus status);
 

@@ -1211,9 +1211,13 @@ public class LeadService {
         return assigned;
     }
     private List<Lead> assignPriorityBased(List<Lead> leads, List<String> counselors) {
-        leads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+        // Create a mutable copy
+        List<Lead> mutableLeads = new ArrayList<>(leads);
 
-        return leads.stream()
+        // Sort the mutable list
+        mutableLeads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+
+        return mutableLeads.stream()
                 .map(lead -> {
                     String counselor = counselors.stream()
                             .min(Comparator.comparingLong(
@@ -1224,6 +1228,7 @@ public class LeadService {
                 })
                 .toList();
     }
+
     private List<Lead> assignAvailabilityBased(List<Lead> leads, List<String> counselors) {
         List<Lead> assigned = new ArrayList<>();
         for (Lead lead : leads) {
