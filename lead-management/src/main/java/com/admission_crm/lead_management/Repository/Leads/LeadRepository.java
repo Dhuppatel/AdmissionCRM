@@ -41,6 +41,8 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
     @Query("SELECT COUNT(l) FROM Lead l WHERE l.assignedCounselor = :counselorId AND l.status IN :statuses")
     Long countActiveLeadsByCounselor(@Param("counselorId") String counselorId, @Param("statuses") List<LeadStatus> statuses);
 
+    Long countLeadsByAssignedCounselor(String counselorId);
+
     // Export and reporting queries
     List<Lead> findByInstitutionIdOrderByCreatedAtAsc(String institutionId);
 
