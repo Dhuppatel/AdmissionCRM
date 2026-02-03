@@ -39,7 +39,8 @@ public class ApplicationForm {
 
     // Applied institute and Course Fields
 
-    private String SelectedInstitute;
+    private String selectedInstitute;
+    private String selectedProgram;
 
 
     @Enumerated(EnumType.STRING)

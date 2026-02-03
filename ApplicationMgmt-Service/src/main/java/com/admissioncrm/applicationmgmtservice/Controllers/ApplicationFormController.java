@@ -4,6 +4,7 @@ import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDT
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.CreateApplicationDTO;
 import com.admissioncrm.applicationmgmtservice.Services.ApplicationFormService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,6 +60,24 @@ public class ApplicationFormController {
 //
 //        return ResponseEntity.ok().body(response);
 //    }
+
+
+
+    @PostMapping("/create")
+    public ResponseEntity<?> createApplicationForm( @Valid @RequestBody CreateApplicationDTO requestDto) {
+        CreateApplicationDTO response=applicationFormService.createApplication(requestDto);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/created/{userId}")
+    public ResponseEntity<?> getApplicationsByUserId(@PathVariable String userId) {
+        var response=applicationFormService.getApplicationsByUserId(userId);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+
     /**
      * Submit Application Form with Documents
      * Handles both JSON data and file uploads in a single request

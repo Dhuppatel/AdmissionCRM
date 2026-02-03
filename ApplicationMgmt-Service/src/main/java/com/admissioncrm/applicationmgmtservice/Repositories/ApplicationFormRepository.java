@@ -67,4 +67,8 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     List<ApplicationForm> findByDeletedAtIsNull();
 
     Optional<ApplicationForm> findByReferenceId(String referenceId);
+
+
+
+    boolean existsByIdUserAndSelectedProgram(String idUser, String selectedProgram);
 }

@@ -5,6 +5,7 @@ import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormFullResponseDT
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormRequestDTO.ApplicationFormSubmissionDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationFormSummaryDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.ApplicationResponseDTO;
+import com.admissioncrm.applicationmgmtservice.Dto.CreateApplicationDTO;
 import com.admissioncrm.applicationmgmtservice.Dto.Stats.ApplicationStatsDTO;
 import com.admissioncrm.applicationmgmtservice.Entities.ApplicationForm.ApplicationForm;
 import com.admissioncrm.applicationmgmtservice.Enums.ApplicationStatus;
@@ -46,55 +47,27 @@ public class ApplicationFormService  {
     private final ReferenceIdService referenceIdService;
     private final DocumentService documentService;
 
-    public ApplicationFormSummaryDTO createApplication(ApplicationFormSubmissionDTO applicationDto) {
+    public CreateApplicationDTO createApplication(CreateApplicationDTO applicationDto) {
+        log.info("Creating new application for user: {}", applicationDto.getApplicantId());
 
-        //
-        // Todo: add the logic to link user(from authnetication service) with Application iD
-        //
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        String userId = authentication.getName();
 
-        log.info("Creating new application for user: {}", applicationDto.getIdUser());
-
-        // Validate application data
-        validateApplicationData(applicationDto);
-
-        // Check for duplicate email
-        if (isEmailAlreadyRegistered(applicationDto.getPersonalInfo().getEmail())) {
-            throw new DuplicateApplicationException(
-                    "Application with email " + applicationDto.getPersonalInfo().getEmail() + " already exists");
+        //cheak if the application is already exists for the user
+        if(applicationFormRepository.existsByIdUserAndSelectedProgram(userId, applicationDto.getProgramId())) {
+            throw new DuplicateApplicationException("Application already exists");
         }
-        //cheak for duplicate phone number
-        if(isStudentMobileAlreadyRegistered(applicationDto.getPersonalInfo().getStudentMobile())){
-            throw new DuplicateApplicationException(
-                    "Application with student mobile " + applicationDto.getPersonalInfo().getStudentMobile() + " already exists"
-            );
-        }
-        try {
-            // Map DTO to Entity
-            ApplicationForm applicationForm = applicationFormMapper.mapToEntity(applicationDto);
 
-            String referenceId = referenceIdService.generateReferenceId();
-            applicationForm.setReferenceId(referenceId);
-            applicationForm.setApplicationStatus(ApplicationStatus.SUBMITTED);
+        ApplicationForm applicationForm = new ApplicationForm();
+        applicationForm.setIdUser(userId);
+        applicationForm.setSelectedProgram(applicationDto.getProgramId());
+//        applicationForm.setSelectedInstitute(applicationDto.getInstitutionId());
 
-            // Save the application
-            ApplicationForm savedApplication = applicationFormRepository.save(applicationForm);
+        applicationFormRepository.save(applicationForm);
 
-            log.info("Application created successfully with ID: {}", savedApplication.getApplicationId());
 
-            return ApplicationFormSummaryDTO.builder()
-                    .referenceId(savedApplication.getReferenceId())
-                    .status(ApplicationStatus.SUBMITTED)
-                    .studentFullName(savedApplication.getPersonalInfo().getFullName())
-                    .courseAppliedFor(savedApplication.getAcademicInfo().getCourseInstituteName())
-                    .email(savedApplication.getEmail())
-                    .submittedDate(LocalDateTime.now(clock))
-                    .build();
-
-        } catch (Exception e) {
-            log.error("Error creating application for user: {}", applicationDto.getIdUser(), e);
-            throw new RuntimeException("Failed to create application", e);
-        }
+        return applicationDto;
     }
 
 
@@ -164,10 +137,21 @@ public class ApplicationFormService  {
 
 
     @Transactional(readOnly = true)
-    public List<ApplicationForm> getApplicationsByUserId(String userId) {
+    public List<CreateApplicationDTO> getApplicationsByUserId(String userId) {
         log.info("Fetching applications for user ID: {}", userId);
 
-        return applicationFormRepository.findByIdUserAndDeletedAtIsNull(userId);
+
+        List<CreateApplicationDTO> applications = applicationFormRepository.findByIdUserAndDeletedAtIsNull(userId)
+                .stream()
+                .map(app -> CreateApplicationDTO.builder()
+                        .applicantId(app.getIdUser())
+                        .referenceId(app.getReferenceId())
+                        .programId(app.getSelectedProgram())
+                        .institutionId(app.getSelectedInstitute())
+                        .build())
+                .toList();
+
+        return null;
     }
     
     public ApplicationFormSummaryDTO updateApplication(String applicationId, ApplicationFormSubmissionDTO applicationDto) {

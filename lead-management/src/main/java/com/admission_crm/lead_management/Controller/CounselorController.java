@@ -22,11 +22,6 @@ public class CounselorController {
 
     private final LeadService leadService;
 
-
-
-
-
-
     //counsellor dashboard
 
     @GetMapping("/{counsellorId}/lead-stats")
