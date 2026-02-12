@@ -112,8 +112,11 @@ public class LeadService {
         return savedLead;
     }
 
-    public Page<Lead> findLeadsByUser(String userEmail, Pageable pageable) {
-        return leadRepository.findByEmail(userEmail, pageable);
+    public Page<LeadResponse> findQueriesByUser(String userEmail, Pageable pageable) {
+
+        Page<Lead> leads=leadRepository.findByEmail(userEmail, pageable);
+
+        return leads.map(LeadResponse::fromEntity);
     }
 
     // Get a lead by ID

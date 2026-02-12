@@ -76,7 +76,7 @@ public class Institution {
 //    private List<String> courses = new ArrayList<>();
 
     @OneToMany(mappedBy = "institution", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Program> programs ;
+    private List<Program> programs =new ArrayList<>();
 
     @ElementCollection
     @CollectionTable(name = "institution_leads", joinColumns = @JoinColumn(name = "institution_id"))

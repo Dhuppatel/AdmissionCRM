@@ -83,26 +83,34 @@ public class LeadController {
         }
     }
 
+// get current user leads
+@GetMapping("/my-leads/{username}")
+public ResponseEntity<ApiResponse<Page<LeadResponse>>> getCurrentUserQueries(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @PathVariable String username) {
 
-    @GetMapping("/my-leads/{username}")
-    public ResponseEntity<Page<Lead>> getCurrentUserLeads(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @PathVariable String username) {
-        try {
-            System.out.println("Line 69 "+ username);
-            log.info("Fetching leads for user: {}", username);
-            Pageable pageable = PageRequest.of(page, size);
-            Page<Lead> leads = leadService.findLeadsByUser(username, pageable);
-            if (leads.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            }
-            return ResponseEntity.ok(leads);
-        } catch (Exception e) {
-            log.error("Error fetching leads for current user: ", e);
-            return ResponseEntity.status(500).body(null);
+    try {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<LeadResponse> leads = leadService.findQueriesByUser(username, pageable);
+
+        if (leads.isEmpty()) {
+            return ResponseEntity.ok(
+                    ApiResponse.success("No leads found", leads)
+            );
         }
+
+        return ResponseEntity.ok(
+                ApiResponse.success("Leads fetched successfully", leads)
+        );
+
+    } catch (Exception e) {
+        log.error("Error fetching leads for current user: ", e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Failed to fetch leads", e.getMessage()));
     }
+}
+
     // Get a lead by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getLeadById(@PathVariable String id) {

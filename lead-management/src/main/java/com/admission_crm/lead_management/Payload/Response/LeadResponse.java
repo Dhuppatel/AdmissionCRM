@@ -1,5 +1,6 @@
 package com.admission_crm.lead_management.Payload.Response;
 
+import com.admission_crm.lead_management.Entity.CoreEntities.Program;
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import lombok.*;
 
@@ -44,6 +45,8 @@ public class LeadResponse {
 
     // Static method to convert Lead entity to LeadResponse
     public static LeadResponse fromEntity(Lead lead) {
+        Program program = lead.getProgram();
+
         return LeadResponse.builder()
                 .id(lead.getId())
                 .firstName(lead.getFirstName())
@@ -60,7 +63,14 @@ public class LeadResponse {
                 .gender(lead.getGender() != null ? lead.getGender().name() : null)
                 .institutionId(lead.getInstitutionId())
                 //show the program name and here courseInterestId=programName
-                .courseInterestId(lead.getProgram().getName())
+                .courseInterestId(program != null ? program.getName(): null)
+                .courseInterestName(program != null ? program.getName() : null)
+                .institutionName(
+                        program != null && program.getInstitution() != null
+                                ? program.getInstitution().getName()
+                                : null
+                )
+
                 .status(lead.getStatus() != null ? lead.getStatus().name() : null)
                 .priority(lead.getPriority() != null ? lead.getPriority().name() : null)
                 .source(lead.getLeadSource() != null ? lead.getLeadSource().name() : null)
