@@ -10,4 +10,8 @@ import java.util.List;
 public interface LeadFollowUpRepository extends JpaRepository<LeadFollowUp, String> {
     List<LeadFollowUp> findByLeadId(String leadId);
     List<LeadFollowUp> findByAssignedTo(String userId);
+
+
+    // Find all follow-ups assigned to a counsellor with PENDING status
+    long countByAssignedToAndStatus(String assignedTo, LeadFollowUp.FollowUpStatus status);
 }

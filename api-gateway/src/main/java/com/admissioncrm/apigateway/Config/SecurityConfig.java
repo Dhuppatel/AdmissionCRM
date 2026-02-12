@@ -33,11 +33,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/login",
                                 "/api/auth/s/register",
-                                "/api/auth/request-password-reset",
                                 "/api/auth/reset-password",
                                 "/api/leads/institutions/getall",
                                 "/api/leads/programs/institution/**",
                                 "/api/leads/landing-page/capture",
+                                "/api/auth/request-password-reset",
                                 "/api/auth/otp/**",
                                 "/actuator/**", "/favicon.ico").permitAll()
                         .anyRequest().authenticated()
@@ -49,7 +49,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:4028"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

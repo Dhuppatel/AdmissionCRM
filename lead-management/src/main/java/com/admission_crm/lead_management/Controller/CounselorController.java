@@ -1,5 +1,6 @@
 package com.admission_crm.lead_management.Controller;
 
+import com.admission_crm.lead_management.Payload.CounsellorLeadStatsDTO;
 import com.admission_crm.lead_management.Payload.Response.ApiResponse;
 import com.admission_crm.lead_management.Payload.CounselorWorkload;
 import com.admission_crm.lead_management.Service.Leads.LeadService;
@@ -20,6 +21,18 @@ import java.util.Map;
 public class CounselorController {
 
     private final LeadService leadService;
+
+    //counsellor dashboard
+
+    @GetMapping("/{counsellorId}/lead-stats")
+    public ResponseEntity<?> getCounsellorLeadStats(@PathVariable String counsellorId) {
+        CounsellorLeadStatsDTO stats = leadService.getLeadStatsForCounsellor(counsellorId);
+        return ResponseEntity.ok(ApiResponse.success("Lead stats fetched successfully", stats));
+    }
+
+
+
+
 
     /**
      * Get counselor workloads for institution

@@ -3,6 +3,7 @@ package com.admission_crm.lead_management.Service.Leads;
 import com.admission_crm.lead_management.Entity.AnalyticsAndReporting.AuditLog;
 import com.admission_crm.lead_management.Entity.CoreEntities.Institution;
 import com.admission_crm.lead_management.Entity.CoreEntities.User;
+import com.admission_crm.lead_management.Entity.FollowUp.LeadFollowUp;
 import com.admission_crm.lead_management.Entity.LeadManagement.Lead;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadSource;
 import com.admission_crm.lead_management.Entity.LeadManagement.LeadStatus;
@@ -15,6 +16,7 @@ import com.admission_crm.lead_management.Payload.Request.Leads.LeadUpdateRequest
 import com.admission_crm.lead_management.Payload.Response.LeadResponse;
 import com.admission_crm.lead_management.Payload.Response.LeadStatsDTO;
 import com.admission_crm.lead_management.Repository.*;
+import com.admission_crm.lead_management.Repository.Leads.LeadFollowUpRepository;
 import com.admission_crm.lead_management.Repository.Leads.LeadRepository;
 import com.admission_crm.lead_management.Service.EmailService;
 import com.admission_crm.lead_management.Service.InstitutionQueueService;
@@ -63,6 +65,7 @@ public class LeadService {
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$"
     );
     private final LeadResponseAssembler leadResponseAssembler;
+    private final LeadFollowUpRepository leadFollowUpRepository;
 
     public Lead createLead(LeadRequest leadRequest, String userEmail) throws Exception {
 
@@ -109,8 +112,11 @@ public class LeadService {
         return savedLead;
     }
 
-    public Page<Lead> findLeadsByUser(String userEmail, Pageable pageable) {
-        return leadRepository.findByEmail(userEmail, pageable);
+    public Page<LeadResponse> findQueriesByUser(String userEmail, Pageable pageable) {
+
+        Page<Lead> leads=leadRepository.findByEmail(userEmail, pageable);
+
+        return leads.map(LeadResponse::fromEntity);
     }
 
     // Get a lead by ID
@@ -871,6 +877,7 @@ public class LeadService {
         funnel.put("CONTACTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.CONTACTED));
         funnel.put("QUALIFIED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.FOLLOW_UP));
         funnel.put("CONVERTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.COMPLETED));
+        funnel.put("FOLLOW_UP", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.COMPLETED));
         funnel.put("REJECTED", leadRepository.countByInstitutionIdAndStatus(institutionId, LeadStatus.REJECTED));
 
         return funnel;
@@ -1210,9 +1217,13 @@ public class LeadService {
         return assigned;
     }
     private List<Lead> assignPriorityBased(List<Lead> leads, List<String> counselors) {
-        leads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+        // Create a mutable copy
+        List<Lead> mutableLeads = new ArrayList<>(leads);
 
-        return leads.stream()
+        // Sort the mutable list
+        mutableLeads.sort(Comparator.comparing(Lead::getPriority).reversed()); // HIGH → MEDIUM → LOW
+
+        return mutableLeads.stream()
                 .map(lead -> {
                     String counselor = counselors.stream()
                             .min(Comparator.comparingLong(
@@ -1223,6 +1234,7 @@ public class LeadService {
                 })
                 .toList();
     }
+
     private List<Lead> assignAvailabilityBased(List<Lead> leads, List<String> counselors) {
         List<Lead> assigned = new ArrayList<>();
         for (Lead lead : leads) {
@@ -1257,6 +1269,27 @@ public class LeadService {
         return saved;
     }
 
+    public CounsellorLeadStatsDTO getLeadStatsForCounsellor(String counsellorId) {
+
+        //find assigned Leads
+        long assignedLeads=leadRepository.countLeadsByAssignedCounselor(counsellorId);
+
+
+        // Check counselor's current workload
+        List<LeadStatus> activeStatuses = Arrays.asList(
+                LeadStatus.ASSIGNED,
+                LeadStatus.IN_PROGRESS,
+                LeadStatus.CONTACTED,
+                LeadStatus.FOLLOW_UP
+        );
+
+        long activeLeads=leadRepository.countActiveLeadsByCounselor(counsellorId,activeStatuses);
+        long completedToday=3;
+
+        long pendingFollowUps=leadFollowUpRepository.countByAssignedToAndStatus(counsellorId, LeadFollowUp.FollowUpStatus.PENDING);
+
+        return new CounsellorLeadStatsDTO(assignedLeads, activeLeads, completedToday, pendingFollowUps);
+    }
 
 
 //    public Page<Lead> getQueuedLeadsByInstituteWithSearch(String institutionId, String searchTerm, Pageable pageable) {
