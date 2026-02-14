@@ -19,7 +19,7 @@ import java.util.Optional;
 public interface ApplicationFormRepository extends JpaRepository<ApplicationForm, String> {
 
     long countByApplicationStatus(ApplicationStatus applicationStatus);
-
+    ApplicationForm findByApplicationIdAndIdUser(String applicationId, String idUser);
 
     // Find by user ID
     List<ApplicationForm> findByIdUserAndDeletedAtIsNull(String idUser);
@@ -56,11 +56,12 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     boolean existsByStudentMobile(String studentMobile);
 
     // Alternative approach using native query (might be more reliable)
-    @Query(value = "SELECT MAX(CAST(RIGHT(reference_id, 6) AS UNSIGNED)) " +
+    @Query(value = "SELECT COALESCE(MAX(CAST(RIGHT(reference_id, 6) AS UNSIGNED)), 0) " +
             "FROM application_forms " +
             "WHERE reference_id LIKE CONCAT('APP-', :year, '-%')",
             nativeQuery = true)
     Long findMaxSequenceForYearNative(@Param("year") int year);
+
 
     List<ApplicationForm> findByApplicationStatusOrderByCreatedAt(ApplicationStatus status);
 
@@ -71,4 +72,8 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
 
 
     boolean existsByIdUserAndSelectedProgram(String idUser, String selectedProgram);
+
+    boolean existsByIdUserAndSelectedProgramAndDeletedAtIsNull(String userId, String programId);
+
+    boolean existsByIdUserAndSelectedProgramAndApplicationIdNotAndDeletedAtIsNull(String userId, String programId, String applicationId);
 }

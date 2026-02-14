@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class AddressInfo {
 
     // Correspondence Address
-    @Column(name = "country", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "country",  columnDefinition = "TEXT")
     private String country;
 
     @Column(name = "state", columnDefinition = "TEXT")
@@ -30,20 +30,20 @@ public class AddressInfo {
     @Column(name = "village_town", columnDefinition = "TEXT")
     private String villageTown;
 
-    @Column(name = "address_line1", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "address_line1",  columnDefinition = "TEXT")
     private String addressLine1;
 
     @Column(name = "address_line2", columnDefinition = "TEXT")
     private String addressLine2;
 
-    @Column(name = "pincode", nullable = false)
+    @Column(name = "pincode")
     private String pincode;
 
-    @Column(name = "permanent_address_same_as_correspondence", nullable = false)
+    @Column(name = "permanent_address_same_as_correspondence")
     private Boolean permanentAddressSameAsCorrespondence;
 
     // Permanent Address
-    @Column(name = "country_permanent", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "country_permanent",  columnDefinition = "TEXT")
     private String countryPermanent;
 
     @Column(name = "state_permanent", columnDefinition = "TEXT")
@@ -58,12 +58,12 @@ public class AddressInfo {
     @Column(name = "village_town_permanent", columnDefinition = "TEXT")
     private String villageTownPermanent;
 
-    @Column(name = "address_line1_permanent", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "address_line1_permanent",  columnDefinition = "TEXT")
     private String addressLine1Permanent;
 
     @Column(name = "address_line2_permanent", columnDefinition = "TEXT")
     private String addressLine2Permanent;
 
-    @Column(name = "pincode_permanent", nullable = false)
+    @Column(name = "pincode_permanent")
     private String pincodePermanent;
 }

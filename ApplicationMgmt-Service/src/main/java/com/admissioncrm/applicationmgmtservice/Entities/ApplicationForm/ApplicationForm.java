@@ -13,7 +13,13 @@ import java.util.List;
 
 
 @Entity
-@Table(name = "application_forms")
+@Table(name = "application_forms",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_user_program",
+                        columnNames = {"id_user", "selected_program"}
+                )
+        })
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,15 +37,16 @@ public class ApplicationForm {
     @Column(name = "id_user", nullable = false)
     private String idUser;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "student_mobile", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "student_mobile", columnDefinition = "TEXT")
     private String studentMobile;
 
     // Applied institute and Course Fields
 
     private String selectedInstitute;
+    @Column(name="selected_program")
     private String selectedProgram;
 
 
@@ -94,6 +101,8 @@ public class ApplicationForm {
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
+    @Column(name = "submitted_at")
+    private LocalDateTime submittedAt;
 }
 
 

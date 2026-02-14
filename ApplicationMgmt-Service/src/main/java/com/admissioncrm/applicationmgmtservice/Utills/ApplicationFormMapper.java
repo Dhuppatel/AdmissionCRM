@@ -295,171 +295,245 @@ public class ApplicationFormMapper {
     }
 
 
-    public void updateEntityFromDTO(ApplicationForm existingEntity, ApplicationFormSubmissionDTO dto) {
+    public void updateEntityFromDTO(ApplicationForm existing, ApplicationFormSubmissionDTO dto) {
 
-        if(existingEntity != null) {
-            existingEntity.setEmail(dto.getPersonalInfo().getEmail());
-            existingEntity.setStudentMobile(dto.getPersonalInfo().getStudentMobile());
-
+        if (existing == null || dto == null) {
+            return;
         }
-        // Update Personal Info
+
+        // Update root-level simple fields
         if (dto.getPersonalInfo() != null) {
-            PersonalInfo pi = existingEntity.getPersonalInfo();
-            if (pi == null) pi = new PersonalInfo();
-            pi.setFirstName(dto.getPersonalInfo().getFirstName());
-            pi.setMiddleName(dto.getPersonalInfo().getMiddleName());
-            pi.setLastName(dto.getPersonalInfo().getLastName());
-            pi.setFullName(dto.getPersonalInfo().getFullName());
-
-            pi.setDob(dto.getPersonalInfo().getDob());
-            pi.setGender(dto.getPersonalInfo().getGender());
-            pi.setReligion(dto.getPersonalInfo().getReligion());
-            pi.setNationality(dto.getPersonalInfo().getNationality());
-            pi.setCasteCategory(dto.getPersonalInfo().getCasteCategory());
-            pi.setDomicileState(dto.getPersonalInfo().getDomicileState());
-            pi.setDifferentlyAbled(dto.getPersonalInfo().getDifferentlyAbled());
-            pi.setDisability(dto.getPersonalInfo().getDisability());
-            pi.setEconomicallyBackwardClass(dto.getPersonalInfo().getEconomicallyBackwardClass());
-            existingEntity.setPersonalInfo(pi);
+            existing.setEmail(dto.getPersonalInfo().getEmail());
+            existing.setStudentMobile(dto.getPersonalInfo().getStudentMobile());
         }
-        // Update Parent Info
+
+
+//     PERSONAL INFO
+
+        if (dto.getPersonalInfo() != null) {
+            PersonalInfo pi = existing.getPersonalInfo();
+            if (pi == null) {
+                pi = new PersonalInfo();
+            }
+
+            PersonalInfoDTO source = dto.getPersonalInfo();
+
+            pi.setFirstName(source.getFirstName());
+            pi.setMiddleName(source.getMiddleName());
+            pi.setLastName(source.getLastName());
+            pi.setFullName(source.getFullName());
+            pi.setDob(source.getDob());
+            pi.setGender(source.getGender());
+            pi.setReligion(source.getReligion());
+            pi.setNationality(source.getNationality());
+            pi.setCasteCategory(source.getCasteCategory());
+            pi.setDomicileState(source.getDomicileState());
+            pi.setDifferentlyAbled(source.getDifferentlyAbled());
+            pi.setDisability(source.getDisability());
+            pi.setEconomicallyBackwardClass(source.getEconomicallyBackwardClass());
+
+            existing.setPersonalInfo(pi);
+        }
+
+
+//     PARENTS INFO
+
         if (dto.getParentInfo() != null) {
-            ParentsInfo pinfo = existingEntity.getParentsInfo();
-            if (pinfo == null) pinfo = new ParentsInfo();
-            pinfo.setFatherSalutation(dto.getParentInfo().getFatherSalutation());
-            pinfo.setFatherName(dto.getParentInfo().getFatherName());
-            pinfo.setFatherMobile(dto.getParentInfo().getFatherMobile());
-            pinfo.setFatherEmail(dto.getParentInfo().getFatherEmail());
-            pinfo.setMotherSalutation(dto.getParentInfo().getMotherSalutation());
-            pinfo.setMotherName(dto.getParentInfo().getMotherName());
-            pinfo.setMotherMobile(dto.getParentInfo().getMotherMobile());
-            pinfo.setMotherEmail(dto.getParentInfo().getMotherEmail());
-            pinfo.setAnnualIncome(dto.getParentInfo().getAnnualIncome());
-            existingEntity.setParentsInfo(pinfo);
-        }
-        // Update Address Info
-        if (dto.getAddressInfo() != null) {
-            AddressInfo ai = existingEntity.getAddressInfo();
-            if (ai == null) ai = new AddressInfo();
-            ai.setCountry(dto.getAddressInfo().getCountry());
-            ai.setState(dto.getAddressInfo().getState());
-            ai.setDistrict(dto.getAddressInfo().getDistrict());
-            ai.setCityTaluka(dto.getAddressInfo().getCityTaluka());
-            ai.setVillageTown(dto.getAddressInfo().getVillageTown());
-            ai.setAddressLine1(dto.getAddressInfo().getAddressLine1());
-            ai.setAddressLine2(dto.getAddressInfo().getAddressLine2());
-            ai.setPincode(dto.getAddressInfo().getPincode());
-            ai.setPermanentAddressSameAsCorrespondence(dto.getAddressInfo().getPermanentAddressSameAsCorrespondence());
-            ai.setCountryPermanent(dto.getAddressInfo().getCountryPermanent());
-            ai.setStatePermanent(dto.getAddressInfo().getStatePermanent());
-            ai.setDistrictPermanent(dto.getAddressInfo().getDistrictPermanent());
-            ai.setCityTalukaPermanent(dto.getAddressInfo().getCityTalukaPermanent());
-            ai.setVillageTownPermanent(dto.getAddressInfo().getVillageTownPermanent());
-            ai.setAddressLine1Permanent(dto.getAddressInfo().getAddressLine1Permanent());
-            ai.setAddressLine2Permanent(dto.getAddressInfo().getAddressLine2Permanent());
-            ai.setPincodePermanent(dto.getAddressInfo().getPincodePermanent());
-            existingEntity.setAddressInfo(ai);
-        }
-        // Update Academic Info
-        if (dto.getAcademicInfo() != null) {
-            AcademicInfo aci = existingEntity.getAcademicInfo();
-            if (aci == null) aci = new AcademicInfo();
-            aci.setUdiseNo(dto.getAcademicInfo().getUdiseNo());
-            aci.setAbcId(dto.getAcademicInfo().getAbcId());
-            aci.setQualification(dto.getAcademicInfo().getQualification());
-            aci.setTwelfthPassoutCountry(dto.getAcademicInfo().getTwelfthPassoutCountry());
-            aci.setTwelfthPassoutState(dto.getAcademicInfo().getTwelfthPassoutState());
-            aci.setTwelfthPassoutBoard(dto.getAcademicInfo().getTwelfthPassoutBoard());
-            aci.setTwelfthSchoolName(dto.getAcademicInfo().getTwelfthSchoolName());
-            aci.setTwelfthResultStatus(dto.getAcademicInfo().getTwelfthResultStatus());
-            aci.setTwelfthSeatNumber(dto.getAcademicInfo().getTwelfthSeatNumber());
-            aci.setTwelfthStream(dto.getAcademicInfo().getTwelfthStream());
-            aci.setTwelfthPassingDate(dto.getAcademicInfo().getTwelfthPassingDate());
-            aci.setTwelfthModeOfStudy(dto.getAcademicInfo().getTwelfthModeOfStudy());
-            aci.setTwelfthMarkingScheme(dto.getAcademicInfo().getTwelfthMarkingScheme());
-            aci.setTwelfthTotalMarks(dto.getAcademicInfo().getTwelfthTotalMarks());
-            aci.setTwelfthObtainMarks(dto.getAcademicInfo().getTwelfthObtainMarks());
-            aci.setTwelfthObtainCgpa(dto.getAcademicInfo().getTwelfthObtainCgpa());
-            aci.setCourseInstituteName(dto.getAcademicInfo().getCourseInstituteName());
-            aci.setCourseSeatNumber(dto.getAcademicInfo().getCourseSeatNumber());
-            aci.setCourseBoardOrUniversity(dto.getAcademicInfo().getCourseBoardOrUniversity());
-            aci.setCourseDegreeOrBranch(dto.getAcademicInfo().getCourseDegreeOrBranch());
-            aci.setCourseSpecialization(dto.getAcademicInfo().getCourseSpecialization());
-            aci.setCoursePassingDate(dto.getAcademicInfo().getCoursePassingDate());
-            aci.setCourseResultStatus(dto.getAcademicInfo().getCourseResultStatus());
-            aci.setCourseMarkingScheme(dto.getAcademicInfo().getCourseMarkingScheme());
-            aci.setCourseMaximumMarks(dto.getAcademicInfo().getCourseMaximumMarks());
-            aci.setCourseObtainMarks(dto.getAcademicInfo().getCourseObtainMarks());
-            aci.setCourseObtainCgpaPercentage(dto.getAcademicInfo().getCourseObtainCgpaPercentage());
-            existingEntity.setAcademicInfo(aci);
-        }
-        // Update Entrance Exam Info
-        if (dto.getEntranceExamInfo() != null) {
-            EntranceExamInfo eei = existingEntity.getEntranceExamInfo();
-            if (eei == null) eei = new EntranceExamInfo();
-            eei.setAppearedForEntranceExam(dto.getEntranceExamInfo().getAppearedForEntranceExam());
-            eei.setEntranceExam1(dto.getEntranceExamInfo().getEntranceExam1());
-            eei.setEntrancePassingDate1(dto.getEntranceExamInfo().getEntrancePassingDate1());
-            eei.setEntranceResultStatus1(dto.getEntranceExamInfo().getEntranceResultStatus1());
-            eei.setEntranceScoreRankPercentile1(dto.getEntranceExamInfo().getEntranceScoreRankPercentile1());
-            eei.setEntranceRollnoApplicationno1(dto.getEntranceExamInfo().getEntranceRollnoApplicationno1());
-            eei.setEntranceExam2(dto.getEntranceExamInfo().getEntranceExam2());
-            eei.setEntrancePassingDate2(dto.getEntranceExamInfo().getEntrancePassingDate2());
-            eei.setEntranceResultStatus2(dto.getEntranceExamInfo().getEntranceResultStatus2());
-            eei.setEntranceScoreRankPercentile2(dto.getEntranceExamInfo().getEntranceScoreRankPercentile2());
-            eei.setEntranceRollnoApplicationno2(dto.getEntranceExamInfo().getEntranceRollnoApplicationno2());
-            eei.setEntranceExam3(dto.getEntranceExamInfo().getEntranceExam3());
-            eei.setEntrancePassingDate3(dto.getEntranceExamInfo().getEntrancePassingDate3());
-            eei.setEntranceResultStatus3(dto.getEntranceExamInfo().getEntranceResultStatus3());
-            eei.setEntranceScoreRankPercentile3(dto.getEntranceExamInfo().getEntranceScoreRankPercentile3());
-            eei.setEntranceRollnoApplicationno3(dto.getEntranceExamInfo().getEntranceRollnoApplicationno3());
-            eei.setEntranceExam4(dto.getEntranceExamInfo().getEntranceExam4());
-            eei.setEntrancePassingDate4(dto.getEntranceExamInfo().getEntrancePassingDate4());
-            eei.setEntranceResultStatus4(dto.getEntranceExamInfo().getEntranceResultStatus4());
-            eei.setEntranceScoreRankPercentile4(dto.getEntranceExamInfo().getEntranceScoreRankPercentile4());
-            eei.setEntranceRollnoApplicationno4(dto.getEntranceExamInfo().getEntranceRollnoApplicationno4());
-            eei.setRegisteredInAcpcAcpdc(dto.getEntranceExamInfo().getRegisteredInAcpcAcpdc());
-            eei.setAcpcMeritNumber(dto.getEntranceExamInfo().getAcpcMeritNumber());
-            eei.setAcpcMeritMarks(dto.getEntranceExamInfo().getAcpcMeritMarks());
-            eei.setAcpcApplicationNumber(dto.getEntranceExamInfo().getAcpcApplicationNumber());
-            existingEntity.setEntranceExamInfo(eei);
-        }
-        // Update Course Preference Info
-        if (dto.getCoursePreference() != null) {
-            CoursePreferenceInfo cpi = existingEntity.getCoursePreferenceInfo();
-            if (cpi == null) cpi = new CoursePreferenceInfo();
-            cpi.setCouresePreference1(dto.getCoursePreference().getCouresePreference1());
-            cpi.setCouresePreference2(dto.getCoursePreference().getCouresePreference2());
-            cpi.setCouresePreference3(dto.getCoursePreference().getCouresePreference3());
-            cpi.setCouresePreference4(dto.getCoursePreference().getCouresePreference4());
-            existingEntity.setCoursePreferenceInfo(cpi);
-        }
-        // Update Additional Info
-        if (dto.getAdditionalInfo() != null) {
-            AdditionalInfo adi = existingEntity.getAdditionalInfo();
-            if (adi == null) adi = new AdditionalInfo();
-            adi.setEducationLoanRequired(dto.getAdditionalInfo().getEducationLoanRequired());
-            adi.setHostelAccommodationRequired(dto.getAdditionalInfo().getHostelAccommodationRequired());
-            adi.setTransportationRequired(dto.getAdditionalInfo().getTransportationRequired());
-            adi.setHeardAboutUniversityFrom(dto.getAdditionalInfo().getHeardAboutUniversityFrom());
-            adi.setStudentOfUniversity(dto.getAdditionalInfo().getStudentOfUniversity());
-            adi.setEnrollmentNumber(dto.getAdditionalInfo().getEnrollmentNumber());
-            existingEntity.setAdditionalInfo(adi);
-        }
-        // Update user ID if provided
-        if (dto.getIdUser() != null) {
-            existingEntity.setIdUser(dto.getIdUser());
+            ParentsInfo p = existing.getParentsInfo();
+            if (p == null) {
+                p = new ParentsInfo();
+            }
+
+            ParentInfoDTO source = dto.getParentInfo();
+
+            p.setFatherSalutation(source.getFatherSalutation());
+            p.setFatherName(source.getFatherName());
+            p.setFatherMobile(source.getFatherMobile());
+            p.setFatherEmail(source.getFatherEmail());
+            p.setMotherSalutation(source.getMotherSalutation());
+            p.setMotherName(source.getMotherName());
+            p.setMotherMobile(source.getMotherMobile());
+            p.setMotherEmail(source.getMotherEmail());
+            p.setAnnualIncome(source.getAnnualIncome());
+
+            existing.setParentsInfo(p);
         }
 
-        // NOTE: These fields are NOT updated to preserve data integrity:
-        // - applicationFormId (Primary key)
-        // - referenceId (Should remain constant)
-        // - createdAt (Original creation time)
-        // - deletedAt (Soft delete marker)
-        // - updatedAt (Will be set by the service layer)
-        // - applicationStatus (Business logic should handle this)
-        // - version (Optimistic locking field)
+
+//     ADDRESS INFO
+
+        if (dto.getAddressInfo() != null) {
+            AddressInfo ai = existing.getAddressInfo();
+            if (ai == null) {
+                ai = new AddressInfo();
+            }
+
+            AddressInfoDTO source = dto.getAddressInfo();
+
+            ai.setCountry(source.getCountry());
+            ai.setState(source.getState());
+            ai.setDistrict(source.getDistrict());
+            ai.setCityTaluka(source.getCityTaluka());
+            ai.setVillageTown(source.getVillageTown());
+            ai.setAddressLine1(source.getAddressLine1());
+            ai.setAddressLine2(source.getAddressLine2());
+            ai.setPincode(source.getPincode());
+            ai.setPermanentAddressSameAsCorrespondence(source.getPermanentAddressSameAsCorrespondence());
+
+            ai.setCountryPermanent(source.getCountryPermanent());
+            ai.setStatePermanent(source.getStatePermanent());
+            ai.setDistrictPermanent(source.getDistrictPermanent());
+            ai.setCityTalukaPermanent(source.getCityTalukaPermanent());
+            ai.setVillageTownPermanent(source.getVillageTownPermanent());
+            ai.setAddressLine1Permanent(source.getAddressLine1Permanent());
+            ai.setAddressLine2Permanent(source.getAddressLine2Permanent());
+            ai.setPincodePermanent(source.getPincodePermanent());
+
+            existing.setAddressInfo(ai);
+        }
+
+
+//     ACADEMIC INFO
+
+        if (dto.getAcademicInfo() != null) {
+            AcademicInfo ac = existing.getAcademicInfo();
+            if (ac == null) {
+                ac = new AcademicInfo();
+            }
+
+            AcademicInfoDTO source = dto.getAcademicInfo();
+
+            ac.setUdiseNo(source.getUdiseNo());
+            ac.setAbcId(source.getAbcId());
+            ac.setQualification(source.getQualification());
+
+            ac.setTwelfthPassoutCountry(source.getTwelfthPassoutCountry());
+            ac.setTwelfthPassoutState(source.getTwelfthPassoutState());
+            ac.setTwelfthPassoutBoard(source.getTwelfthPassoutBoard());
+            ac.setTwelfthSchoolName(source.getTwelfthSchoolName());
+            ac.setTwelfthResultStatus(source.getTwelfthResultStatus());
+            ac.setTwelfthSeatNumber(source.getTwelfthSeatNumber());
+            ac.setTwelfthStream(source.getTwelfthStream());
+            ac.setTwelfthPassingDate(source.getTwelfthPassingDate());
+            ac.setTwelfthModeOfStudy(source.getTwelfthModeOfStudy());
+            ac.setTwelfthMarkingScheme(source.getTwelfthMarkingScheme());
+            ac.setTwelfthTotalMarks(source.getTwelfthTotalMarks());
+            ac.setTwelfthObtainMarks(source.getTwelfthObtainMarks());
+            ac.setTwelfthObtainCgpa(source.getTwelfthObtainCgpa());
+
+            ac.setCourseInstituteName(source.getCourseInstituteName());
+            ac.setCourseSeatNumber(source.getCourseSeatNumber());
+            ac.setCourseBoardOrUniversity(source.getCourseBoardOrUniversity());
+            ac.setCourseDegreeOrBranch(source.getCourseDegreeOrBranch());
+            ac.setCourseSpecialization(source.getCourseSpecialization());
+            ac.setCoursePassingDate(source.getCoursePassingDate());
+            ac.setCourseResultStatus(source.getCourseResultStatus());
+            ac.setCourseMarkingScheme(source.getCourseMarkingScheme());
+            ac.setCourseMaximumMarks(source.getCourseMaximumMarks());
+            ac.setCourseObtainMarks(source.getCourseObtainMarks());
+            ac.setCourseObtainCgpaPercentage(source.getCourseObtainCgpaPercentage());
+
+            existing.setAcademicInfo(ac);
+        }
+
+//     ENTRANCE EXAM INFO
+
+        if (dto.getEntranceExamInfo() != null) {
+            EntranceExamInfo ee = existing.getEntranceExamInfo();
+            if (ee == null) {
+                ee = new EntranceExamInfo();
+            }
+
+            EntranceExamInfoDTO source = dto.getEntranceExamInfo();
+
+            ee.setAppearedForEntranceExam(source.getAppearedForEntranceExam());
+            ee.setEntranceExam1(source.getEntranceExam1());
+            ee.setEntrancePassingDate1(source.getEntrancePassingDate1());
+            ee.setEntranceResultStatus1(source.getEntranceResultStatus1());
+            ee.setEntranceScoreRankPercentile1(source.getEntranceScoreRankPercentile1());
+            ee.setEntranceRollnoApplicationno1(source.getEntranceRollnoApplicationno1());
+
+            ee.setEntranceExam2(source.getEntranceExam2());
+            ee.setEntrancePassingDate2(source.getEntrancePassingDate2());
+            ee.setEntranceResultStatus2(source.getEntranceResultStatus2());
+            ee.setEntranceScoreRankPercentile2(source.getEntranceScoreRankPercentile2());
+            ee.setEntranceRollnoApplicationno2(source.getEntranceRollnoApplicationno2());
+
+            ee.setEntranceExam3(source.getEntranceExam3());
+            ee.setEntrancePassingDate3(source.getEntrancePassingDate3());
+            ee.setEntranceResultStatus3(source.getEntranceResultStatus3());
+            ee.setEntranceScoreRankPercentile3(source.getEntranceScoreRankPercentile3());
+            ee.setEntranceRollnoApplicationno3(source.getEntranceRollnoApplicationno3());
+
+            ee.setEntranceExam4(source.getEntranceExam4());
+            ee.setEntrancePassingDate4(source.getEntrancePassingDate4());
+            ee.setEntranceResultStatus4(source.getEntranceResultStatus4());
+            ee.setEntranceScoreRankPercentile4(source.getEntranceScoreRankPercentile4());
+            ee.setEntranceRollnoApplicationno4(source.getEntranceRollnoApplicationno4());
+
+            ee.setRegisteredInAcpcAcpdc(source.getRegisteredInAcpcAcpdc());
+            ee.setAcpcMeritNumber(source.getAcpcMeritNumber());
+            ee.setAcpcMeritMarks(source.getAcpcMeritMarks());
+            ee.setAcpcApplicationNumber(source.getAcpcApplicationNumber());
+
+            existing.setEntranceExamInfo(ee);
+        }
+
+    /*
+     =========================
+     COURSE PREFERENCE
+     =========================
+     */
+        if (dto.getCoursePreference() != null) {
+            CoursePreferenceInfo cp = existing.getCoursePreferenceInfo();
+            if (cp == null) {
+                cp = new CoursePreferenceInfo();
+            }
+
+            CoursePreferenceDTO source = dto.getCoursePreference();
+
+            cp.setCouresePreference1(source.getCouresePreference1());
+            cp.setCouresePreference2(source.getCouresePreference2());
+            cp.setCouresePreference3(source.getCouresePreference3());
+            cp.setCouresePreference4(source.getCouresePreference4());
+
+            existing.setCoursePreferenceInfo(cp);
+        }
+
+
+//     ADDITIONAL INFO
+
+        if (dto.getAdditionalInfo() != null) {
+            AdditionalInfo ai = existing.getAdditionalInfo();
+            if (ai == null) {
+                ai = new AdditionalInfo();
+            }
+
+            AdditionalInfoDTO source = dto.getAdditionalInfo();
+
+            ai.setEducationLoanRequired(source.getEducationLoanRequired());
+            ai.setHostelAccommodationRequired(source.getHostelAccommodationRequired());
+            ai.setTransportationRequired(source.getTransportationRequired());
+            ai.setHeardAboutUniversityFrom(source.getHeardAboutUniversityFrom());
+            ai.setStudentOfUniversity(source.getStudentOfUniversity());
+            ai.setEnrollmentNumber(source.getEnrollmentNumber());
+
+            existing.setAdditionalInfo(ai);
+        }
+
+        // Update user if provided
+        if (dto.getIdUser() != null) {
+            existing.setIdUser(dto.getIdUser());
+        }
+
+        // DO NOT TOUCH:
+        // - applicationId
+        // - referenceId
+        // - createdAt
+        // - version
+        // - status (handled in service layer)
     }
+
 
 
 }

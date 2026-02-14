@@ -16,29 +16,29 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PersonalInfo {
 
-    @Column(name = "full_name", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "full_name", columnDefinition = "TEXT")
     private String fullName;
 
-    @Column(name = "first_name", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "first_name", columnDefinition = "TEXT")
     private String firstName;
 
     @Column(name = "middle_name", columnDefinition = "TEXT")
     private String middleName;
 
-    @Column(name = "last_name", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "last_name", columnDefinition = "TEXT")
     private String lastName;
 
-    @Column(name = "dob", nullable = false)
+    @Column(name = "dob")
     private java.time.LocalDate dob;
 
-    @Column(name = "gender", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "gender", columnDefinition = "TEXT")
     @Enumerated(EnumType.STRING)
     private com.admissioncrm.applicationmgmtservice.Enums.Gender gender;
 
-    @Column(name = "religion", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "religion", columnDefinition = "TEXT")
     private String religion;
 
-    @Column(name = "nationality", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "nationality", columnDefinition = "TEXT")
     private String nationality;
 
     @Column(name = "caste_category", columnDefinition = "TEXT")
@@ -47,7 +47,7 @@ public class PersonalInfo {
     @Column(name = "domicile_state", columnDefinition = "TEXT")
     private String domicileState;
 
-    @Column(name = "differently_abled", nullable = false)
+    @Column(name = "differently_abled")
     private Boolean differentlyAbled;
 
     @Column(name = "disability", columnDefinition = "TEXT")

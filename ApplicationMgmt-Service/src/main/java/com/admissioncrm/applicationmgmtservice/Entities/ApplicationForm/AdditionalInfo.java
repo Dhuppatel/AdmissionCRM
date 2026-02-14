@@ -24,10 +24,10 @@ public class AdditionalInfo {
     @Column(name = "transportation_required")
     private Boolean transportationRequired;
 
-    @Column(name = "heard_about_university_from", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "heard_about_university_from",  columnDefinition = "TEXT")
     private String heardAboutUniversityFrom;
 
-    @Column(name = "student_of_university", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "student_of_university", columnDefinition = "TEXT")
     private String studentOfUniversity;
 
     @Column(name = "enrollment_number", columnDefinition = "TEXT")

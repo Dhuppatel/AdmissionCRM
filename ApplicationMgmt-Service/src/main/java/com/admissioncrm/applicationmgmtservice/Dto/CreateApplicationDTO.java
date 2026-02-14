@@ -15,10 +15,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CreateApplicationDTO {
     String programId;
-    String institutionId;
+    String instituteId;
     String applicantId;
 
-
+    String email;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     ApplicationStatus status;

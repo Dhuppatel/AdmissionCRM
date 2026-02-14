@@ -4,6 +4,7 @@ import lombok.Data;
 
 
 public  enum ApplicationStatus {
+    CREATED,
     DRAFT,
     SUBMITTED,
     UNDER_REVIEW,

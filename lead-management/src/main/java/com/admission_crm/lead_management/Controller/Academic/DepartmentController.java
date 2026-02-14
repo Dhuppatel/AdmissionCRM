@@ -78,7 +78,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/program/{programId}")
-    @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
+//    @PreAuthorize("hasRole('UNIVERSITY_ADMIN') or hasRole('INSTITUTE_ADMIN')")
     public ResponseEntity<ApiResponse> getDepartmentsByProgramId(@PathVariable String programId) {
         try {
             log.info("REST request to get departments by Program ID: {}", programId);
