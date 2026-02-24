@@ -236,5 +236,10 @@ public class InstitutionService {
         return institute != null ? entityMapper.toResponseDTO(institute) : null;
     }
 
+    public String getInstituteNameById(String institutionId) {
+        return institutionRepository.findById(institutionId)
+                .map(Institution::getName)
+                .orElse(null);
+    }
 
 }

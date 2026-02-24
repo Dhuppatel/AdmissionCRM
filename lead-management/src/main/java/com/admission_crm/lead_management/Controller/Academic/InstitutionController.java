@@ -220,4 +220,10 @@ public class InstitutionController {
             return ResponseEntity.badRequest().body("Failed to assign Counsellor to Institute");
         }
     }
+
+    @GetMapping("/{institutionId}/getname")
+    public String getInstitutionName(@PathVariable String institutionId) {
+
+        return institutionService.getInstituteNameById(institutionId);
+    }
 }

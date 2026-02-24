@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class EntranceExamInfo {
 
-    @Column(name = "appeared_for_entrance_exam", nullable = false)
+    @Column(name = "appeared_for_entrance_exam")
     private Boolean appearedForEntranceExam;
 
     // Entrance Exam 1
@@ -84,7 +84,7 @@ public class EntranceExamInfo {
     private String entranceRollnoApplicationno4;
 
     // ACPC Information
-    @Column(name = "registered_in_acpc_acpdc", nullable = false)
+    @Column(name = "registered_in_acpc_acpdc")
     private Boolean registeredInAcpcAcpdc;
 
     @Column(name = "acpc_merit_number")

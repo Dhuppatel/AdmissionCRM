@@ -396,8 +396,8 @@ public class LeadService {
         lead.setQueryTitle(request.getQueryTitle());
         lead.setQueryDescription(request.getQueryDescription());
         lead.setLeadSource(request.getLeadSource());
-        lead.setStatus(request.getStatus());
-
+//        lead.setStatus(request.getStatus());
+        lead.setStatus(LeadStatus.NEW);
         if (request.getDateOfBirth() != null && !request.getDateOfBirth().trim().isEmpty()) {
             try {
                 lead.setDateOfBirth(LocalDate.parse(request.getDateOfBirth()));

@@ -158,6 +158,9 @@ public class ProgramController {
                     .body(ApiResponse.error("Failed to update program status", "An unexpected error occurred"));
         }
     }
-
+    @GetMapping("/{programId}/getname")
+    public String getProgramNameById(@PathVariable String programId) {
+        return programService.getProgramNameById(programId);
+    }
 
 }

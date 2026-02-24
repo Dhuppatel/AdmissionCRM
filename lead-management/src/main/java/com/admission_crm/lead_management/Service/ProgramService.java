@@ -99,4 +99,8 @@ public class ProgramService {
         }).orElse(false);
     }
 
+    public String getProgramNameById(String programId) {
+       return programRepository.findById(programId).orElseThrow(() -> new ResourceNotFoundException("Program not found")).getName();
+
+    }
 }

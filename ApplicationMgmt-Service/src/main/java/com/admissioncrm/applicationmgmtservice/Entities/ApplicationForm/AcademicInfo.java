@@ -21,7 +21,7 @@ public class AcademicInfo {
     @Column(name = "abc_id", columnDefinition = "TEXT")
     private String abcId;
 
-    @Column(name = "qualification", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "qualification", columnDefinition = "TEXT")
     private String qualification;
 
     // 12th Grade Information
