@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: ${DB_URL_LOCAL:jdbc:mysql://localhost:3306/admissioncrm_lead?useSSL=false&serverTimezone=UTC}
+    username: ${DB_USERNAME_LOCAL:admissionCRM}
+    password: ${DB_PASSWORD_LOCAL:Admission123}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  config:
+    import: optional:file:.env[.properties]
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost

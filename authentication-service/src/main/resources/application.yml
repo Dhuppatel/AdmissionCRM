@@ -1,19 +1,72 @@
-
-
-
-server:
-  port: ${PORT}
-
+#
+#
+#
+#server:
+#  port: ${PORT}
+#
+#spring:
+#  datasource:
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#    driver-class-name: org.postgresql.Driver
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#
+#    show-sql: true
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#  mail:
+#    host: smtp.gmail.com
+#    port: 587
+#    username: ${MAIL_USERNAME}
+#    password: ${MAIL_PASS}
+#    properties:
+#      mail:
+#        smtp:
+#          auth: true
+#          starttls:
+#            enable: true
+#  application:
+#    name: authentication-service
+#twilio:
+#  account-sid: ${TWILIO_ACCOUNT_SID}
+#  auth-token: ${TWILIO_AUTH_TOKEN}
+#  phone-number: ${TWILIO_PHONE_NUMBER}
+#
+#jwt:
+#  secret: ${JWT_SECRET}
+#  expiration: 86400000
+#
+#
+#frontend:
+#  url: ${FRONTEND_URL:http://localhost:4028}
+#
+#sendgrid:
+#  api-key: ${SENDGRID_API_KEY}
+#
+#eureka:
+#  client:
+#    enabled: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#  instance:
+#    prefer-ip-address: true
+#
+#lead-service:
+#  base-url: lb://lead-service
+#
+#
+#
 spring:
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    name: authentication-service
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -25,20 +78,21 @@ spring:
           auth: true
           starttls:
             enable: true
-  application:
-    name: authentication-service
-twilio:
-  account-sid: ${TWILIO_ACCOUNT_SID}
-  auth-token: ${TWILIO_AUTH_TOKEN}
-  phone-number: ${TWILIO_PHONE_NUMBER}
+
+server:
+  port: ${PORT:8002}
 
 jwt:
   secret: ${JWT_SECRET}
   expiration: 86400000
 
-
 frontend:
   url: ${FRONTEND_URL:http://localhost:4028}
+
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID}
+  auth-token: ${TWILIO_AUTH_TOKEN}
+  phone-number: ${TWILIO_PHONE_NUMBER}
 
 sendgrid:
   api-key: ${SENDGRID_API_KEY}
@@ -46,13 +100,5 @@ sendgrid:
 eureka:
   client:
     enabled: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
   instance:
     prefer-ip-address: true
-
-lead-service:
-  base-url: http://localhost:8080/api/leads
-
-
-

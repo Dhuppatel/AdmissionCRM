@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: ${DB_URL_local}
+    username: ${DB_USERNAME_local}
+    password: ${DB_PASSWORD_local}
+  config:
+    import: optional:file:.env[.properties]
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+auth:
+  service:
+    url: http://localhost:6002
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
