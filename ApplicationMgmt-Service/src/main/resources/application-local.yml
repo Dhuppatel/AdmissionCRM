@@ -4,7 +4,7 @@ spring:
     username: ${DB_USERNAME_local}
     password: ${DB_PASSWORD_local}
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:./ApplicationMgmt-Service/.env[.properties]
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
 

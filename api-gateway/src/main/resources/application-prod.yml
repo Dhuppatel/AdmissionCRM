@@ -1,0 +1,39 @@
+server:
+  address: 0.0.0.0
+
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+
+            - id: auth-service
+              uri: lb://AUTHENTICATION-SERVICE
+              predicates:
+                - Path=/api/auth/**
+
+            - id: lead-service
+              uri: lb://LEAD-SERVICE
+              predicates:
+                - Path=/api/leads/**
+
+            - id: application-service
+              uri: lb://APPLICATIONMGMT-SERVICE
+              predicates:
+                - Path=/api/application/**
+
+            - id: document-service
+              uri: lb://DOCUMENT-SERVICE
+              predicates:
+                - Path=/api/documents/**
+
+            - id: workflow-service
+              uri: lb://WORKFLOW-SERVICE
+              predicates:
+                - Path=/api/workflows/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

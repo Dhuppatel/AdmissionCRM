@@ -5,8 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity(name = "system_logs")
 @Table(name = "logs")
@@ -44,8 +47,9 @@ public class AuditLog {
     @Column(name = "session_id", length = 100)
     private String sessionId;
 
-    @Column(name = "additional_info", columnDefinition = "JSON")
-    private String additionalInfo;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "additional_info", columnDefinition = "json")
+    private Map<String, Object> additionalInfo;
 
     @CreationTimestamp
     @Column(name = "timestamp")

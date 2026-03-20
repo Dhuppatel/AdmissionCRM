@@ -28,7 +28,7 @@ services:
     build: ./authentication-service
     container_name: auth-service
     ports:
-      - "6002:8002"
+      - "6002:6002"
     depends_on:
       - eureka-server
     env_file:
@@ -42,7 +42,7 @@ services:
     build: ./lead-management
     container_name: lead-service
     ports:
-      - "6001:8083"
+      - "6001:6001"
     depends_on:
       - eureka-server
     env_file:

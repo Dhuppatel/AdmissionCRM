@@ -7,9 +7,10 @@ import com.admission_crm.lead_management.Payload.Request.UniversityCreateRequest
 import com.admission_crm.lead_management.Payload.Request.UniversityUpdateRequest;
 import com.admission_crm.lead_management.Payload.Response.UniversityResponseDTO;
 import com.admission_crm.lead_management.Repository.UniversityRepository;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

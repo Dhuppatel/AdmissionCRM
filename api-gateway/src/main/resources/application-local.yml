@@ -1,0 +1,36 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+
+            - id: auth-service
+              uri: http://localhost:6002
+              predicates:
+                - Path=/api/auth/**
+
+            - id: lead-service
+              uri: http://localhost:6001
+              predicates:
+                - Path=/api/leads/**
+
+            - id: application-service
+              uri: http://localhost:8001
+              predicates:
+                - Path=/api/application/**
+
+            - id: document-service
+              uri: http://localhost:8084
+              predicates:
+                - Path=/api/documents/**
+
+            - id: workflow-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/api/workflows/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
