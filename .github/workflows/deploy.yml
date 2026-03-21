@@ -21,7 +21,6 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd AdmissionCRM
-            git pull origin main
+            git pull origin main --rebase
             docker-compose down
             docker-compose up --build -d
-            
