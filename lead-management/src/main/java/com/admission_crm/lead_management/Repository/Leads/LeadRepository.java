@@ -105,13 +105,16 @@ public interface LeadRepository extends JpaRepository<Lead, String> {
                                         @Param("endDate") LocalDateTime endDate);
 
     // Search functionality
-    @Query("SELECT l FROM Lead l WHERE " +
-            "(:searchTerm IS NULL OR LOWER(l.firstName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(l.lastName) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(l.email) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "l.phone LIKE CONCAT('%', :searchTerm, '%')) AND " +
-            "(:institutionId IS NULL OR l.institutionId = :institutionId) AND " +
-            "(:status IS NULL OR l.status = :status)")
+    @Query("""
+SELECT l FROM Lead l WHERE 
+(:searchTerm IS NULL OR 
+ LOWER(l.firstName) LIKE LOWER(CONCAT('%', CAST(:searchTerm AS string), '%')) OR
+ LOWER(l.lastName) LIKE LOWER(CONCAT('%', CAST(:searchTerm AS string), '%')) OR
+ LOWER(l.email) LIKE LOWER(CONCAT('%', CAST(:searchTerm AS string), '%')) OR
+ l.phone LIKE CONCAT('%', CAST(:searchTerm AS string), '%'))
+AND (:institutionId IS NULL OR l.institutionId = :institutionId)
+AND (:status IS NULL OR l.status = :status)
+""")
     Page<Lead> searchLeads(@Param("searchTerm") String searchTerm,
                            @Param("institutionId") String institutionId,
                            @Param("status") LeadStatus status,

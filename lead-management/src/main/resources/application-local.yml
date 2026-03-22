@@ -5,7 +5,7 @@ spring:
     password: ${DB_PASSWORD_LOCAL:Admission123}
     driver-class-name: com.mysql.cj.jdbc.Driver
   config:
-    import: optional:file:.env[.properties]
+    import: optional:file:./lead-management/.env[.properties]
 eureka:
   client:
     service-url:
