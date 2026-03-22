@@ -6,28 +6,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 public class ReferenceIdService {
 
     private final ApplicationFormRepository applicationFormRepository;
-
     @Transactional
-    synchronized public String generateReferenceId(){
-
-
+    synchronized public String generateReferenceId() {
 
         int currentYear = LocalDate.now().getYear();
 
-        Long maxSequence = applicationFormRepository.findMaxSequenceForYearNative(currentYear);
+        List<String> refs = applicationFormRepository.findReferenceIdsByYear(currentYear);
 
-        long sequenceNumber=maxSequence+1;
+        long maxSequence = refs.stream()
+                .map(ref -> ref.substring(ref.length() - 6))
+                .mapToLong(Long::parseLong)
+                .max()
+                .orElse(0L);
 
+        long sequenceNumber = maxSequence + 1;
 
-        // Format: APP-2025-000001
         return String.format("APP-%d-%06d", currentYear, sequenceNumber);
-
     }
     public boolean isReferenceIdExists(String RefId)
     {

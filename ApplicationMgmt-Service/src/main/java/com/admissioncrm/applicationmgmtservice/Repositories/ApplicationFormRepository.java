@@ -56,11 +56,8 @@ public interface ApplicationFormRepository extends JpaRepository<ApplicationForm
     boolean existsByStudentMobile(String studentMobile);
 
     // Alternative approach using native query (might be more reliable)
-    @Query(value = "SELECT COALESCE(MAX(CAST(RIGHT(reference_id, 6) AS UNSIGNED)), 0) " +
-            "FROM application_forms " +
-            "WHERE reference_id LIKE CONCAT('APP-', :year, '-%')",
-            nativeQuery = true)
-    Long findMaxSequenceForYearNative(@Param("year") int year);
+    @Query("SELECT af.referenceId FROM ApplicationForm af WHERE af.referenceId LIKE CONCAT('APP-', :year, '-%')")
+    List<String> findReferenceIdsByYear(@Param("year") int year);
 
 
     List<ApplicationForm> findByApplicationStatusOrderByCreatedAt(ApplicationStatus status);
