@@ -1,7 +1,7 @@
 
 #  AdmissionCRM – Smart Admission Management System
 
-🔗 **Live Demo:** https://admission.dhup.tech
+🔗 **Live Demo:** https://admission.dhup.online
 
 ---
 
